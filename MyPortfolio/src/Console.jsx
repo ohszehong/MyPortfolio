@@ -2,8 +2,7 @@ import React from 'react'
 
 export default function Console() {
   return (
-    <div className='absolute w-[40%] max-xl:w-[55%] max-sm:w-[70%] h-[29.4rem] max-xl:h-[20rem] max-sm:h-[15rem] top-1/4 left-[27%] max-xl:left-[20%] max-sm:left-[15%]'>
-      <svg className='absolute w-full h-full' preserveAspectRatio='none' viewBox='0 0 900 500' xmlns="http://www.w3.org/2000/svg">
+      <svg className='absolute top-[50%] translate-y-[-50%]' preserveAspectRatio='xMinYMin meet' viewBox='0 0 900 500' xmlns="http://www.w3.org/2000/svg">
         <defs>
         <linearGradient id='ScreenBgColorGradient' x1='0' x2='0' y1='0' y2='1'>
           <stop offset='25%' stopColor='#7EA0F4'/>
@@ -61,6 +60,5 @@ export default function Console() {
             </tspan>
           </text>
       </svg>
-    </div>
   )
 }

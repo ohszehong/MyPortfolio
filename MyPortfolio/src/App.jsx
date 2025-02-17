@@ -8,11 +8,9 @@ function App() {
 
   return (
     <>
-    <div className='relative w-lvw h-lvh'>
-      <p className='top-[6.7em] pt-8 text-8xl max-md:text-6xl max-sm:text-4xl'>Hi, Welcome to my portfolio.</p>
+      <p className='p-7'>Hi, Welcome to my portfolio.</p>
       <BgBlocks />
       <Console />
-    </div>
     </>
   )
 }
