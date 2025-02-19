@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function Console() {
   return (
-      <svg className='absolute top-[50%] translate-y-[-50%]' preserveAspectRatio='xMinYMin meet' viewBox='0 0 900 500' xmlns="http://www.w3.org/2000/svg">
+      <svg className='relative md:ml-[10%] md:mr-[10%]' preserveAspectRatio='xMinYMin meet' viewBox='0 0 900 500' xmlns="http://www.w3.org/2000/svg">
         <defs>
         <linearGradient id='ScreenBgColorGradient' x1='0' x2='0' y1='0' y2='1'>
           <stop offset='25%' stopColor='#7EA0F4'/>
