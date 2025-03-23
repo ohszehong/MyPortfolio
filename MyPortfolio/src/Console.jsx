@@ -1,8 +1,45 @@
 import React from 'react'
 
-export default function Console() {
+export default function Console({isDraggingCassette}) {
+
+  /** @param {React.PointerEvent} event */
+  function handleConsolePointerEnter(event)
+  {
+    //console.log('pointer enter...');
+    /** @param {React.DOMElement} */
+    const svgContent = event.currentTarget;
+
+    //console.log(svgContent);
+    //console.log(isDraggingCassette);
+
+    if(svgContent && isDraggingCassette)
+    {
+      svgContent.classList.add('border-8');
+    }
+  }
+
+  /** @param {React.PointerEvent} event */
+  function handleConsolePointerLeave(event)
+  {
+    /** @param {React.DOMElement} */
+    const svgContent = event.currentTarget;
+
+    if(svgContent)
+    {
+      svgContent.classList.remove('border-8');
+    }
+  }
+
   return (
-      <svg className='relative md:ml-[10%] md:mr-[10%]' preserveAspectRatio='xMinYMin meet' viewBox='0 0 900 500' xmlns="http://www.w3.org/2000/svg">
+      <svg 
+        className='inline-block box-content 2xl:mr-8 md:w-[75%] select-none' 
+        preserveAspectRatio='xMinYMin meet' 
+        viewBox='0 0 900 500' 
+        xmlns="http://www.w3.org/2000/svg"
+        
+        onPointerEnter={handleConsolePointerEnter}
+        onPointerLeave={handleConsolePointerLeave}
+        >
         <defs>
         <linearGradient id='ScreenBgColorGradient' x1='0' x2='0' y1='0' y2='1'>
           <stop offset='25%' stopColor='#7EA0F4'/>
