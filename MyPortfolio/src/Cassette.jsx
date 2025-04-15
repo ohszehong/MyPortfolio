@@ -70,7 +70,7 @@ export default function Cassette({
           (consoleBoundingRect.width - cassetteInPlayBoundingRect.width) / 2 +
           consoleBoundingRect.left;
         const cassetteNewTop =
-          consoleBoundingRect.top - cassetteInPlayBoundingRect.height / 2;
+          (consoleBoundingRect.top + window.scrollY) - cassetteInPlayBoundingRect.height / 2;
 
         cassetteInPlay.current.style.left = `${cassetteNewLeft}px`;
         cassetteInPlay.current.style.top = `${cassetteNewTop}px`;
@@ -212,11 +212,11 @@ export default function Cassette({
         (consoleBoundingRect.width - cassetteBoundingRect.width) / 2 +
         consoleBoundingRect.left;
       const cassetteNewTop =
-        consoleBoundingRect.top - cassetteBoundingRect.height / 2;
+        (consoleBoundingRect.top + window.scrollY) - cassetteBoundingRect.height / 2; //DOMRect top is relative to the viewport, so we need to add the scrollY to get the correct position
 
       cassetteInPlay.current.style.left = `${cassetteNewLeft}px`;
       cassetteInPlay.current.style.top = `${cassetteNewTop}px`;
-      cassetteInPlay.current.style.zIndex = "1";
+      cassetteInPlay.current.style.zIndex = "-1";
     } else if (cassette) {
       cassette.style.maxWidth = "";
       cassette.style.left = "";
