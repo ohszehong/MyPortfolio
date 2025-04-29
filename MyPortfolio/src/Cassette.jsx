@@ -25,6 +25,8 @@ export default function Cassette({
   const cassetteIsOverConsole = useRef(false);
   const cassetteInPlay = useRef(null);
 
+  const prevTime = useRef(null);
+
   useEffect(() => {
     window.addEventListener("pointerup", handleResetContainerDrag);
     window.addEventListener("blur", handleResetContainerDrag);
@@ -57,23 +59,48 @@ export default function Cassette({
           cassetteInShelf.getBoundingClientRect();
 
         cassetteInPlay.current.style.minWidth = `${cassetteInShelfBoundingRect.width}px`;
+        cassetteInPlay.current.style.maxWidth = `${cassetteInShelfBoundingRect.width}px`;
       }
 
       //modify the left and top of the cassetteInPlay so that it stay proportional as the console size changes
       if (consoleSvgRef.current) {
-        const consoleBoundingRect =
-          consoleSvgRef.current.getBoundingClientRect();
+        const consoleBodyBoundingRect = consoleSvgRef.current
+          .querySelector("#console-body")
+          .getBoundingClientRect();
         const cassetteInPlayBoundingRect =
           cassetteInPlay.current.getBoundingClientRect();
 
         const cassetteNewLeft =
-          (consoleBoundingRect.width - cassetteInPlayBoundingRect.width) / 2 +
-          consoleBoundingRect.left;
+          (consoleBodyBoundingRect.width - cassetteInPlayBoundingRect.width) /
+            2 +
+          consoleBodyBoundingRect.left;
         const cassetteNewTop =
-          (consoleBoundingRect.top + window.scrollY) - cassetteInPlayBoundingRect.height / 2;
+          consoleBodyBoundingRect.top +
+          window.scrollY -
+          cassetteInPlayBoundingRect.height / 2;
 
         cassetteInPlay.current.style.left = `${cassetteNewLeft}px`;
         cassetteInPlay.current.style.top = `${cassetteNewTop}px`;
+
+        const slideDistance = cassetteInPlayBoundingRect.height / 2;
+
+        cassetteInPlay.current.style.setProperty(
+          "--slide-distance",
+          `${slideDistance}px`
+        );
+
+        if (
+          cassetteInPlay.current.style.getPropertyValue(
+            "--transition-duration"
+          ) != "0s"
+        ) {
+          cassetteInPlay.current.style.setProperty(
+            "--transition-duration",
+            "0s"
+          );
+          cassetteInPlay.current.style.display = "none";
+          setShouldBlockInput(false);
+        }
       }
     }
   }
@@ -122,19 +149,14 @@ export default function Cassette({
       const targetBounds = target.getBoundingClientRect();
       const targetWidth = targetBounds.width;
       const targetHeight = targetBounds.height;
-
       const targetHalfWidth = targetWidth / 2;
       const targetHalfHeight = targetHeight / 2;
-
       const targetXMid = targetBounds.left + targetHalfWidth;
       const targetYMid = targetBounds.top + targetHalfHeight;
-
       const newLeftOffset = targetXMid - event.pageX;
       const newTopOffset = targetYMid - event.pageY;
-
       target.style.left = `${targetBounds.left - newLeftOffset}px`;
       target.style.top = `${targetBounds.top - newTopOffset}px`;
-
       target.style.position = "absolute";
       target.style.zIndex = 10;
       target.style.maxWidth = `${targetWidth}px`;
@@ -187,13 +209,14 @@ export default function Cassette({
 
   /** @param {React.PointerEvent} event */
   function handleDropCassette(event) {
-    console.log("drop cassette triggered...");
     if (!isDraggingCassette) return;
+    console.log("drop cassette triggered...");
 
     //if the event is pointerleave or pointercancel, reset the cassette regardless
     if (event.type === "pointerleave" || event.type === "pointercancel") {
       console.log("is pointer leaving...");
       cassetteIsOverConsole.current = false;
+      consoleSvgRef.current.classList.remove("border-8");
     }
 
     setIsDraggingCassette(false);
@@ -201,32 +224,83 @@ export default function Cassette({
 
     //Dropped on Console
     if (cassetteIsOverConsole.current && consoleSvgRef.current) {
+      //Reset cassette that is currently in play, if any
+      if (cassetteInPlay.current) {
+        resetCassetteLayout(cassetteInPlay.current);
+      }
+
+      //auto-scroll to top
+      requestAnimationFrame(smoothScrollingToTop);
+
       consoleSvgRef.current.classList.remove("border-8");
       cassetteInPlay.current = cassette;
-      //setShouldBlockInput(true);
 
-      const consoleBoundingRect = consoleSvgRef.current.getBoundingClientRect();
+      const consoleBodyBoundingRect = consoleSvgRef.current
+        .querySelector("#console-body")
+        .getBoundingClientRect();
       const cassetteBoundingRect =
         cassetteInPlay.current.getBoundingClientRect();
       const cassetteNewLeft =
-        (consoleBoundingRect.width - cassetteBoundingRect.width) / 2 +
-        consoleBoundingRect.left;
+        (consoleBodyBoundingRect.width - cassetteBoundingRect.width) / 2 +
+        consoleBodyBoundingRect.left;
+
       const cassetteNewTop =
-        (consoleBoundingRect.top + window.scrollY) - cassetteBoundingRect.height / 2; //DOMRect top is relative to the viewport, so we need to add the scrollY to get the correct position
+        consoleBodyBoundingRect.top +
+        window.scrollY -
+        cassetteBoundingRect.height / 2; //DOMRect top is relative to the viewport, so we need to add the scrollY to get the correct position
 
       cassetteInPlay.current.style.left = `${cassetteNewLeft}px`;
       cassetteInPlay.current.style.top = `${cassetteNewTop}px`;
-      cassetteInPlay.current.style.zIndex = "-1";
-    } else if (cassette) {
-      cassette.style.maxWidth = "";
-      cassette.style.left = "";
-      cassette.style.top = "";
-      cassette.style.position = "";
+      cassetteInPlay.current.style.zIndex = "1";
+
+      //block all user inputs and play slide down animation for cassetteInPlay
+      setShouldBlockInput(true);
+      const slideDistance = cassetteBoundingRect.height / 2;
+
+      cassetteInPlay.current.style.setProperty(
+        "--slide-distance",
+        `${slideDistance}px`
+      );
+      cassetteInPlay.current.style.setProperty("--transition-duration", "3s");
+    } else {
+      resetCassetteLayout(cassette);
     }
   }
 
-  function handleCassetteAnimationEnd() {
-    setShouldBlockInput(false);
+  function resetCassetteLayout(cassette) {
+    if (cassette) {
+      cassette.style.display = "";
+      cassette.style.maxWidth = "";
+      cassette.style.minWidth = "";
+      cassette.style.left = "";
+      cassette.style.top = "";
+      cassette.style.position = "";
+      cassette.style.zIndex = "";
+      cassette.style.setProperty("--slide-distance", "0px");
+      cassette.style.setProperty("--transition-duration", "0s");
+    }
+  }
+
+  function smoothScrollingToTop() {
+    const currentScrollY = window.scrollY;
+    const scrollPerSec = currentScrollY < 150 ? 50 : 300;
+
+    if (currentScrollY > 0) {
+      const currentStartTime = document.timeline.currentTime;
+
+      if (prevTime.current === null) {
+        prevTime.current = currentStartTime;
+      }
+
+      const deltaTime =
+        (document.timeline.currentTime - prevTime.current) / 1000;
+      window.scrollTo(0, currentScrollY - scrollPerSec * deltaTime);
+
+      prevTime.current = currentStartTime;
+      requestAnimationFrame(smoothScrollingToTop);
+    } else {
+      prevTime.current = null;
+    }
   }
 
   return (
@@ -244,11 +318,14 @@ export default function Cassette({
             onPointerUp={handleDropCassette}
             onPointerLeave={handleDropCassette}
             onPointerCancel={handleDropCassette}
-            onAnimationEnd={handleCassetteAnimationEnd}
+            onTransitionEnd={(event) => {
+              event.currentTarget.style.display = "none";
+              setShouldBlockInput(false);
+            }}
             key={index}
             data-index={index}
             id={`cassette${index}`}
-            className={`flex-shrink-0 w-[70%] lg:w-[55%] 2xl:w-[60%] 3xl:w-[55%] touch-none`}
+            className={`flex-shrink-0 w-[70%] lg:w-[55%] 2xl:w-[60%] 3xl:w-[55%] touch-none cassette-transition`}
           >
             {/* <img draggable='false' src={'src/assets/drawing.png'} /> */}
             <CassetteSvg cassetteProperties={Item} className={"relative"} />

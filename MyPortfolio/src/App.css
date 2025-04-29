@@ -31,6 +31,11 @@
   }
 }
 
+.cassette-transition {
+  transition: transform var(--transition-duration) ease-out;
+  transform: translateY(var(--slide-distance)); 
+}
+
 .card {
   padding: 2em;
 }

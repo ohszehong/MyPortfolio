@@ -35,6 +35,7 @@ export default function Console({ consoleSvgRef }) {
         fill="#D9D9D9"
       />
       <path
+        id="console-body"
         d="M200 20 H725 q30 100, 135 100 V350 l-200 70 l-50 40 h-300 l-50 -40 l-200 -60 v-230 q100 -20, 135 -110"
         fill="#47399D"
       />
