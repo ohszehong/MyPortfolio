@@ -6,6 +6,8 @@ export default function Cassette({
   isDraggingCassette,
   setIsDraggingCassette,
   setShouldBlockInput,
+  cassetteInPlayIndexRef,
+  setIsLoadingGame,
 }) {
   const [startScrollX, setStartScrollX] = useState(0);
   const [isDraggingContainer, setIsDraggingContainer] = useState(false);
@@ -94,12 +96,7 @@ export default function Cassette({
             "--transition-duration"
           ) != "0s"
         ) {
-          cassetteInPlay.current.style.setProperty(
-            "--transition-duration",
-            "0s"
-          );
-          cassetteInPlay.current.style.display = "none";
-          setShouldBlockInput(false);
+          StartCassetteGameOnScreen(cassetteInPlay.current);
         }
       }
     }
@@ -281,6 +278,20 @@ export default function Cassette({
     }
   }
 
+  function StartCassetteGameOnScreen(cassette) {
+    if (cassette) {
+      cassette.style.setProperty("--transition-duration", "0s");
+      cassette.style.display = "none";
+      setShouldBlockInput(false);
+      setIsLoadingGame(true);
+      cassetteInPlayIndexRef.current = parseInt(cassette.dataset.index);
+
+      setTimeout(() => {
+        setIsLoadingGame(false);
+      }, 3000);
+    }
+  }
+
   function smoothScrollingToTop() {
     const currentScrollY = window.scrollY;
     const scrollPerSec = currentScrollY < 150 ? 50 : 300;
@@ -319,8 +330,7 @@ export default function Cassette({
             onPointerLeave={handleDropCassette}
             onPointerCancel={handleDropCassette}
             onTransitionEnd={(event) => {
-              event.currentTarget.style.display = "none";
-              setShouldBlockInput(false);
+              StartCassetteGameOnScreen(event.currentTarget);
             }}
             key={index}
             data-index={index}
