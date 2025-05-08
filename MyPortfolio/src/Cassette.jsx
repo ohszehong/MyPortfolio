@@ -96,7 +96,7 @@ export default function Cassette({
             "--transition-duration"
           ) != "0s"
         ) {
-          StartCassetteGameOnScreen(cassetteInPlay.current);
+          startCassetteGameOnScreen(cassetteInPlay.current);
         }
       }
     }
@@ -278,7 +278,7 @@ export default function Cassette({
     }
   }
 
-  function StartCassetteGameOnScreen(cassette) {
+  function startCassetteGameOnScreen(cassette) {
     if (cassette) {
       cassette.style.setProperty("--transition-duration", "0s");
       cassette.style.display = "none";
@@ -330,7 +330,7 @@ export default function Cassette({
             onPointerLeave={handleDropCassette}
             onPointerCancel={handleDropCassette}
             onTransitionEnd={(event) => {
-              StartCassetteGameOnScreen(event.currentTarget);
+              startCassetteGameOnScreen(event.currentTarget);
             }}
             key={index}
             data-index={index}
