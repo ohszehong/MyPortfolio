@@ -2,9 +2,9 @@ import ConsoleSvg from "./ConsoleSvg";
 
 export default function Console({
   consoleSvgRef,
-  cassetteInPlayIndexRef,
-  isLoadingGame,
-  GameMaps,
+  cassetteInPlayIndex,
+  isLoadingContent,
+  CassetteContentManager,
 }) {
   function AnimatedDots(numberOfDots) {
     return (
@@ -32,7 +32,10 @@ export default function Console({
 
   return (
     <div>
-      <ConsoleSvg consoleSvgRef={consoleSvgRef} GameMaps={GameMaps}>
+      <ConsoleSvg
+        consoleSvgRef={consoleSvgRef}
+        CassetteContentManager={CassetteContentManager}
+      >
         <text
           x="470"
           y="200"
@@ -41,10 +44,16 @@ export default function Console({
           textAnchor="middle"
           fill="#FFFFFF"
         >
-          {cassetteInPlayIndexRef.current != null ? (
-            isLoadingGame ? (
+          {cassetteInPlayIndex != null ? (
+            isLoadingContent ? (
               <>
                 <tspan dy="0.5em">Loading</tspan>
+                {AnimatedDots(3)}
+              </>
+            ) : isLoadingContent === null ? (
+              <>
+                <tspan dy="0.5em">Cassette is corrupted</tspan>
+
                 {AnimatedDots(3)}
               </>
             ) : (

@@ -6,8 +6,9 @@ export default function Cassette({
   isDraggingCassette,
   setIsDraggingCassette,
   setShouldBlockInput,
-  cassetteInPlayIndexRef,
-  setIsLoadingGame,
+  cassetteInPlayIndex,
+  setCassetteInPlayIndex,
+  setIsLoadingContent,
 }) {
   const [startScrollX, setStartScrollX] = useState(0);
   const [isDraggingContainer, setIsDraggingContainer] = useState(false);
@@ -283,12 +284,8 @@ export default function Cassette({
       cassette.style.setProperty("--transition-duration", "0s");
       cassette.style.display = "none";
       setShouldBlockInput(false);
-      setIsLoadingGame(true);
-      cassetteInPlayIndexRef.current = parseInt(cassette.dataset.index);
-
-      setTimeout(() => {
-        setIsLoadingGame(false);
-      }, 3000);
+      setIsLoadingContent(true);
+      setCassetteInPlayIndex(parseInt(cassette.dataset.index));
     }
   }
 

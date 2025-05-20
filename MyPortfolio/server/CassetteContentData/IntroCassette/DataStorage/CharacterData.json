@@ -1,0 +1,13 @@
+{
+    "characterData": {
+        "characterPosition": {
+            "dx": 0,
+            "dy": 0
+        },
+        "collisionPosition": {
+            "ddx": 0,
+            "ddy": 0
+        },
+        "movespeed": 10
+    }
+}

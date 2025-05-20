@@ -1,14 +1,12 @@
-//import tiledMapJSON from "../../public/MapData/IntroMap/MapJSON/IntroMapV2.json";
+import tiledMapJSON from "../../public/MapData/IntroMap/MapJSON/IntroMapV2.json";
 
-export const loadTileMap = async (shouldAbortRef, origin, cassetteIndex) => {
+export const loadTileMap = async (shouldAbortRef, mapJSONPath) => {
     if(shouldAbortRef?.current) return;
 
-    const apiURL = `${origin}${import.meta.env.VITE_API_RETRIEVE_CASSETTE_CONTENT_DATA}?cassetteIndex=${cassetteIndex}&dataType=MapData`;
-
-    ///** @type {tiledMapJSON} */
-    const mapJSON = await ((await fetch(apiURL)).json()).then((json) => json);
+    /** @type {tiledMapJSON} */
+    const mapJSON = await ((await fetch(mapJSONPath)).json()).then((json) => json);
     
-    console.log("path: ", apiURL, mapJSON);
+    console.log("path: ", mapJSONPath, mapJSON);
 
     const tileWidthInPixels = mapJSON.tilewidth;
     const tileHeightInPixels = mapJSON.tileheight;
@@ -23,11 +21,11 @@ export const loadTileMap = async (shouldAbortRef, origin, cassetteIndex) => {
         let image;
         try
         {
-            image = await loadImage(origin, tileset.image);
+            image = await loadImage(tileset.image);
             //console.log("loaded image: ", image);
         }
         catch(err){
-            console.log("error: ", origin, tileset.image, err);
+            console.log("error: ", tileset.image);
             continue;
         }
         
@@ -107,7 +105,7 @@ export const loadTileMap = async (shouldAbortRef, origin, cassetteIndex) => {
                     tempCanvasContext.translate(tempCanvas.width / 2, tempCanvas.height / 2); //assuming a 4x4 square, imagine the context move left once and up once.
             
                  if (decodedTile.flippedDiagonally) {
-                    //console.log("flipped Diagonally...");
+                    console.log("flipped Diagonally...");
                         if (decodedTile.flippedHorizontally && decodedTile.flippedVertically) {
                         tempCanvasContext.rotate(Math.PI); // 180°
                         tempCanvasContext.scale(1, -1);
@@ -120,7 +118,7 @@ export const loadTileMap = async (shouldAbortRef, origin, cassetteIndex) => {
                         tempCanvasContext.scale(1, -1);
                         }
                     } else {
-                        //console.log("flipped horizontally or vertically...");
+                        console.log("flipped horizontally or vertically...");
                         if (decodedTile.flippedHorizontally) tempCanvasContext.scale(-1, 1);
                         if (decodedTile.flippedVertically) tempCanvasContext.scale(1, -1);
                     }
@@ -178,12 +176,11 @@ const decodeTile = (rawGid) => {
     };
 }
 
-const loadImage = (origin, src) => {
-    //console.log(`${origin}/images/${src}`);
+const loadImage = (src) => {
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => resolve(img);
         img.onerror = reject;
-        img.src = `${origin}/images/${src}`;
+        img.src = src;
     });
 }

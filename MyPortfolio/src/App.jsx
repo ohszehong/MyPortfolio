@@ -4,15 +4,15 @@ import BlockInputModal from "./BlockInputModal";
 import BgBlocks from "./BgBlocks";
 import Console from "./Console";
 import Cassette from "./Cassette";
-import GameMaps from "./GameMaps";
+import CassetteContentManager from "./CassetteContentManager";
 
 function App() {
   const [isDraggingCassette, setIsDraggingCassette] = useState(false);
   const [shouldBlockInput, setShouldBlockInput] = useState(false);
-  const [isLoadingGame, setIsLoadingGame] = useState(false);
+  const [isLoadingContent, setIsLoadingContent] = useState(false);
+  const [cassetteInPlayIndex, setCassetteInPlayIndex] = useState(null);
 
   const consoleSvgRef = useRef(null);
-  const cassetteInPlayIndex = useRef(null);
 
   return (
     <>
@@ -21,17 +21,23 @@ function App() {
       <BgBlocks />
       <Console
         consoleSvgRef={consoleSvgRef}
-        cassetteInPlayIndexRef={cassetteInPlayIndex}
-        isLoadingGame={isLoadingGame}
-        GameMaps={<GameMaps />}
+        cassetteInPlayIndex={cassetteInPlayIndex}
+        isLoadingContent={isLoadingContent}
+        CassetteContentManager={
+          <CassetteContentManager
+            cassetteInPlayIndex={cassetteInPlayIndex}
+            setIsLoadingContent={setIsLoadingContent}
+          />
+        }
       />
       <Cassette
         consoleSvgRef={consoleSvgRef}
         isDraggingCassette={isDraggingCassette}
         setIsDraggingCassette={setIsDraggingCassette}
         setShouldBlockInput={setShouldBlockInput}
-        cassetteInPlayIndexRef={cassetteInPlayIndex}
-        setIsLoadingGame={setIsLoadingGame}
+        cassetteInPlayIndex={cassetteInPlayIndex}
+        setCassetteInPlayIndex={setCassetteInPlayIndex}
+        setIsLoadingContent={setIsLoadingContent}
       />
     </>
   );
