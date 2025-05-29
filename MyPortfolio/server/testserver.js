@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import http from "http";
-import httpInit from "./httpHandler.js";
+import httpsInit from "./httpsHandler.js";
 import wsInit from "./wsHandler.js";
 
 const __serverFilePath = fileURLToPath(import.meta.url);
@@ -13,7 +13,7 @@ dotenv.config({path: envFile});
 
 const port = process.env.SERVER_PORT;
 
-const app = httpInit(__serverDirPath);
+const app = httpsInit(__serverDirPath);
 const httpServer = http.createServer(app);
 wsInit(httpServer);
 

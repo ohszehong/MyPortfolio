@@ -1,0 +1,198 @@
+{
+  "mainCharacter": {
+    "targetType": "ally",
+    "animation": {
+      "idle": {
+        "left": [
+          {
+            "frames": [
+              {
+                "spritesheetOffset": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 250,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 16,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 100,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 32,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 100,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 48,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 250,
+                "collisions": []
+              }
+            ],
+            "spritesheetFile": "idleLeftSheet.png"
+          }
+        ],
+        "down": [
+          {
+            "frames": [
+              {
+                "spritesheetOffset": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 250,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 16,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 100,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 32,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 100,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 48,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 250,
+                "collisions": []
+              }
+            ],
+            "spritesheetFile": "idleDownSheet.png"
+          }
+        ],
+        "up": [
+          {
+            "frames": [
+              {
+                "spritesheetOffset": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 250,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 16,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 100,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 32,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 100,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 48,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 250,
+                "collisions": []
+              }
+            ],
+            "spritesheetFile": "idleUpSheet.png"
+          }
+        ],
+        "right": [
+          {
+            "frames": [
+              {
+                "spritesheetOffset": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 250,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 16,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 100,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 32,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 100,
+                "collisions": []
+              },
+              {
+                "spritesheetOffset": {
+                  "x": 48,
+                  "y": 0,
+                  "width": 16,
+                  "height": 24
+                },
+                "duration": 250,
+                "collisions": []
+              }
+            ],
+            "spritesheetFile": "idleRightSheet.png"
+          }
+        ]
+      }
+    },
+    "blockCollisionBounds": { "x": 8, "y": 4, "width": 17, "height": 24 }
+  }
+}

@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import http from "http";
-import httpInit from "./httpHandler.js";
+import https from "https";
+import fs from "fs";
+import httpsInit from "./httpsHandler.js";
 import wsInit from "./wsHandler.js";
 
 const __serverFilePath = fileURLToPath(import.meta.url);
@@ -13,10 +14,16 @@ dotenv.config({path: envFile});
 
 const port = process.env.SERVER_PORT;
 
-const app = httpInit(__serverDirPath);
-const httpServer = http.createServer(app);
-wsInit(httpServer);
+const app = httpsInit(__serverDirPath);
+const httpsServer = https.createServer({
+    key: fs.readFileSync(process.env.SERVER_KEY_PATH),
+    cert: fs.readFileSync(process.env.SERVER_CERT_PATH),
+    ca: fs.readFileSync(process.env.SERVER_CA_CERT_PATH),
+    requestCert: false,
+    rejectUnauthorized: false
+}, app);
+wsInit(httpsServer);
 
-httpServer.listen(port, () => {
+httpsServer.listen(port, () => {
     console.log(`app is listening on port ${port}`);
 })

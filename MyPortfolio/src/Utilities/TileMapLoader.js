@@ -1,11 +1,16 @@
-//import tiledMapJSON from "../../public/MapData/IntroMap/MapJSON/IntroMapV2.json";
+import tiledMapJSON from "../../server/CassetteContentData/IntroCassette/MapData/IntroMapV2.json";
+import CollisionTypes from "../assets/Standards/StringKeys/CollisionTypes.json"
+import { sanitizeCameraPosition } from "./GameCalculations";
 
-export const loadTileMap = async (shouldAbortRef, origin, cassetteIndex) => {
+/** @param {Array} fixedBlockCollisionsData */
+export const loadTileMap = async (shouldAbortRef, cassetteIndex, cameraPosition, fixedBackgroundCanvasRef, fixedBlockCollisionsData, fixedJumpTriggersData, consoleScreenRef) => {
     if(shouldAbortRef?.current) return;
+
+    const origin = import.meta.env.VITE_API_ORIGIN;
 
     const apiURL = `${origin}${import.meta.env.VITE_API_RETRIEVE_CASSETTE_CONTENT_DATA}?cassetteIndex=${cassetteIndex}&dataType=MapData`;
 
-    ///** @type {tiledMapJSON} */
+    /** @type {tiledMapJSON} */
     const mapJSON = await ((await fetch(apiURL)).json()).then((json) => json);
     
     console.log("path: ", apiURL, mapJSON);
@@ -27,7 +32,7 @@ export const loadTileMap = async (shouldAbortRef, origin, cassetteIndex) => {
             //console.log("loaded image: ", image);
         }
         catch(err){
-            console.log("error: ", origin, tileset.image, err);
+            console.log("error: ", origin, tileset.image, err.message);
             continue;
         }
         
@@ -66,16 +71,14 @@ export const loadTileMap = async (shouldAbortRef, origin, cassetteIndex) => {
         }
     }
 
-    const canvas = document.createElement("canvas");
+    const canvas = new OffscreenCanvas(totalTilesInX * tileWidthInPixels, totalTilesInY * tileHeightInPixels);
     const context = canvas.getContext("2d");
-    canvas.width = totalTilesInX * tileWidthInPixels;
-    canvas.height = totalTilesInY * tileHeightInPixels;
 
-    for (let layer of mapJSON.layers)
+    const tileLayers = mapJSON.layers.filter((layer) => layer.type === "tilelayer");
+
+    for (let layer of tileLayers)
     {
         if(shouldAbortRef?.current) return;
-
-        if(layer.type != "tilelayer") continue;
 
         let currentTileColumnInIndex = 0;
         let currentTileRowInIndex = 0;
@@ -155,8 +158,109 @@ export const loadTileMap = async (shouldAbortRef, origin, cassetteIndex) => {
             }
         }
     }
-    
-    return canvas;
+
+    const textsLayer = mapJSON.layers.find((layer) => layer.name === "Texts");
+
+    if(textsLayer)
+    {
+        if(shouldAbortRef?.current) return;
+
+        for (const text of textsLayer.objects)
+        {
+            if(text.text)
+            {
+
+                context.font = `${text.text.pixelsize}px ${text.text.fontfamily}`;
+            
+                const metrics = context.measureText(text.text?.text);
+                const textActualHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+                const textActualPadding = (text.height - textActualHeight) / 2;
+
+                context.fillStyle = text.text?.color;
+                context.fillText(text.text?.text, text.x, text.y + text.height - textActualPadding, text.width);
+            }
+        }
+    }
+
+    const blockCollisionsLayer = mapJSON.layers.find((layer) => layer.name === "BlockCollisions");
+
+    if (blockCollisionsLayer)
+    {
+        if (shouldAbortRef?.current) return;
+
+        for (const blockCollision of blockCollisionsLayer.objects)
+        {
+            if (shouldAbortRef?.current) return;
+
+            const collisionTargets = blockCollision.properties[0]?.value.split(",");
+            
+            let blockCollisionData = {
+                targets: collisionTargets
+            };
+
+            blockCollisionData.x = blockCollision.x;
+            blockCollisionData.y = blockCollision.y;
+            blockCollisionData.width = blockCollision.width;
+            blockCollisionData.height = blockCollision.height;
+
+            fixedBlockCollisionsData.current.push({...blockCollisionData});
+        }
+    }
+
+    console.log("fixedBlockCollisionsData first load: ", fixedBlockCollisionsData.current);
+
+    const jumpTriggersLayer = mapJSON.layers.find((layer) => layer.name === "JumpTriggers");
+
+    if(jumpTriggersLayer)
+    {
+        if(shouldAbortRef?.current) return;
+
+        for(const jumpCollision of jumpTriggersLayer.objects)
+        {
+            if(shouldAbortRef?.current) return;
+
+            let jumpTriggerData = {
+                blocking: false,
+                jumpDirection: "right",
+                jumpMagnitude: 0
+            };
+
+            for(const property of jumpCollision.properties)
+            {
+                jumpTriggerData[property.name] = property.value;
+            }
+
+            fixedJumpTriggersData.current.push({...jumpTriggerData});
+        }
+    }
+
+    console.log("fixedJumpTriggersData: ", fixedJumpTriggersData.current);
+
+    fixedBackgroundCanvasRef.current = canvas;
+
+    //starting position 
+    const startingPosition = mapJSON.layers.find((layer) => layer.name === "PlayerPosition").objects[0];
+
+    //character stayed in the middle of the camera
+    if(startingPosition)
+    {
+        let screenWidth = 0;
+        let screenHeight = 0;
+
+        if(consoleScreenRef.current)
+        {
+            screenWidth = consoleScreenRef.current.width.baseVal.value;
+            screenHeight = consoleScreenRef.current.height.baseVal.value;
+        }
+
+        cameraPosition.current.x = startingPosition.x - screenWidth / 2;
+        cameraPosition.current.y = startingPosition.y - screenHeight / 2;
+        sanitizeCameraPosition(cameraPosition, consoleScreenRef, {current: canvas});
+
+        // console.log("cameraPosition: ", cameraPosition.current);
+        // console.log("canvas width: ", canvas.width);
+        // console.log("canvas height: ", canvas.height);
+    }
 }
 
 const decodeTile = (rawGid) => {
@@ -182,6 +286,7 @@ const loadImage = (origin, src) => {
     //console.log(`${origin}/images/${src}`);
     return new Promise((resolve, reject) => {
         const img = new Image();
+        img.crossOrigin = "anonymous";
         img.onload = () => resolve(img);
         img.onerror = reject;
         img.src = `${origin}/images/${src}`;

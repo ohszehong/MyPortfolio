@@ -1,0 +1,7 @@
+{
+  "idle": "idle",
+  "walking": "walking",
+  "running": "running",
+  "jumping": "jumping",
+  "attacking": "attacking"
+}

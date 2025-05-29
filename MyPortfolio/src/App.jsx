@@ -23,12 +23,13 @@ function App() {
         consoleSvgRef={consoleSvgRef}
         cassetteInPlayIndex={cassetteInPlayIndex}
         isLoadingContent={isLoadingContent}
-        CassetteContentManager={
+        CassetteContentManager={(props) => (
           <CassetteContentManager
+            {...props}
             cassetteInPlayIndex={cassetteInPlayIndex}
             setIsLoadingContent={setIsLoadingContent}
           />
-        }
+        )}
       />
       <Cassette
         consoleSvgRef={consoleSvgRef}

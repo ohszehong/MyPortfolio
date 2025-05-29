@@ -1,7 +1,8 @@
 import { WebSocketServer } from "ws";
+import crypto from "crypto";
 
-export default function wsInit(httpServer) {
-    const wss = new WebSocketServer({server: httpServer});
+export default function wsInit(httpsServer) {
+    const wss = new WebSocketServer({server: httpsServer});
 
     wss.on("connection", (ws, req) => {
         console.log("WebSocket connection opened.");

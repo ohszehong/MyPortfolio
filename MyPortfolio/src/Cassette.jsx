@@ -106,8 +106,8 @@ export default function Cassette({
   /** @param {React.PointerEvent} event */
   function handleContainerPointerDown(event) {
     //left click only for mouse
-    if (event.pointerType == "mouse") {
-      if (event.button != "0") return;
+    if (event.pointerType === "mouse") {
+      if (event.button != 0) return;
     }
 
     console.log("container pressed...");
