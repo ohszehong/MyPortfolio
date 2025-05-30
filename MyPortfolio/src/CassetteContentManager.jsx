@@ -10,7 +10,6 @@ import useCassetteInit from "./UseCassetteInit";
 const CassetteContentManager = ({
   cassetteInPlayIndex,
   setIsLoadingContent,
-  consoleScreenRef,
   consoleSvgRef,
   buttonsRef,
 }) => {
@@ -62,7 +61,7 @@ const CassetteContentManager = ({
           fixedBackgroundOffscreenCanvasRef,
           fixedObjectBlockCollisionsData,
           fixedJumpTriggersData,
-          consoleScreenRef
+          contentCanvasRef
         );
         if (isCancelled) return;
 
@@ -80,7 +79,7 @@ const CassetteContentManager = ({
         if (
           context2d &&
           fixedBackgroundOffscreenCanvasRef.current &&
-          consoleScreenRef.current
+          contentCanvasRef.current
         ) {
           // console.log("putting image data: ", fixedBackgroundCanvasRef.current);
 
@@ -170,10 +169,8 @@ const CassetteContentManager = ({
     webSocketRef,
     //UIReferences
     {
-      contentParentDivRef: contentParentDivRef,
       fixedBackgroundCanvasRef: fixedBackgroundOffscreenCanvasRef,
       contentCanvasRef: contentCanvasRef,
-      consoleScreenRef: consoleScreenRef,
       consoleSvgRef: consoleSvgRef,
     },
     //gameDataReferences

@@ -1,9 +1,9 @@
 import tiledMapJSON from "../../server/CassetteContentData/IntroCassette/MapData/IntroMapV2.json";
 import CollisionTypes from "../assets/Standards/StringKeys/CollisionTypes.json"
-import { sanitizeCameraPosition } from "./GameCalculations";
+import { sanitizeCameraPosition } from "../assets/Engine/Engine";
 
 /** @param {Array} fixedBlockCollisionsData */
-export const loadTileMap = async (shouldAbortRef, cassetteIndex, cameraPosition, fixedBackgroundCanvasRef, fixedBlockCollisionsData, fixedJumpTriggersData, consoleScreenRef) => {
+export const loadTileMap = async (shouldAbortRef, cassetteIndex, cameraPosition, fixedBackgroundCanvasRef, fixedBlockCollisionsData, fixedJumpTriggersData, contentCanvasRef) => {
     if(shouldAbortRef?.current) return;
 
     const origin = import.meta.env.VITE_API_ORIGIN;
@@ -247,15 +247,15 @@ export const loadTileMap = async (shouldAbortRef, cassetteIndex, cameraPosition,
         let screenWidth = 0;
         let screenHeight = 0;
 
-        if(consoleScreenRef.current)
+        if(contentCanvasRef.current)
         {
-            screenWidth = consoleScreenRef.current.width.baseVal.value;
-            screenHeight = consoleScreenRef.current.height.baseVal.value;
+            screenWidth = contentCanvasRef.current.width.baseVal.value;
+            screenHeight = contentCanvasRef.current.height.baseVal.value;
         }
 
         cameraPosition.current.x = startingPosition.x - screenWidth / 2;
         cameraPosition.current.y = startingPosition.y - screenHeight / 2;
-        sanitizeCameraPosition(cameraPosition, consoleScreenRef, {current: canvas});
+        sanitizeCameraPosition(cameraPosition, contentCanvasRef, {current: canvas});
 
         // console.log("cameraPosition: ", cameraPosition.current);
         // console.log("canvas width: ", canvas.width);

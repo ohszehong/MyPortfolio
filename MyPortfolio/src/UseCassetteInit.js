@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { sanitizeCameraPosition } from "./Utilities/GameCalculations";
 
 export default function useCassetteInit(
@@ -137,7 +137,6 @@ export default function useCassetteInit(
             gameDataReferences.cameraPosition,
             UIReferences.fixedBackgroundCanvasRef,
             UIReferences.contentCanvasRef,
-            UIReferences.consoleScreenRef
           );
         }
 
@@ -154,7 +153,6 @@ export default function useCassetteInit(
     cameraPosition,
     fixedBackgroundCanvasRef,
     contentCanvasRef,
-    consoleScreenRef
   ) => {
     if (
       !cameraPosition.current &&
@@ -169,7 +167,7 @@ export default function useCassetteInit(
     if (context2d) {
       sanitizeCameraPosition(
         cameraPosition,
-        consoleScreenRef,
+        contentCanvasRef,
         fixedBackgroundCanvasRef,
         false
       );

@@ -15,9 +15,6 @@ export default function ConsoleSvg({
     buttonA: null,
     buttonB: null,
   });
-
-  const consoleScreenRef = useRef(null);
-
   useEffect(() => {
     if (consoleSvgRef.current) {
       console.log("adding event listener. Source: consoleSvgRef.current");
@@ -397,10 +394,8 @@ export default function ConsoleSvg({
         width={480}
         height={280}
         clipPath="url(#ScreenClipPath)"
-        ref={consoleScreenRef}
       >
         {CassetteContentManager({
-          consoleScreenRef: consoleScreenRef,
           consoleSvgRef: consoleSvgRef,
           buttonsRef: buttonsRef,
         })}
