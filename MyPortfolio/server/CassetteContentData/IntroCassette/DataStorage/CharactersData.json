@@ -1,6 +1,7 @@
 {
   "mainCharacter": {
     "targetType": "ally",
+    "selectable": false,
     "animation": {
       "idle": {
         "left": [

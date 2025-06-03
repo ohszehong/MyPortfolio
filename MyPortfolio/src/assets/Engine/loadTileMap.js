@@ -1,17 +1,19 @@
-import tiledMapJSON from "../../server/CassetteContentData/IntroCassette/MapData/IntroMapV2.json";
-import CollisionTypes from "../assets/Standards/StringKeys/CollisionTypes.json"
-import { sanitizeCameraPosition } from "../assets/Engine/Engine";
+//import tiledMapJSON from "../../../server/CassetteContentData/IntroCassette/MapData/IntroMapV2.json";
 
-/** @param {Array} fixedBlockCollisionsData */
-export const loadTileMap = async (shouldAbortRef, cassetteIndex, cameraPosition, fixedBackgroundCanvasRef, fixedBlockCollisionsData, fixedJumpTriggersData, contentCanvasRef) => {
+export default async function loadTileMap(shouldAbortRef) {
     if(shouldAbortRef?.current) return;
 
     const origin = import.meta.env.VITE_API_ORIGIN;
 
-    const apiURL = `${origin}${import.meta.env.VITE_API_RETRIEVE_CASSETTE_CONTENT_DATA}?cassetteIndex=${cassetteIndex}&dataType=MapData`;
+    const apiURL = `${origin}${import.meta.env.VITE_API_RETRIEVE_CASSETTE_CONTENT_DATA}?cassetteIndex=${this.cassetteIndex}&dataType=MapData`;
 
-    /** @type {tiledMapJSON} */
     const mapJSON = await ((await fetch(apiURL)).json()).then((json) => json);
+
+    //having statusCode means the server has failed to send the file.
+    if(mapJSON.statusCode) 
+    {
+        throw new Error(mapJSON.message);
+    }
     
     console.log("path: ", apiURL, mapJSON);
 
@@ -203,11 +205,11 @@ export const loadTileMap = async (shouldAbortRef, cassetteIndex, cameraPosition,
             blockCollisionData.width = blockCollision.width;
             blockCollisionData.height = blockCollision.height;
 
-            fixedBlockCollisionsData.current.push({...blockCollisionData});
+            this.fixedObjectBlockCollisionsData.push({...blockCollisionData});
         }
     }
 
-    console.log("fixedBlockCollisionsData first load: ", fixedBlockCollisionsData.current);
+    console.log("fixedObjectBlockCollisionsData first load: ", this.fixedObjectBlockCollisionsData);
 
     const jumpTriggersLayer = mapJSON.layers.find((layer) => layer.name === "JumpTriggers");
 
@@ -230,13 +232,13 @@ export const loadTileMap = async (shouldAbortRef, cassetteIndex, cameraPosition,
                 jumpTriggerData[property.name] = property.value;
             }
 
-            fixedJumpTriggersData.current.push({...jumpTriggerData});
+            this.fixedJumpTriggersData.push({...jumpTriggerData});
         }
     }
 
-    console.log("fixedJumpTriggersData: ", fixedJumpTriggersData.current);
+    console.log("fixedJumpTriggersData: ", this.fixedJumpTriggersData);
 
-    fixedBackgroundCanvasRef.current = canvas;
+    this.fixedBackgroundOffscreenCanvas = canvas;
 
     //starting position 
     const startingPosition = mapJSON.layers.find((layer) => layer.name === "PlayerPosition").objects[0];
@@ -247,19 +249,16 @@ export const loadTileMap = async (shouldAbortRef, cassetteIndex, cameraPosition,
         let screenWidth = 0;
         let screenHeight = 0;
 
-        if(contentCanvasRef.current)
+        if(this.contentCanvas)
         {
-            screenWidth = contentCanvasRef.current.width.baseVal.value;
-            screenHeight = contentCanvasRef.current.height.baseVal.value;
+            //screenWidth = this.contentCanvas.width.baseVal.value;
+            //screenHeight = this.contentCanvas.height.baseVal.value;
+            screenWidth = this.contentCanvas.width;
+            screenHeight = this.contentCanvas.height;
         }
 
-        cameraPosition.current.x = startingPosition.x - screenWidth / 2;
-        cameraPosition.current.y = startingPosition.y - screenHeight / 2;
-        sanitizeCameraPosition(cameraPosition, contentCanvasRef, {current: canvas});
-
-        // console.log("cameraPosition: ", cameraPosition.current);
-        // console.log("canvas width: ", canvas.width);
-        // console.log("canvas height: ", canvas.height);
+        this.cameraPosition.x = startingPosition.x - screenWidth / 2;
+        this.cameraPosition.y = startingPosition.y - screenHeight / 2;
     }
 }
 

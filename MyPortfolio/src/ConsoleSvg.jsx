@@ -17,7 +17,7 @@ export default function ConsoleSvg({
   });
   useEffect(() => {
     if (consoleSvgRef.current) {
-      console.log("adding event listener. Source: consoleSvgRef.current");
+      //console.log("adding event listener. Source: consoleSvgRef.current");
       consoleSvgRef.current.addEventListener("keydown", onKeyDown);
       consoleSvgRef.current.addEventListener("keyup", onKeyUp);
 
@@ -25,7 +25,7 @@ export default function ConsoleSvg({
     }
 
     return () => {
-      console.log("remove event listener. Source: consoleSvgRef.current");
+      //console.log("remove event listener. Source: consoleSvgRef.current");
 
       if (consoleSvgRef.current) {
         consoleSvgRef.current.removeEventListener("keydown", onKeyDown);

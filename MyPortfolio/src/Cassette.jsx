@@ -110,7 +110,7 @@ export default function Cassette({
       if (event.button != 0) return;
     }
 
-    console.log("container pressed...");
+    //console.log("container pressed...");
     setStartScrollX(event.pageX);
     setIsDraggingContainer(true);
   }
@@ -168,7 +168,7 @@ export default function Cassette({
       if (event.button != "0") return;
     }
 
-    console.log("cassette pressed...");
+    //console.log("cassette pressed...");
     event.stopPropagation();
     centerEventTargetAroundCursor(event);
     setIsDraggingCassette(true);
@@ -208,7 +208,7 @@ export default function Cassette({
   /** @param {React.PointerEvent} event */
   function handleDropCassette(event) {
     if (!isDraggingCassette) return;
-    console.log("drop cassette triggered...");
+    //console.log("drop cassette triggered...");
 
     //if the event is pointerleave or pointercancel, reset the cassette regardless
     if (event.type === "pointerleave" || event.type === "pointercancel") {

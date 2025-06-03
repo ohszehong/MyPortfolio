@@ -1,11 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { loadTileMap } from "./Utilities/TileMapLoader";
-import CollisionTypes from "./assets/Standards/StringKeys/CollisionTypes.json";
-import TargetTypes from "./assets/Standards/StringKeys/TargetTypes.json";
-import CharacterStateTypes from "./assets/Standards/StringKeys/CharacterStateTypes.json";
-import FacingDirections from "./assets/Standards/StringKeys/FacingDirections.json";
-import useCassetteInit from "./UseCassetteInit";
+import Engine from "./assets/Engine/Engine";
 
 const CassetteContentManager = ({
   cassetteInPlayIndex,
@@ -13,103 +8,56 @@ const CassetteContentManager = ({
   consoleSvgRef,
   buttonsRef,
 }) => {
+  /** @type {{current: HTMLDivElement}} */
   const contentParentDivRef = useRef(null);
-  const contentCanvasRef = useRef(null);
-  const webSocketRef = useRef(null);
 
-  const cameraPosition = useRef({ x: 0, y: 0 });
-  const fixedBackgroundOffscreenCanvasRef = useRef(null);
-  const fixedObjectBlockCollisionsData = useRef([]);
-  const fixedJumpTriggersData = useRef([]);
-
-  const playerState = useRef({
-    targetType: TargetTypes.ally,
-    state: CharacterStateTypes.idle,
-    facingDirection: FacingDirections.right,
-    position: { dx: 0, dy: 0 },
-    collision: { ddx: 0, ddy: 0, width: 0, height: 0 },
-  });
-
-  //for ally npcs
-  const allyPawnsState = useRef([]);
-
-  //for enemy npcs
-  const enemyPawnsState = useRef([]);
-
-  //const otherPlayersState = useRef([]);
+  /** @type {{current: Engine}} */
+  const EngineRef = useRef(null);
 
   useEffect(() => {
-    console.log("mounted. Source: CassetteContentManager");
+    EngineRef.current = new Engine(consoleSvgRef, buttonsRef);
+
+    return () => {
+      console.log("resetting from []");
+      EngineRef.current.resetEngine();
+    };
+  }, []);
+
+  useEffect(() => {
+    //console.log("mounted. Source: CassetteContentManager");
 
     //for height transition effect
     if (contentParentDivRef?.current) {
       contentParentDivRef.current.style.width = "0px";
       contentParentDivRef.current.style.height = "0px";
+
+      //force reflow since offsetHeight is one of the layout dependent property in which the browser have to get all the latest surrounding dom elements to get the correct offset value.
+      contentParentDivRef.current.offsetHeight;
     }
 
-    let isCancelled = false;
     const shouldAbortRef = { current: false };
 
     const loadContent = async () => {
       console.log("play index: ", cassetteInPlayIndex);
 
       try {
-        await loadTileMap(
-          shouldAbortRef,
-          cassetteInPlayIndex,
-          cameraPosition,
-          fixedBackgroundOffscreenCanvasRef,
-          fixedObjectBlockCollisionsData,
-          fixedJumpTriggersData,
-          contentCanvasRef
-        );
-        if (isCancelled) return;
-
-        setIsLoadingContent(false);
-
-        if (contentParentDivRef.current) {
-          contentParentDivRef.current.style.width = "100%";
-          contentParentDivRef.current.style.height = "100%";
-        }
-
-        //Initial draw
-        /** @type {CanvasRenderingContext2D} */
-        const context2d = contentCanvasRef.current?.getContext("2d");
-
-        if (
-          context2d &&
-          fixedBackgroundOffscreenCanvasRef.current &&
-          contentCanvasRef.current
-        ) {
-          // console.log("putting image data: ", fixedBackgroundCanvasRef.current);
-
-          // console.log(
-          //   "image data width: ",
-          //   fixedBackgroundCanvasRef.current.width
-          // );
-          // console.log(
-          //   "image data height: ",
-          //   fixedBackgroundCanvasRef.current.height
-          // );
-
-          // console.log(
-          //   "console screen width and height: ",
-          //   consoleScreenRef.current.getBoundingClientRect().width,
-          //   " ",
-          //   consoleScreenRef.current.getBoundingClientRect().height
-          // );
-
-          context2d.drawImage(
-            fixedBackgroundOffscreenCanvasRef.current,
-            cameraPosition.current.x,
-            cameraPosition.current.y,
-            contentCanvasRef.current.width,
-            contentCanvasRef.current.height,
-            0,
-            0,
-            contentCanvasRef.current.width,
-            contentCanvasRef.current.height
+        if (EngineRef.current) {
+          await EngineRef.current.initCassette(
+            cassetteInPlayIndex,
+            shouldAbortRef
           );
+          setIsLoadingContent(false);
+
+          if (contentParentDivRef.current) {
+            contentParentDivRef.current.style.width = "100%";
+            contentParentDivRef.current.style.height = "100%";
+            contentParentDivRef.current.appendChild(
+              EngineRef.current.getContentCanvas()
+            );
+            contentParentDivRef.current.offsetHeight;
+          }
+
+          EngineRef.current.startGameLoop();
         }
       } catch (err) {
         setIsLoadingContent(null);
@@ -117,74 +65,18 @@ const CassetteContentManager = ({
       }
     };
 
-    if (cassetteInPlayIndex != null) {
-      loadContent();
-
-      //connect to websocket
-      webSocketRef.current = new WebSocket(
-        `${import.meta.env.VITE_WS_CONNECTION}//${
-          import.meta.env.VITE_ORIGIN_WITHOUT_HTTP
-        }/cassetteSocket`,
-        `cassette-${cassetteInPlayIndex}`
-      );
-
-      if (webSocketRef.current) {
-        /** @type {WebSocket} */
-        const ws = webSocketRef.current;
-
-        ws.onopen = (event) => {
-          ws.send("hello world.");
-        };
-
-        ws.onmessage = (event) => {
-          console.log("received message from server: ", event.data);
-        };
-      }
-    }
+    if (cassetteInPlayIndex != null) loadContent();
 
     return () => {
-      console.log("unmounted. Source: CassetteContentManager");
-      isCancelled = true;
+      //console.log("unmounted. Source: CassetteContentManager");
       shouldAbortRef.current = true;
 
-      if (contentCanvasRef.current) {
-        /** @type {CanvasRenderingContext2D} */
-        const context2d = contentCanvasRef.current.getContext("2d");
-        context2d.clearRect(
-          0,
-          0,
-          contentCanvasRef.current.width,
-          contentCanvasRef.current.height
-        );
-      }
-
-      if (webSocketRef.current) {
-        webSocketRef.current.close();
+      if (EngineRef.current && cassetteInPlayIndex != null) {
+        console.log("resetting from cassetteInPlayIndex");
+        EngineRef.current.resetEngine();
       }
     };
   }, [cassetteInPlayIndex]);
-
-  useCassetteInit(
-    cassetteInPlayIndex,
-    webSocketRef,
-    //UIReferences
-    {
-      fixedBackgroundCanvasRef: fixedBackgroundOffscreenCanvasRef,
-      contentCanvasRef: contentCanvasRef,
-      consoleSvgRef: consoleSvgRef,
-    },
-    //gameDataReferences
-    {
-      cameraPosition: cameraPosition,
-      fixedObjectBlockCollisionsData: fixedObjectBlockCollisionsData,
-      fixedJumpTriggersData: fixedJumpTriggersData,
-      playerState: playerState,
-      allyPawnsState: allyPawnsState,
-      enemyPawnsState: enemyPawnsState,
-    },
-    //buttons
-    buttonsRef
-  );
 
   return (
     <div
@@ -197,9 +89,7 @@ const CassetteContentManager = ({
       tabIndex={0}
       ref={contentParentDivRef}
       id="cassette-content-wrapper"
-    >
-      <canvas width={480} height={280} ref={contentCanvasRef}></canvas>
-    </div>
+    ></div>
   );
 };
 
