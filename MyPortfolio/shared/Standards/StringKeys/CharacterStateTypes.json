@@ -1,0 +1,8 @@
+{
+  "idling": "idling",
+  "walking": "walking",
+  "running": "running",
+  "jumping": "jumping",
+  "receivingDamage": "receivingDamage",
+  "usingAbility": "usingAbility"
+}

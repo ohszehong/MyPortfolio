@@ -1,0 +1,764 @@
+{
+  "mainCharacter": {
+    "defaultImageFile": "",
+    "selectable": false,
+    "targetType": "ally",
+    "defaultStats": {
+      "health": 100,
+      "defense": 10,
+      "attack": 10,
+      "movespeed": 10,
+      "attackspeed": 2,
+      "healing": 0
+    },
+    "maxLevel": 10,
+    "collision": {
+      "target": "all",
+      "active": true,
+      "collisionType": "blockCollision",
+      "ddx": 7,
+      "ddy": 4,
+      "width": 18,
+      "height": 24
+    },
+    "animation": {
+      "idle": {
+        "spritesheetFile": "idleSheet.png",
+        "down": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            }
+          ]
+        },
+        "up": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            }
+          ]
+        },
+        "right": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            }
+          ]
+        },
+        "left": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 290,
+              "collisions": []
+            }
+          ]
+        }
+      },
+      "walk": {
+        "spritesheetFile": "walkSheet.png",
+        "down": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 128,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 160,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            }
+          ]
+        },
+        "up": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 128,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 160,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            }
+          ]
+        },
+        "right": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 128,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 160,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            }
+          ]
+        },
+        "left": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 128,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 160,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 100,
+              "collisions": []
+            }
+          ]
+        }
+      },
+      "jump": {
+        "spritesheetFile": "jumpSheet.png",
+        "down": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 128,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 160,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 192,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            }
+          ]
+        },
+        "up": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 128,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 160,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 192,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            }
+          ]
+        },
+        "right": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 128,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 160,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 192,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            }
+          ]
+        },
+        "left": {
+          "frames": [
+            {
+              "spritesheetOffset": {
+                "x": 0,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 32,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 64,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 96,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 128,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 160,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            },
+            {
+              "spritesheetOffset": {
+                "x": 192,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "duration": 120,
+              "collisions": []
+            }
+          ]
+        }
+      }
+    }
+  }
+}

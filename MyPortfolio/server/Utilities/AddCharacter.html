@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Character Data</title>
+  </head>
+  <body style="min-width: 320px; min-height: 100vh; text-align: center">
+    <br />
+    <pre style="font-size: large;">
+    1) slice name convention: collisionType + number e.g. blockCollision1,
+    blockCollision2... 
+    
+    for default collision, set the slice name to
+    defaultCollision 
+
+    2) write slice data in JSON format: e.g.
+    {"collisionType": "blockCollision", "target":"enemy"} 
+    
+    current available properties: collisionType, target 
+    also, collision active is set to true by default
+
+    3) REMEMBER to click on the slice bounding box in
+    aseprite if you wish to add it in the current frame, otherwise it won't add
+    into the current frame. 
+
+    4) REMEMBER to change the type from Hash to Array
+    before exporting. 
+    
+    Prefer to do: change the export png and json name to
+    something understandable. Extra: it is optional to trim the cells before
+    exporting but remember to add some padding if the sprite sheet gets too
+    close. 
+
+    5) To add defaultImage (used for something like character icon and etc), simply create a folder named defaultImage under character folder 
+    and name the image as defaultImage.png
+    
+    Limitation: currently can only add one animation at a time, to add other animation, retain
+    all other info while changing the animation name and its json file path.
+    </pre>
+    <br />
+    <form
+      id="add-character-data-form"
+      style="display: inline-block; text-align: end; margin-right: 15%"
+    >
+      <label for="character-name">Character Name: </label>
+      <input
+        type="text"
+        id="character-name"
+        name="characterName"
+      /><br /><br /><br />
+      <label for="character-target-type"
+        >Character Target Type (all, ally, enemy, none), default is all:
+      </label>
+      <input
+        type="text"
+        id="character-target-type"
+        name="characterTargetType"
+      /><br /><br /><br />
+      <label for="animation-name"
+        >Animation Name (idle, walk, run, jump, attack):
+      </label>
+      <input
+        type="text"
+        id="animation-name"
+        name="animationName"
+      />
+      <br /><br /><br />
+      <label for="selectable">
+        selectable
+      </label>
+      <input
+        type="checkbox"
+        id="selectable"
+        name="selectable"
+      />
+      <br /><br /><br />
+      <label for="health">
+        health
+      </label>
+      <input
+        type="text"
+        id="health"
+        name="health"
+      />
+      <br /><br /><br />
+      <label for="defense">
+        defense
+      </label>
+      <input
+        type="text"
+        id="defense"
+        name="defense"
+      />
+      <br /><br /><br />
+      <label for="attack">
+        attack
+      </label>
+      <input
+        type="text"
+        id="attack"
+        name="attack"
+      />
+      <br /><br /><br />
+      <label for="movespeed">
+        movespeed
+      </label>
+      <input
+        type="text"
+        id="movespeed"
+        name="movespeed"
+      />
+      <br /><br /><br />
+      <label for="attackspeed">
+        attackspeed
+      </label>
+      <input
+        type="text"
+        id="attackspeed"
+        name="attackspeed"
+      />
+      <br /><br /><br />
+      <label for="healing">
+        healing
+      </label>
+      <input
+        type="text"
+        id="healing"
+        name="healing"
+      />
+      <br /><br /><br />
+      <label for="max-level">
+        max level
+      </label>
+      <input
+        type="text"
+        id="max-level"
+        name="maxLevel"
+      />
+      <br /><br /><br />
+      <label for="source-animation-path"
+        >Source Animation JSON Absolute Filepath:
+      </label>
+      <input
+        type="text"
+        id="source-animation-path"
+        name="sourceAnimationPath"
+      /><br /><br /><br />
+      <label for="destination-data-path"
+        >Destination Character Data JSON Absolute Filepath:
+      </label>
+      <input
+        type="text"
+        id="destination-data-path"
+        name="destinationDataPath"
+      /><br /><br />
+      <input
+        style="width: 100%; height: 50px"
+        type="submit"
+        id="add-character-data-submit"
+        value="ADD"
+      />
+    </form>
+    <script>
+      const form = document.getElementById("add-character-data-form");
+      console.log("form", form);
+
+      if (form) {
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          console.log("event current target: ", event.currentTarget);
+          const formData = new URLSearchParams(
+            new FormData(event.currentTarget)
+          );
+
+          const responseJSON = await fetch("/add-character-data", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formData.toString(),
+          }).then((resObject) => resObject.json());
+
+          if (responseJSON) {
+            const messageText = responseJSON.message;
+            console.log("responseJSON: ", responseJSON);
+            console.log("messageText: ", messageText);
+            alert(messageText);
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

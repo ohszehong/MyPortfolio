@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import Engine from "./assets/Engine/Engine";
+import ClientStatesManager from "./assets/ClientStatesManager/ClientStatesManager";
 
 const CassetteContentManager = ({
   cassetteInPlayIndex,
@@ -11,15 +11,18 @@ const CassetteContentManager = ({
   /** @type {{current: HTMLDivElement}} */
   const contentParentDivRef = useRef(null);
 
-  /** @type {{current: Engine}} */
-  const EngineRef = useRef(null);
+  /** @type {{current: ClientStatesManager}} */
+  const ClientStatesManagerRef = useRef(null);
 
   useEffect(() => {
-    EngineRef.current = new Engine(consoleSvgRef, buttonsRef);
+    ClientStatesManagerRef.current = new ClientStatesManager(
+      consoleSvgRef,
+      buttonsRef
+    );
 
     return () => {
       console.log("resetting from []");
-      EngineRef.current.resetEngine();
+      ClientStatesManagerRef.current.resetStates();
     };
   }, []);
 
@@ -41,8 +44,8 @@ const CassetteContentManager = ({
       console.log("play index: ", cassetteInPlayIndex);
 
       try {
-        if (EngineRef.current) {
-          await EngineRef.current.initCassette(
+        if (ClientStatesManagerRef.current) {
+          await ClientStatesManagerRef.current.loadCassette(
             cassetteInPlayIndex,
             shouldAbortRef
           );
@@ -52,12 +55,12 @@ const CassetteContentManager = ({
             contentParentDivRef.current.style.width = "100%";
             contentParentDivRef.current.style.height = "100%";
             contentParentDivRef.current.appendChild(
-              EngineRef.current.getContentCanvas()
+              ClientStatesManagerRef.current.getContentCanvas()
             );
             contentParentDivRef.current.offsetHeight;
           }
 
-          EngineRef.current.startGameLoop();
+          //ClientStatesManagerRef.current.startGameLoop();
         }
       } catch (err) {
         setIsLoadingContent(null);
@@ -71,9 +74,9 @@ const CassetteContentManager = ({
       //console.log("unmounted. Source: CassetteContentManager");
       shouldAbortRef.current = true;
 
-      if (EngineRef.current && cassetteInPlayIndex != null) {
+      if (ClientStatesManagerRef.current && cassetteInPlayIndex != null) {
         console.log("resetting from cassetteInPlayIndex");
-        EngineRef.current.resetEngine();
+        ClientStatesManagerRef.current.resetStates();
       }
     };
   }, [cassetteInPlayIndex]);

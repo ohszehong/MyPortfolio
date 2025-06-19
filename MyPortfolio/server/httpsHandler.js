@@ -2,11 +2,17 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 
-import AddAnimDataApiVer from "./Utilities/AddAnimationDataApiVer.js"
+import GameStatesManager from "./GameStatesManager/GameStatesManager.js";
+import AddCharacterData from "./Utilities/addCharacterData.js";
+import CharacterStateTypes from "../shared/Standards/StringKeys/CharacterStateTypes.json" with {type: "json"};
+import FacingDirection from "../shared/Standards/StringKeys/FacingDirections.json" with {type: "json"};
 
 export default function httpsInit(__serverDirPath) {
   const app = express();
   const defaultAllowedOrigin = process.env.SERVER_DEFAULT_ALLOWED_ORIGIN;
+
+  //prototype, to be changed later...
+  let introCassetteClients = []; //store GameStatesManager of each client
 
   //middlewares
   app.use(
@@ -15,43 +21,51 @@ export default function httpsInit(__serverDirPath) {
     })
   );
   app.use(express.json());
-  app.use(express.urlencoded({extended: true}));
+  app.use(express.urlencoded({ extended: true }));
+  app.use(cookiesParser);
 
-  app.get("/api/retrieve-cassette-content-data", (req, res) => {
-    if (req.query.cassetteIndex) {
-      const cert = req.socket.getPeerCertificate();
-
-      if (cert && Object.keys(cert).length > 0) {
-        console.log("client cert serial number: ", cert.serialNumber);
-      }
-
-      if (req.query.dataType === "MapData") {
-        const dirToCassetteContentData = path.join(
-          __serverDirPath,
-          "CassetteContentData"
-        );
-
-        switch (req.query.cassetteIndex) {
-          case "0":
-            sendFile(res, path.join(dirToCassetteContentData, "IntroCassette", "MapData", "IntroMapV2.json"), "File not found.");
-            return;
-
-          default:
-            sendResponse(res, 404, "invalid cassette index.");
-            return;
-        }
-      } else {
-            sendResponse(res, 400, "dataType is required.");
-      }
+  app.post("/api/load-cassette", async (req, res) => {
+    if(!req.body?.clientContentCanvasWidth || !req.body?.clientContentCanvasHeight)
+    {
+      sendResponse(res, statusCode.invalidRequest, "missing clientContentCanvasWidth/clientContentCanvasHeight.");
+      return;
     }
 
-    sendResponse(res, 400, "cassetteIndex param is required to retrieve cassette content data.");
-  });
+    if (req.body?.cassetteIndex >= 0) {
+        try {
+          let clientGameStates = new GameStatesManager(req.body.cassetteIndex, req.headers.cookie["introcassette-uuid"], req.body.clientContentCanvasWidth, req.body.clientContentCanvasHeight);
+          await clientGameStates.init();
+          introCassetteClients.push(clientGameStates);
+
+          //console.log("client game states json: ", clientGameStates.toJSON().pawnActorsBlobDictionary);
+
+          sendHttpOnlyCookie(res, "introcassette-uuid", clientGameStates.userId, (365 * 24 * 60 * 60 * 1000)); //1 year
+          sendResponse(res, statusCode.success, "successfully loaded cassette.", clientGameStates.toJSON());
+          return;
+        }
+        catch (err) {
+          console.log("stack trace: ", err.stack);
+          console.log("error occured when loading cassette: ", err);
+          const parsedError = JSON.parse(err.message);
+
+          sendResponse(res, parsedError.statusCode, parsedError.message);
+          return;
+        }
+      }
+    else {
+        sendResponse(res, statusCode.invalidRequest, "missing cassetteIndex.");
+        return;
+    }
+});
 
   app.get("/images/*imagepath", (req, res) => {
     const pathParam = req.params?.imagepath;
     if (pathParam) {
-      sendFile(res, path.join(__serverDirPath, ...pathParam), "Image not found.");
+      sendFile(
+        res,
+        path.join(__serverDirPath, ...pathParam),
+        "Image not found."
+      );
     }
   });
 
@@ -59,77 +73,114 @@ export default function httpsInit(__serverDirPath) {
     const apiKey = process.env.SERVER_API_KEY;
 
     if (apiKey) {
-      res.cookie("api-key", apiKey, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, //1 week
-      });
-      sendResponse(res, 200, "Success.");
+      sendHttpOnlyCookie(res, "api-key", apiKey, (7 * 24 * 60 * 60 * 1000)); //1 week
+      sendResponse(res, statusCode.success, "Success.");
       return;
     }
 
-    sendResponse(res, 403, "Forbidden access.");
+    sendResponse(res, statusCode.forbiddenAccess, "Forbidden access.");
   });
 
-  app.get("/add-anim-form", (req, res) => {
-    const cookies = req.headers.cookie || "";
+  app.get("/add-character-data-form", (req, res) => {
+    const cookies = req.headers.cookie;
 
-    const parsedCookies = cookies.split(";").reduce((cookies, cookie) => {
-        const [name, ...rest] = cookie.trim().split("=");
-        cookies[name] = rest.join("=");
-        return cookies;
-    }, {})
+    if (cookies) {
+      console.log("api key sent: ", cookies["api-key"]);
 
-    console.log("api key sent: ", parsedCookies["api-key"]);
-
-    if(parsedCookies["api-key"] === process.env.SERVER_API_KEY)
-    {
-        sendFile(res, path.join(__serverDirPath, "AddAnim.html"), "File not found.");
+      if (cookies["api-key"] === process.env.SERVER_API_KEY) {
+        sendFile(
+          res,
+          path.join(__serverDirPath, "AddCharacter.html"),
+          "File not found."
+        );
         return;
+      }
     }
-    
-    sendResponse(res, 401, "Unauthorized access.");
+
+    sendResponse(res, statusCode.unauthorizedAccess, "Unauthorized access.");
   });
 
-  app.post("/add-anim", (req, res) => {
-
+  app.post("/add-character-data", (req, res) => {
     console.log("req body: ", req.body);
- 
-    if(AddAnimDataApiVer(
-        req.body?.characterName, 
+
+    const selectable = req.body?.selectable ? true : false;
+    const characterStats = {
+      health: parseFloat(req.body?.health),
+      defense: parseFloat(req.body?.defense),
+      attack: parseFloat(req.body?.attack),
+      movespeed: parseFloat(req.body?.movespeed),
+      attackspeed: parseFloat(req.body?.attackspeed),
+      healing: parseFloat(req.body?.healing),
+    }
+
+    if (
+      AddCharacterData(
+        req.body?.characterName,
         req.body?.characterTargetType,
         req.body?.animationName,
-        req.body?.animationFacingDirection,
         req.body?.sourceAnimationPath,
-        req.body?.destinationDataPath
-    ))
-    {
-        sendResponse(res, 200, "Added successfully.");
-        return;
+        req.body?.destinationDataPath,
+        selectable,
+        characterStats,
+        parseInt(req.body?.maxLevel)
+      )
+    ) {
+      sendResponse(res, statusCode.success, "Added successfully.");
+      return;
     }
-    
-    sendResponse(res, 400, "Missing data.");
-  })
+
+    sendResponse(res, statusCode.invalidRequest, "Missing data.");
+  });
 
   return app;
 }
 
-function sendResponse(resObject, statusCode, message) {
+function sendResponse(resObject, statusCode, message, data = null) {
   resObject.status(statusCode).json({
-      statusCode: statusCode,
-      message: message,
-  })
+    statusCode: statusCode,
+    message: message,
+    data: data,
+  });
 }
 
 function sendFile(resObject, dir, errMessage) {
   resObject.sendFile(dir, (err) => {
     if (err) {
-      resObject.status(404).json({
-        statusCode: 404,
+      resObject.status(statusCode.notFound).json({
+        statusCode: statusCode.notFound,
         message: errMessage,
-        err: err
+        err: err,
       });
     }
   });
 }
+
+function cookiesParser(req, res, next) {
+  const cookies = req.headers.cookie || "";
+  req.headers.cookie = cookies.split(";").reduce((cookies, cookie) => {
+    const [name, ...rest] = cookie.trim().split("=");
+    cookies[name] = rest.join("=");
+    return cookies;
+  }, {});
+
+  next();
+}
+
+function sendHttpOnlyCookie(res, cookieName, cookieData, cookieMaxAge)
+{
+  res.cookie(cookieName, cookieData, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+                maxAge: cookieMaxAge,
+              });
+}
+
+const statusCode = {
+  success: 200,
+  invalidRequest: 400,
+  unauthorizedAccess: 401,
+  forbiddenAccess: 403,
+  notFound: 404,
+  serverError: 500,
+};
