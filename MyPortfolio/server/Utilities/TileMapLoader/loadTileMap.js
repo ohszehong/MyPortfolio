@@ -1,4 +1,4 @@
-import { Canvas, createCanvas } from "canvas";
+import { Canvas, createCanvas, registerFont } from "canvas";
 
 import IntroMapV2JSON from "../../CassetteContentData/IntroCassette/MapData/IntroMapV2.json" with {type: "json"};
 import TileActor from "../../../shared/Actors/TileActor.js";
@@ -6,6 +6,16 @@ import loadImage from "../ImgLoader/loadImage.js";
 
 export default async function loadTileMap(shouldAbortRef) {
   if (shouldAbortRef.current) return;
+
+  if(process.platform != "win32")
+  {
+    console.log("registering font...");
+    registerFont("../fonts/stencil-Regular.ttf", {
+      family: "Stencil",
+      weight: "normal",
+      style: "normal"
+    });
+  }
 
   let mapJSON;
   switch(this.cassetteIndex)

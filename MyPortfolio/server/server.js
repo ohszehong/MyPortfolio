@@ -18,7 +18,7 @@ const app = httpsInit(__serverDirPath);
 const httpsServer = https.createServer({
     key: fs.readFileSync(process.env.SERVER_KEY_PATH),
     cert: fs.readFileSync(process.env.SERVER_CERT_PATH),
-    ca: fs.readFileSync(process.env.SERVER_CA_CERT_PATH),
+    //ca: fs.readFileSync(process.env.SERVER_CA_CERT_PATH),
     requestCert: false,
     rejectUnauthorized: false
 }, app);

@@ -12,8 +12,8 @@ export default defineConfig(({mode}) => {
     plugins: [react()],
       server: {
         https: {
-          key: fs.readFileSync(path.resolve(__dirname, "cert/localhost.key")),
-          cert: fs.readFileSync(path.resolve(__dirname, "cert/localhost.crt"))
+          key: fs.readFileSync(path.resolve(__dirname, "cert/key.pem")),
+          cert: fs.readFileSync(path.resolve(__dirname, "cert/cert.pem"))
         },
         proxy: {
           "/api": {

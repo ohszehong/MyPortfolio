@@ -9,8 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "devserver": "cd server && SET NODE_ENV=development&& node server.js",
+    "devserver-unix": "cd server && NODE_ENV=development node server.js",
     "prodserver": "cd server && SET NODE_ENV=production&& node server.js",
-    "addanim": "cd server/Utilities && node AddAnimationData.js"
+    "prodserver-unix": "cd server && NODE_ENV=production node server.js"
   },
   "dependencies": {
     "autoprefixer": "^10.4.20",

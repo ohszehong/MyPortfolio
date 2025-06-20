@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import ClientStatesManager from "./assets/ClientStatesManager/ClientStatesManager";
+import ClientStatesManager from "./ClientStatesManager/ClientStatesManager";
 
 const CassetteContentManager = ({
   cassetteInPlayIndex,

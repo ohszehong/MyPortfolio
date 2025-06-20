@@ -1,6 +1,6 @@
-import TargetTypes from "../../../../shared/Standards/StringKeys/TargetTypes.json";
-import CharacterStateTypes from "../../../../shared/Standards/StringKeys/CharacterStateTypes.json";
-import FacingDirection from "../../../../shared/Standards/StringKeys/FacingDirections.json";
+import TargetTypes from "../../../shared/Standards/StringKeys/TargetTypes.json";
+import CharacterStateTypes from "../../../shared/Standards/StringKeys/CharacterStateTypes.json";
+import FacingDirection from "../../../shared/Standards/StringKeys/FacingDirections.json";
 
 /**
  * @typedef {Object} Engine

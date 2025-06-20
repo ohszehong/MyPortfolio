@@ -1,8 +1,25 @@
 import { WebSocketServer } from "ws";
-import crypto from "crypto";
+import { Worker } from "worker_threads";
 
 export default function wsInit(httpsServer) {
     const wss = new WebSocketServer({server: httpsServer});
+
+    // Initialize a worker thread for handling ticks
+    const tickWorker = new Worker("./tickWorker.js", {
+        type: "module"
+    })
+
+    tickWorker.on("message", (deltaTime) => {
+        // Broadcast the tick message to all connected WebSocket clients
+        wss.clients.forEach((client) => {
+            if (client.readyState === client.OPEN) {
+                client.send({
+                    type: "deltaTime",
+                    value: deltaTime
+                });
+            }
+        });
+    })
 
     wss.on("connection", (ws, req) => {
         console.log("WebSocket connection opened.");

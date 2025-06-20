@@ -1,9 +1,9 @@
 import IntroCassetteButtonsInputCheckLoop from "./InputCheckLoops/IntroCassetteButtonsInputCheckLoop";
-import CharacterStateTypes from "../../../shared/Standards/StringKeys/CharacterStateTypes.json";
-import FacingDirections from "../../../shared/Standards/StringKeys/FacingDirections.json";
-import TargetTypes from "../../../shared/Standards/StringKeys/TargetTypes.json";
-import PawnActor from "../../../shared/Actors/PawnActor";
-import TileActor from "../../../shared/Actors/TileActor";
+import CharacterStateTypes from "../../shared/Standards/StringKeys/CharacterStateTypes.json";
+import FacingDirections from "../../shared/Standards/StringKeys/FacingDirections.json";
+import TargetTypes from "../../shared/Standards/StringKeys/TargetTypes.json";
+import PawnActor from "../../shared/Actors/PawnActor";
+import TileActor from "../../shared/Actors/TileActor";
 
 export default class ClientStatesManager {
   cassetteIndex = null;
@@ -64,6 +64,9 @@ export default class ClientStatesManager {
 
   //tiles that have animation or participate in y ordering
   tileActors = [];
+
+  //array containing all types of actors that are sorted by y position
+  allActorsSortedByY = [];
 
   constructor(consoleSvgRef, buttonsRef) {
     this.consoleSvgRef = consoleSvgRef;
@@ -143,7 +146,11 @@ export default class ClientStatesManager {
         console.log("playerActor", this.playerActor);
         console.log("pawnActorsBlobDictionary: ", this.pawnActorsBlobDictionary)
 
-        //CONTINUE FROM HERE...
+        //sort all the actors by y position
+        this.allActorsSortedByY = [this.playerActor, ...this.allyPawnActors, ...this.enemyPawnActors, ...this.tileActors];
+        this.allActorsSortedByY.sort((a, b) => {
+          return a.position.y - b.position.y;
+        });
       }
 
       //Initial draw
@@ -169,7 +176,12 @@ export default class ClientStatesManager {
         };
 
         ws.onmessage = (event) => {
-          console.log("received message from server: ", event.data);
+          //console.log("received message from server: ", event.data);
+
+          if(event.data?.type === "deltaTime")
+          {
+            console.log("deltaTime from server: ", event.data.value);
+          }
         };
       }
     } catch (err) {
@@ -253,6 +265,18 @@ export default class ClientStatesManager {
             this.contentCanvas.height
           );
         }
+
+        //draw all other actors
+        // this.allActorsSortedByY.forEach((actor) => {
+        //   //if actor is a TileActor
+        //   if(actor.tiles && actor.tiles.length > 0) {
+        //     //const actor.
+        //     const tileCanvas = this.tileActorsBloarn bDictionary[actor.tiles[0].gid];
+        //     if (tileCanvas) {
+        //       conte
+        //     }
+        //   }
+        //})
       }
     } catch (err) {
       console.log("drawContentCanvas failed: ", err);
