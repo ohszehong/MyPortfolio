@@ -1,6 +1,7 @@
 import { Canvas, createCanvas, registerFont } from "canvas";
 
 import IntroMapV2JSON from "../../CassetteContentData/IntroCassette/MapData/IntroMapV2.json" with {type: "json"};
+import TriggerTypes from "../../../shared/Standards/StringKeys/TriggerTypes.json" with {type: "json"};
 import TileActor from "../../../shared/Actors/TileActor.js";
 import loadImage from "../ImgLoader/loadImage.js";
 
@@ -56,19 +57,28 @@ export default async function loadTileMap(shouldAbortRef) {
 
     if (tileset.tiles) {
       tileset.tiles.forEach((tileProperties) => {
-        let data = {};
+        let data = {
+          renderLast: false
+        };
 
         data.tileGid = tileset.firstgid + tileProperties.id;
+
+        const renderLast = tileProperties.properties?.find((property) => property.name === "renderLast");
+        if(renderLast)
+        {
+          data.renderLast = renderLast.value;
+        }
+
 
         if (tileProperties.animation)
           data.animation = [...tileProperties.animation];
 
         if (tileProperties.objectgroup?.objects) {
           tileProperties.objectgroup.objects.forEach((object) => {
-            const collisionTarget = object.properties?.filter(
+            const collisionTarget = object.properties?.find(
               (property) => property.name === "target"
             );
-            const collisionActive = object.properties?.filter(
+            const collisionActive = object.properties?.find(
               (property) => property.name === "active"
             );
 
@@ -208,7 +218,8 @@ export default async function loadTileMap(shouldAbortRef) {
                   tileGid: gid,
                   collision: tileData.collision,
                   duration: frameData.duration,
-                  tileCanvas: tileData.tileCanvas
+                  tileCanvas: tileData.tileCanvas,
+                  renderLast: tileData.renderLast
                 });
               }
             });
@@ -219,7 +230,8 @@ export default async function loadTileMap(shouldAbortRef) {
               tileGid: decodedTile.gid,
               collision: tileWithProperties.collision,
               duration: -1,
-              tileCanvas: tileWithProperties.tileCanvas
+              tileCanvas: tileWithProperties.tileCanvas,
+              renderLast: tileWithProperties.renderLast
             })
           }
 
@@ -227,7 +239,7 @@ export default async function loadTileMap(shouldAbortRef) {
           const dx = layer.x + currentTileColumnInIndex * tileWidthInPixels;
           const dy =
             layer.y +
-            currentTileRowInIndex * tileHeightInPixels - tileWithProperties.tileCanvas.height;
+            currentTileRowInIndex * tileHeightInPixels;  //don't have to offset with tileWithProperties.tileCanvas.height here because currentTileColumnInIndex starts from 0 which mean we already shift the position by 16pixels by default.
 
           const position = {
             dx: dx,
@@ -316,6 +328,7 @@ export default async function loadTileMap(shouldAbortRef) {
                   null,
                   currentTileData.position,
                   currentTileData.tiles,
+                  currentTileData.renderLast
               );
 
               this.tileActors.push(tileActor);
@@ -378,19 +391,14 @@ export default async function loadTileMap(shouldAbortRef) {
         active: collisionActive
       };
 
-      blockCollisionData.x = blockCollision.x;
-      blockCollisionData.y = blockCollision.y;
+      blockCollisionData.dx = blockCollision.x;
+      blockCollisionData.dy = blockCollision.y;
       blockCollisionData.width = blockCollision.width;
       blockCollisionData.height = blockCollision.height;
 
       this.mapCollisions.push({ ...blockCollisionData });
     }
   }
-
-  // console.log(
-  //   "map collisions: ",
-  //   this.mapCollisions
-  // );
 
   const jumpTriggersLayer = mapJSON.layers.find(
     (layer) => layer.name === "JumpTriggers"
@@ -399,25 +407,98 @@ export default async function loadTileMap(shouldAbortRef) {
   if (jumpTriggersLayer) {
     if (shouldAbortRef.current) return;
 
-    for (const jumpCollision of jumpTriggersLayer.objects) {
+    for (const jumpTrigger of jumpTriggersLayer.objects) {
       if (shouldAbortRef.current) return;
 
       let jumpTriggerData = {
-        triggerTypes: "jumpTrigger",
-        blocking: false,
-        jumpDirection: "right",
-        jumpMagnitude: 0,
+          triggerTypes: TriggerTypes.jumpTrigger,
+          actionToTrigger: null,
+          jumpDirection: "right",
+          jumpMagnitude: 0,
+          active: true,
+          target: "ally",
+          dx: jumpTrigger.x,
+          dy: jumpTrigger.y,
+          width: jumpTrigger.width,
+          height: jumpTrigger.height
       };
 
-      for (const property of jumpCollision.properties) {
-        jumpTriggerData[property.name] = property.value;
+      //handle flipping
+      if (jumpTrigger.rotation === 90) {
+          jumpTriggerData.dx = jumpTrigger.x - jumpTrigger.height;
+
+          const prevWidth = jumpTriggerData.width;
+          jumpTriggerData.width = jumpTrigger.height;
+          jumpTriggerData.height = prevWidth;
+        } else if (Math.abs(jumpTrigger.rotation) === 180) {
+          jumpTriggerData.dx = jumpTrigger.x - jumpTrigger.width;
+          jumpTriggerData.dy = jumpTrigger.y - jumpTrigger.height;
+        } else if (jumpTrigger.rotation === -90) {
+          jumpTriggerData.dy = jumpTrigger.y - jumpTrigger.width;
+
+          const prevWidth = jumpTriggerData.width;
+          jumpTriggerData.width = jumpTrigger.height;
+          jumpTriggerData.height = prevWidth;
+        }
+
+      for (const property of jumpTrigger.properties) {
+        jumpTriggerData[property.name] = property.name === "jumpMagnitude" ? parseFloat(property.value) : property.value;
       }
 
-      this.mapTriggers.push({ ...jumpTriggerData });
+      this.mapJumpTriggers.push({ ...jumpTriggerData });
     }
   }
 
-  //console.log("map triggers: ", this.mapTriggers);
+  const soundTriggersLayer = mapJSON.layers.find((layer) => layer.name === "SoundTriggers");
+
+  if(soundTriggersLayer)
+  {
+    if (shouldAbortRef.current) return;
+
+    for (const soundTrigger of soundTriggersLayer.objects) {
+      if (shouldAbortRef.current) return;
+
+      let soundTriggerData = {
+          triggerTypes: TriggerTypes.soundTrigger,
+          actionToTrigger: null,
+          filename: null,
+          priority: 99,
+          totalVariations: 0,
+          active: true,
+          target: "all",
+          dx: soundTrigger.x,
+          dy: soundTrigger.y,
+          width: soundTrigger.width,
+          height: soundTrigger.height
+      };
+
+      //handle flipping
+      if (soundTrigger.rotation === 90) {
+          soundTriggerData.dx = soundTrigger.x - soundTrigger.height;
+
+          const prevWidth = soundTriggerData.width;
+          soundTriggerData.width = soundTrigger.height;
+          soundTriggerData.height = prevWidth;
+        } else if (Math.abs(soundTrigger.rotation) === 180) {
+          soundTriggerData.dx = soundTrigger.x - soundTrigger.width;
+          soundTriggerData.dy = soundTrigger.y - soundTrigger.height;
+        } else if (soundTrigger.rotation === -90) {
+          soundTriggerData.dy = soundTrigger.y - soundTrigger.width;
+
+          const prevWidth = soundTriggerData.width;
+          soundTriggerData.width = soundTrigger.height;
+          soundTriggerData.height = prevWidth;
+        }
+
+      for (const property of soundTrigger.properties) {
+        soundTriggerData[property.name] = property.name === "priority" || property.name === "totalVariations" ? parseInt(property.value) : property.value;
+      }
+
+      console.log(soundTriggerData);
+
+      this.mapSoundTriggers.push({ ...soundTriggerData });
+    }
+  }
 
   this.gameMapBackgroundCanvas = canvas;
 }

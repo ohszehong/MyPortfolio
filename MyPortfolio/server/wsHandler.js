@@ -1,40 +1,98 @@
 import { WebSocketServer } from "ws";
+import url from "url";
+
+import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageTypes.json" with {type: "json"};
 import { Worker } from "worker_threads";
 
-export default function wsInit(httpsServer) {
+export default function wsInit(httpsServer, gameStatesTickers, clientWebSockets) {
     const wss = new WebSocketServer({server: httpsServer});
 
-    // Initialize a worker thread for handling ticks
-    const tickWorker = new Worker("./tickWorker.js", {
-        type: "module"
-    })
+    /** @type {Worker} */
+    const introCassetteTicker = gameStatesTickers.introCassetteTicker;
 
-    tickWorker.on("message", (deltaTime) => {
-        // Broadcast the tick message to all connected WebSocket clients
-        wss.clients.forEach((client) => {
-            if (client.readyState === client.OPEN) {
-                client.send({
-                    type: "deltaTime",
-                    value: deltaTime
-                });
-            }
-        });
+    //broadcast payloads received from ticker to all client...
+    introCassetteTicker.on("message", (message) => {
+        if(message.type === SocketMessageTypes.clientsPayload)
+        {
+            Object.keys(message.value).forEach((clientId) => {
+                //console.log("clientId: ", clientId);
+                //console.log("clientWebSockets: ", clientWebSockets.introCassetteWebSockets);
+                /** @type {WebSocket} */
+                const ws = clientWebSockets.introCassetteWebSockets[clientId]?.ws;
+                
+                if(ws)
+                {
+                    ws.send(JSON.stringify({
+                        type: SocketMessageTypes.clientPayload,
+                        value: message.value[clientId]
+                    }));
+                }
+            })
+        }
     })
 
     wss.on("connection", (ws, req) => {
+        const parsedURL = url.parse(req.url, true);
         console.log("WebSocket connection opened.");
 
-        if(req.url === "/cassetteSocket")
+        if(parsedURL.pathname === "/cassetteSocket")
         {
              if(ws.protocol === "cassette-0")
             {
+                
+                if(!parsedURL.query.userId)
+                {
+                    ws.close(400, "missing userId parameter.");
+                    return;
+                }
+                    
+                //add client websocket to the socket dictionary
+                clientWebSockets.introCassetteWebSockets[parsedURL.query.userId] = {
+                    ws: ws
+                }
+
+                //console.log("userId: ", parsedURL.query.userId);
+                //console.log("newly added client sockets: ", clientWebSockets.introCassetteWebSockets);
+
                 ws.on("message", message => {
-                    console.log("message from client: ", message.toString());
-                    ws.send(`message received. using protocol: ${ws.protocol}`);
+                    const parsedMessage = JSON.parse(message.toString());
+ 
+                    if(!parsedMessage.userId) return;
+
+                    if(parsedMessage.type === SocketMessageTypes.userInput)
+                    {
+                        introCassetteTicker.postMessage({
+                            type: SocketMessageTypes.userInput,
+                            value: {
+                                userId: parsedMessage.userId,
+                                inputName: parsedMessage.message
+                            }
+                        });
+                    }
+                    else if(parsedMessage.type === SocketMessageTypes.log)
+                    {
+                        console.log("log from client with userId of ", parsedMessage.userId, " message: ", parsedMessage.message);
+                    }
                 });
             
-                ws.on("close", () => console.log("WebSocket connection closed. request url: /cassetteSocket"));
-                ws.on("error", err => console.log("WebSocket error: ", err.message, "\n", "cause: ", err.cause, " request url: /cassetteSocket"));
+                ws.on("close", () => {
+                    console.log("WebSocket connection closed. request url: /cassetteSocket");
+
+                    delete clientWebSockets.introCassetteWebSockets[parsedURL.query.userId];
+                    introCassetteTicker.postMessage({
+                        type: SocketMessageTypes.removeClientManager,
+                        value: parsedURL.query.userId
+                    })
+                });
+                ws.on("error", (err) => {
+                    console.log("WebSocket error: ", err.message, "\n", "cause: ", err.cause, " request url: /cassetteSocket");
+
+                    delete clientWebSockets.introCassetteWebSockets[parsedURL.query.userId];
+                    introCassetteTicker.postMessage({
+                        type: SocketMessageTypes.removeClientManager,
+                        value: parsedURL.query.userId
+                    })
+                });
             }
         }
         else

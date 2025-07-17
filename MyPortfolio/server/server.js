@@ -5,6 +5,7 @@ import https from "https";
 import fs from "fs";
 import httpsInit from "./httpsHandler.js";
 import wsInit from "./wsHandler.js";
+import { Worker } from "worker_threads";
 
 const __serverFilePath = fileURLToPath(import.meta.url);
 const __serverDirPath = path.dirname(__serverFilePath);
@@ -14,7 +15,20 @@ dotenv.config({path: envFile});
 
 const port = process.env.SERVER_PORT;
 
-const app = httpsInit(__serverDirPath);
+// Initialize a worker threads for handling ticks
+const introCassetteTicker = new Worker("./introCassetteTicker.js", {
+    type: "module"
+});
+    
+let gameStatesTickers = {
+    introCassetteTicker: introCassetteTicker
+}
+
+let clientWebSockets = {
+    introCassetteWebSockets: {}
+}
+
+const app = httpsInit(__serverDirPath, gameStatesTickers);
 const httpsServer = https.createServer({
     key: fs.readFileSync(process.env.SERVER_KEY_PATH),
     cert: fs.readFileSync(process.env.SERVER_CERT_PATH),
@@ -22,7 +36,7 @@ const httpsServer = https.createServer({
     requestCert: false,
     rejectUnauthorized: false
 }, app);
-wsInit(httpsServer);
+wsInit(httpsServer, gameStatesTickers, clientWebSockets);
 
 httpsServer.listen(port, () => {
     console.log(`app is listening on port ${port}`);

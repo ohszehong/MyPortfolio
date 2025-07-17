@@ -12,8 +12,8 @@ export default defineConfig(({mode}) => {
     plugins: [react()],
       server: {
         https: {
-          key: fs.readFileSync(path.resolve(__dirname, "cert/key.pem")),
-          cert: fs.readFileSync(path.resolve(__dirname, "cert/cert.pem"))
+          key: fs.readFileSync(path.resolve(__dirname, "cert/localhost.key")),
+          cert: fs.readFileSync(path.resolve(__dirname, "cert/localhost.crt"))
         },
         proxy: {
           "/api": {
@@ -21,6 +21,12 @@ export default defineConfig(({mode}) => {
             changeOrigin: true,
             secure: false,
             ws: true
+        },
+        "/sfx": {
+          target: env.VITE_API_ORIGIN,
+          changeOrigin: true,
+          secure: false,
+          ws: true
         }
       }
       },

@@ -60,7 +60,7 @@ const CassetteContentManager = ({
             contentParentDivRef.current.offsetHeight;
           }
 
-          //ClientStatesManagerRef.current.startGameLoop();
+          ClientStatesManagerRef.current.startGameLoop();
         }
       } catch (err) {
         setIsLoadingContent(null);

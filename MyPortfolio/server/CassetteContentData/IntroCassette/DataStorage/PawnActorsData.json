@@ -7,7 +7,7 @@
       "health": 100,
       "defense": 10,
       "attack": 10,
-      "movespeed": 10,
+      "movespeed": 100,
       "attackspeed": 2,
       "healing": 0
     },

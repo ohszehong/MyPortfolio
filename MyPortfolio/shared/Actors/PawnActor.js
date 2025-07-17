@@ -11,7 +11,9 @@ export default class PawnActor extends Actor
         let data = super.toJSON();
 
         data.currentLevel = this.currentLevel;
-        data.actorStats = this.actorStats;
+        data.maxLevel = this.maxLevel;
+        data.actorDefaultStats = this.actorDefaultStats;
+        data.actorCurrentStats = this.actorCurrentStats;
         data.actorState = this.actorState;
         data.facingDirection = this.facingDirection;
         data.activeStateAnimationName = this.activeStateAnimationName;
@@ -20,10 +22,13 @@ export default class PawnActor extends Actor
         return data;
     }
 
+    previousPosition;
+
     currentLevel;
     maxLevel;
 
-    actorStats = {};
+    actorDefaultStats = {};
+    actorCurrentStats = {};
     
     actorState;
 
@@ -48,11 +53,14 @@ export default class PawnActor extends Actor
 
     activeAbilityName;
 
-    constructor(tempId, actorName, position, actorStats, actorState, characterAnimationsData, currentLevel = 1, maxLevel = 1, collision = null, selectable = false)
+    constructor(tempId, actorName, position, actorDefaultStats, actorCurrentStats, actorState, characterAnimationsData, currentLevel = 1, maxLevel = 1, collision = null, selectable = false)
     {
         super(tempId, actorName, position, collision, selectable);
 
-        this.actorStats = {...actorStats};
+        this.actorDefaultStats = actorDefaultStats;
+        this.actorCurrentStats = actorCurrentStats;
+
+        this.facingDirection = "right"; //default direction
 
         let animationSets = {
             idle: null,
@@ -68,22 +76,24 @@ export default class PawnActor extends Actor
             heal: null,
         }
         
-        Object.values(characterAnimationsData).forEach((key) => {
-            if(Object.keys(animationSets).includes(key))
+        Object.keys(characterAnimationsData).forEach((animationName) => {
+            if(Object.keys(animationSets).includes(animationName))
             {
-                animationSets[key] = new DirectionDependentAnimation(this, key, characterAnimationsData[key]);
+                //console.log("adding animationSets of animation name: ", animationName);
+                animationSets[animationName] = new DirectionDependentAnimation(this, animationName, characterAnimationsData[animationName]);
             }
-            else if(Object.keys(abilitySets).includes(key))
+            else if(Object.keys(abilitySets).includes(animationName))
             {
-                abilitySets[key] = new Ability(new DirectionDependentAnimation(this, key, characterAnimationsData[key]), characterAnimationsData[key]?.scalingValue, characterAnimationsData[key]?.scalingType);
+                //console.log("adding abilitySets of animation name: ", animationName);
+                abilitySets[animationName] = new Ability(new DirectionDependentAnimation(this, animationName, characterAnimationsData[animationName]), characterAnimationsData[animationName]?.scalingValue, characterAnimationsData[animationName]?.scalingType);
             }
         })
 
         this.stateAnimations = {
-            [CharacterStateTypes.idling]: animationSets.idle,
-            [CharacterStateTypes.walking]: animationSets.walk,
-            [CharacterStateTypes.jumping]: animationSets.jump,
-            [CharacterStateTypes.receivingDamage]: animationSets.receiveDamage
+            idle: animationSets.idle,
+            walk: animationSets.walk,
+            jump: animationSets.jump,
+            receiveDamage: animationSets.receiveDamage
         }
 
         //default montage names
@@ -101,95 +111,161 @@ export default class PawnActor extends Actor
 
         this.currentLevel = currentLevel;
         this.maxLevel = maxLevel;
+
+        this.currentRenderData = {
+            animationSpritesheetDirection: null,
+            animationSpritesheetName: null,
+            frameData: null
+        }
     }
 
-    canChangeState(newState)
+    canChangeState()
     {
-        if((this.actorState === CharacterStateTypes.idle || this.actorState === CharacterStateTypes.walking) && this.actorState != newState) return true;
+        if(this.actorState === CharacterStateTypes.idling || this.actorState === CharacterStateTypes.walking) return true;
         return false;
     }
 
-    idle(facingDirection = null)
+    toIdleState(force = false)
     {
-        if(this.canChangeState(CharacterStateTypes.idling))
+        if(force || this.canChangeState())
         {
-            if(facingDirection) this.facingDirection = facingDirection;
             this.actorState = CharacterStateTypes.idling;
             this.activeAbilityName = null;
             this.activeStateAnimationName = "idle";
         }
     }
 
-    walk(facingDirection = null)
+    toWalkState(facingDirection = null)
     {
-        if(this.canChangeState(CharacterStateTypes.walking))
+        if(!facingDirection) return;
+
+        if(this.canChangeState())
         {
-            if(facingDirection) this.facingDirection = facingDirection;
             this.actorState = CharacterStateTypes.walking;
+            this.facingDirection = facingDirection;
             this.activeAbilityName = null;
             this.activeStateAnimationName = "walk";
         }
     }
 
-    jump(facingDirection = null)
+    toJumpState(jumpMagnitude = null)
     {
-        if(this.canChangeState(CharacterStateTypes.jumping))
+        if(this.canChangeState())
         {
-            if(facingDirection) this.facingDirection = facingDirection;
             this.actorState = CharacterStateTypes.jumping;
             this.activeAbilityName = null;
             this.activeStateAnimationName = "jump";
+            
+            if(jumpMagnitude) this.actorCurrentStats.movespeed = jumpMagnitude;
         }
     }
 
-    attack(facingDirection = null, attackNumber = 1)
+    toAttackState(attackNumber = 1)
     {
-        if(this.canChangeState(CharacterStateTypes.usingAbility))
+        if(this.canChangeState())
         {
-            if(facingDirection) this.facingDirection = facingDirection;
             this.actorState = CharacterStateTypes.usingAbility;
             this.activeAbilityName = "attack" + attackNumber.toString();
             this.activeStateAnimationName = null;
         }
     }
     
-    heal(facingDirection = null)
+    toHealingState()
     {
-        if(this.canChangeState(CharacterStateTypes.usingAbility))
+        if(this.canChangeState())
         {
-            if(facingDirection) this.facingDirection = facingDirection;
             this.actorState = CharacterStateTypes.usingAbility;
             this.activeAbilityName = "heal";
             this.activeStateAnimationName = null;
         }
     }
 
-    getCurrentActorData(deltaTime)
+    applyMovement(mapMaxWidth, mapMaxHeight, deltaTime)
+    {
+        if(this.actorState === CharacterStateTypes.walking || this.actorState === CharacterStateTypes.jumping)
+        {
+            const deltaPercent = deltaTime / 1000;
+
+            //for rewinding
+            this.previousPosition = {...this.position};
+
+            let mapMaxWidthAfterOffset = mapMaxWidth;
+            let mapMaxHeightAfterOffset = mapMaxHeight;
+            if(this.collision)
+            {
+                mapMaxWidthAfterOffset -= (this.collision.width + this.collision.ddx);
+                mapMaxHeightAfterOffset -= (this.collision.height + this.collision.ddy);
+            }
+
+            switch(this.facingDirection)
+            {
+                case FacingDirections.up:
+                    this.position.dy = Math.max(0, this.position.dy - this.actorCurrentStats.movespeed * deltaPercent);
+                    break;
+
+                case FacingDirections.down:
+                    this.position.dy = Math.min(mapMaxHeightAfterOffset, this.position.dy + this.actorCurrentStats.movespeed * deltaPercent);
+                    break;
+
+                case FacingDirections.left:
+                    this.position.dx = Math.max(0, this.position.dx - this.actorCurrentStats.movespeed * deltaPercent);
+                    break;
+
+                case FacingDirections.right:
+                    this.position.dx = Math.min(mapMaxWidthAfterOffset, this.position.dx + this.actorCurrentStats.movespeed * deltaPercent);
+                    break;
+            }
+        }
+    }
+
+    playAnimation(deltaTime)
     {
         if(this.activeStateAnimationName)
         {
+            const currentActiveFrameData = this.stateAnimations[this.activeStateAnimationName].getCurrentActiveFrameData(deltaTime);
+            
+            this.currentRenderData.animationSpritesheetDirection = currentActiveFrameData.animationSpritesheetDirection;
+            this.currentRenderData.animationSpritesheetName = currentActiveFrameData.animationSpritesheetName;
+            this.currentRenderData.frameData = currentActiveFrameData.frameData;
+
+            if(this.activeStateAnimationName != "walk" && this.activeStateAnimationName != "idle")
+            {
+                if(currentActiveFrameData.lastFrameIsCompleted)
+                {
+                    if(this.activeStateAnimationName === "jump") this.actorCurrentStats.movespeed = this.actorDefaultStats.movespeed;
+                    this.toIdleState(true);
+                }
+            }
+
             return {
-                ...this.stateAnimations[this.activeStateAnimationName].getCurrentActiveFrameData(deltaTime),
-                position: {...this.position}
+                collisions: currentActiveFrameData.collisions,
+                summons: currentActiveFrameData.summons
             }
         }
         else if(this.activeAbilityName)
         {
             const currentActiveFrameData = this.Abilities[this.activeAbilityName].abilityAnimation.getCurrentActiveFrameData(deltaTime);
-            const activeAbilityName = this.activeAbilityName;
+
+            this.currentRenderData.animationSpritesheetDirection = currentActiveFrameData.animationSpritesheetDirection;
+            this.currentRenderData.animationSpritesheetName = currentActiveFrameData.animationSpritesheetName;
+            this.currentRenderData.frameData = currentActiveFrameData.frameData;
 
             //stop playing this animation in the next frame by changing state
-            if(currentActiveFrameData.isLastFrame)
+            if(currentActiveFrameData.lastFrameIsCompleted)
             {
-                this.actorState = CharacterStateTypes.idling;
-                this.idle(); //here it sets this.activeAbilityName to null
+                this.toIdleState(true); //here it sets this.activeAbilityName to null
             }
 
             return {
-                ...currentActiveFrameData,
-                position: {...this.position},
-                ability: this.Abilities[activeAbilityName]
+                collisions: currentActiveFrameData.collisions,
+                summons: currentActiveFrameData.summons,
+                ability: this.Abilities[this.activeAbilityName]
             }
+        }
+
+        return {
+            collisions: [],
+            summons: []
         }
     }
 }

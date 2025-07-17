@@ -6,6 +6,7 @@ import { Canvas, createCanvas } from "canvas";
 
 import FacingDirections from "../../shared/Standards/StringKeys/FacingDirections.json" with {type: "json"};
 import CharacterStateTypes from "../../shared/Standards/StringKeys/CharacterStateTypes.json" with {type: "json"};
+import CollisionTypes from "../../shared/Standards/StringKeys/CollisionTypes.json" with {type: "json"};
 import loadTileMap from "../Utilities/TileMapLoader/loadTileMap.js";
 import loadImage from "../Utilities/ImgLoader/loadImage.js";
 import PawnActor from "../../shared/Actors/PawnActor.js";
@@ -15,6 +16,10 @@ export default class GameStatesManager {
   cassetteIndex;
   cassetteName;
   userId;
+
+  //client websocket instance
+  /** @type {WebSocket} */
+  ws;
 
   dirToCassetteContentData;
   dirToPawnActorsDataJSONFile;
@@ -26,8 +31,13 @@ export default class GameStatesManager {
   /** @type {Canvas} */
   gameMapBackgroundCanvas;
 
+  //for Worker usage
+  gameMapBackgroundCanvasBaseWidth;
+  gameMapBackgroundCanvasBaseHeight;
+
   mapCollisions = [];
-  mapTriggers = [];
+  mapJumpTriggers = [];
+  mapSoundTriggers = [];
 
   cameraPosition = { x: 0, y: 0 };
   cursorPosition = { x: 0, y: 0 };
@@ -53,42 +63,74 @@ export default class GameStatesManager {
   /** @type {Array<TileActor>} */
   tileActors = [];
 
-  getSerializedActorsData()
-  {
-     const actorDefaultData = JSON.parse(
-       fs.readFileSync(this.dirToPawnActorsDataJSONFile, "utf-8")
-     );
+  //collisions that spawn from animation
+  spawnCollisions = [];
 
+  //actors that spawn from animation
+  spawnActors = [];
+
+  currentGameTick = 0;
+
+  getSerializedActorsData(withActorDefaultData = false)
+  {
+    let actorDefaultData;
+    if(withActorDefaultData)
+    {
+      actorDefaultData = JSON.parse(
+        fs.readFileSync(this.dirToPawnActorsDataJSONFile, "utf-8")
+      );
+    }
+
+     let serializedPlayerActor;
      let serializedAllyPawnActors = [];
      let serializedEnemyPawnActors = [];
      let serializedTileActors = [];
 
+     serializedPlayerActor = this.playerActor.toJSON();
+
+     if(withActorDefaultData)
+     {
+        serializedPlayerActor.actorDefaultData = actorDefaultData[this.playerActor.actorName];
+     }
+     
      this.allyPawnActors.forEach((actor) => {
-      serializedAllyPawnActors.push({...actor.toJSON(), ...actorDefaultData[actor.actorName].animation});
+      let serializedData = actor.toJSON();
+
+      if(withActorDefaultData)
+      {
+        serializedData.actorDefaultData = actorDefaultData[actor.actorName];
+      }
+      serializedAllyPawnActors.push(serializedData);
     });
 
     this.enemyPawnActors.forEach((actor) => {
-      serializedEnemyPawnActors.push({...actor.toJSON(), ...actorDefaultData[actor.actorName].animation});
+      let serializedData = actor.toJSON();
+
+      if(withActorDefaultData)
+      {
+        serializedData.actorDefaultData = actorDefaultData[actor.actorName];
+      }
+      serializedAllyPawnActors.push(serializedData);
     });
 
     this.tileActors.forEach((actor) => {
-      serializedTileActors.push(actor.toJSON());
+        serializedTileActors.push(actor.toJSON());
     });
-
-    return [{...this.playerActor.toJSON(), ...actorDefaultData[this.playerActor.actorName]}, serializedAllyPawnActors, serializedEnemyPawnActors, serializedTileActors];
+    
+    return [serializedPlayerActor, serializedAllyPawnActors, serializedEnemyPawnActors, serializedTileActors];
   }
 
-  toJSON() {
-    const gameMapBackgroundBlob = this.gameMapBackgroundCanvas.toBuffer().toString("base64");
-
-    const [playerActor, serializedAllyPawnActors, serializedEnemyPawnActors, serializedTileActors] = this.getSerializedActorsData();
+  toJSON(mode = "all") {
+    const withActorDefaultData = mode === "all" ? true : false;
+    const [playerActor, serializedAllyPawnActors, serializedEnemyPawnActors, serializedTileActors] = this.getSerializedActorsData(withActorDefaultData);
 
     const data = {
-      pawnActorsBlobDictionary: this.pawnActorsBlobDictionary,
-      tileActorsBlobDictionary: this.tileActorsBlobDictionary,
-      gameMapBackgroundBlob: gameMapBackgroundBlob,
+      cassetteIndex: this.cassetteIndex,
+      cassetteName: this.cassetteName,
+      userId: this.userId,
       mapCollisions: this.mapCollisions,
-      mapTriggers: this.mapTriggers,
+      mapJumpTriggers: this.mapJumpTriggers,
+      mapSoundTriggers: this.mapSoundTriggers,
       cameraPosition: this.cameraPosition,
       cursorPosition: this.cursorPosition,
       selectedObject: this.selectedObject,
@@ -98,6 +140,22 @@ export default class GameStatesManager {
       tileActors: serializedTileActors,
     };
 
+    if(mode === "all")
+    {
+      const gameMapBackgroundBlob = this.gameMapBackgroundCanvas.toBuffer().toString("base64");
+
+      data.pawnActorsBlobDictionary = this.pawnActorsBlobDictionary;
+      data.tileActorsBlobDictionary = this.tileActorsBlobDictionary;
+      data.gameMapBackgroundBlob = gameMapBackgroundBlob;
+      data.clientContentCanvasBaseWidth = this.clientContentCanvasBaseWidth;
+      data.clientContentCanvasBaseHeight = this.clientContentCanvasBaseHeight;
+      data.gameMapBackgroundCanvasBaseWidth = this.gameMapBackgroundCanvas.width;
+      data.gameMapBackgroundCanvasBaseHeight = this.gameMapBackgroundCanvas.height;
+      data.dirToCassetteContentData = this.dirToCassetteContentData;
+      data.dirToPawnActorsDataJSONFile = this.dirToPawnActorsDataJSONFile;
+      data.dirToGameStatesJSONFile = this.dirToGameStatesJSONFile;
+    }
+
     return data;
   }
 
@@ -105,48 +163,216 @@ export default class GameStatesManager {
     cassetteIndex,
     userId,
     clientContentCanvasWidth,
-    clientContentCanvasHeight
+    clientContentCanvasHeight,
+    workerMode = false //for worker
   ) {
-    this.cassetteIndex = cassetteIndex;
-    this.userId = userId;
+    if(!workerMode)
+    {
+      this.cassetteIndex = cassetteIndex;
+      this.userId = userId;
 
-    const __currentFilePath = fileURLToPath(import.meta.url);
-    const __currentDirPath = path.dirname(__currentFilePath);
 
-    const __serverDirPath = __currentDirPath.split("GameStatesManager")[0];
-    // console.log("current dir path: ", __currentDirPath);
-    // console.log("server dir path: ", __serverDirPath);
+      const __currentFilePath = fileURLToPath(import.meta.url);
+      const __currentDirPath = path.dirname(__currentFilePath);
+  
+      const __serverDirPath = __currentDirPath.split("GameStatesManager")[0];
+  
+      this.dirToCassetteContentData = path.join(
+        __serverDirPath,
+        "CassetteContentData"
+      );
+    
 
-    this.dirToCassetteContentData = path.join(
-      __serverDirPath,
-      "CassetteContentData"
-    );
+      switch (cassetteIndex) {
+        case 0:
+          this.cassetteName = "IntroCassette";
+          break;
+      }
 
-    switch (cassetteIndex) {
-      case 0:
-        this.cassetteName = "IntroCassette";
-        break;
+      this.dirToPawnActorsDataJSONFile = path.join(
+        this.dirToCassetteContentData,
+        this.cassetteName,
+        "DataStorage",
+        "PawnActorsData.json"
+      );
+
+      this.dirToGameStatesJSONFile = path.join(
+        this.dirToCassetteContentData,
+        this.cassetteName,
+        "DataStorage",
+        "GameStates.json"
+      );
+
+      this.clientContentCanvasBaseWidth = clientContentCanvasWidth;
+      this.clientContentCanvasBaseHeight = clientContentCanvasHeight;
     }
-
-    this.dirToPawnActorsDataJSONFile = path.join(
-      this.dirToCassetteContentData,
-      this.cassetteName,
-      "DataStorage",
-      "PawnActorsData.json"
-    );
-    this.dirToGameStatesJSONFile = path.join(
-      this.dirToCassetteContentData,
-      this.cassetteName,
-      "DataStorage",
-      "GameStates.json"
-    );
-
-    this.clientContentCanvasBaseWidth = clientContentCanvasWidth;
-    this.clientContentCanvasBaseHeight = clientContentCanvasHeight;
   }
 
-  simulateAnimation(animationName) {
-    //PlayerActor.getCurrentActorData...
+  //using serializedJSON to construct instead
+  //this is for the worker thread
+  static constructFromSerializedJSON(serializedJSON)
+  {
+    const clientManager = new GameStatesManager(null, null, null, null, true);
+    
+    clientManager.cassetteIndex = serializedJSON.cassetteIndex;
+    clientManager.cassetteName = serializedJSON.cassetteName;
+    clientManager.userId = serializedJSON.userId;
+    clientManager.pawnActorsBlobDictionary = serializedJSON.pawnActorsBlobDictionary;
+    clientManager.tileActorsBlobDictionary = serializedJSON.tileActorsBlobDictionary;
+    clientManager.mapCollisions = serializedJSON.mapCollisions;
+    clientManager.mapJumpTriggers = serializedJSON.mapJumpTriggers;
+    clientManager.mapSoundTriggers = serializedJSON.mapSoundTriggers;
+    clientManager.cameraPosition = serializedJSON.cameraPosition;
+    clientManager.cursorPosition = serializedJSON.cursorPosition;
+    clientManager.selectedObject = serializedJSON.selectedObject;
+    clientManager.clientContentCanvasBaseWidth = serializedJSON.clientContentCanvasBaseWidth;
+    clientManager.clientContentCanvasBaseHeight = serializedJSON.clientContentCanvasBaseHeight;
+    clientManager.gameMapBackgroundCanvasBaseWidth = serializedJSON.gameMapBackgroundCanvasBaseWidth;
+    clientManager.gameMapBackgroundCanvasBaseHeight = serializedJSON.gameMapBackgroundCanvasBaseHeight;
+    clientManager.dirToCassetteContentData = serializedJSON.dirToCassetteContentData;
+    clientManager.dirToPawnActorsDataJSONFile = serializedJSON.dirToPawnActorsDataJSONFile;
+    clientManager.dirToGameStatesJSONFile = serializedJSON.dirToGameStatesJSONFile;
+        
+    clientManager.playerActor = new PawnActor(
+      serializedJSON.playerActor.tempId, 
+      serializedJSON.playerActor.actorName, 
+      serializedJSON.playerActor.position, 
+      serializedJSON.playerActor.actorDefaultStats,
+      serializedJSON.playerActor.actorCurrentStats, 
+      serializedJSON.playerActor.actorState, 
+      serializedJSON.playerActor.actorDefaultData.animation, 
+      serializedJSON.playerActor.currentLevel, 
+      serializedJSON.playerActor.maxLevel, 
+      serializedJSON.playerActor.collision, 
+      serializedJSON.playerActor.selectable);
+
+    serializedJSON.allyPawnActors.forEach((actorJSON) => {
+      clientManager.allyPawnActors.push(new PawnActor(
+        actorJSON.tempId,
+        actorJSON.actorName,
+        actorJSON.position,
+        actorJSON.actorDefaultStats,
+        actorJSON.actorCurrentStats,
+        actorJSON.actorState,
+        actorJSON.actorDefaultData.animation,
+        actorJSON.currentLevel,
+        actorJSON.maxLevel,
+        actorJSON.collision,
+        actorJSON.selectable
+      ));
+    });
+
+    serializedJSON.enemyPawnActors.forEach((actorJSON) => {
+      clientManager.enemyPawnActors.push(new PawnActor(
+        actorJSON.tempId,
+        actorJSON.actorName,
+        actorJSON.position,
+        actorJSON.actorDefaultStats,
+        actorJSON.actorCurrentStats,
+        actorJSON.actorState,
+        actorJSON.actorDefaultData.animation,
+        actorJSON.currentLevel,
+        actorJSON.maxLevel,
+        actorJSON.collision,
+        actorJSON.selectable
+      ));
+    });
+
+    serializedJSON.tileActors.forEach((actorJSON) => {
+      clientManager.tileActors.push(new TileActor(actorJSON.tempId, actorJSON.position, actorJSON.tiles, actorJSON.selectable));
+    });
+
+    return clientManager;
+  }
+
+  playAllActorsAnimation(deltaTime) {
+    if(this.playerActor)
+    {
+      const animationResult = this.playerActor.playAnimation(deltaTime);
+      //console.log("animationData: ", animationResult);
+
+      if(animationResult.collisions)
+      {
+        this.spawnCollisions = [...this.spawnCollisions, ...animationResult.collisions];
+      }
+    }
+
+    this.allyPawnActors.forEach((actor) => {
+      const animationResult = actor.playAnimation(deltaTime);
+      
+      if(animationResult.collisions)
+      {
+        this.spawnCollisions = [...this.spawnCollisions, ...animationResult.collisions];
+      }
+    });
+
+    this.enemyPawnActors.forEach((actor) => {
+      const animationResult = actor.playAnimation(deltaTime);
+
+      if(animationResult.collisions)
+      {
+        this.spawnCollisions = [...this.spawnCollisions, ...animationResult.collisions];
+      }
+    });
+
+    this.tileActors.forEach((actor) => {
+      actor.playAnimation(deltaTime);
+    });
+
+    //handle summoning later...
+  }
+
+  getAllPawnActors()
+  {
+    let pawnActors = [];
+
+    if(this.playerActor)
+    {
+      pawnActors.push(this.playerActor);
+    }
+
+    return pawnActors = [...pawnActors, ...this.allyPawnActors, ...this.enemyPawnActors];
+  }
+
+  getAllNonPawnActorBlockCollisions()
+  {
+    let collisions = [];
+
+    this.tileActors.forEach((actor) => {
+      if(actor.collision)
+      {
+        collisions.push(actor.collision);
+      }
+    })
+
+    this.spawnActors.forEach((actor) => {
+      if(actor.collision?.collisionType === CollisionTypes.blockCollision)
+      {
+        collisions.push(actor.collision);
+      }
+    })
+
+    let spawnBlockCollisions = this.spawnCollisions.filter((collision) => collision.collisionType === CollisionTypes.blockCollision);
+
+    let mapBlockCollisions = this.mapCollisions.filter(
+      (collision) => collision.collisionType === CollisionTypes.blockCollision
+    );
+
+    collisions = [...collisions, ...spawnBlockCollisions, ...mapBlockCollisions];
+
+    return collisions;
+  }
+
+  handleSpawnCollisionsLifetime(deltaTime)
+  {
+    this.spawnCollisions.forEach((collision, index) => {
+      this.spawnCollisions[index].duration -= deltaTime; 
+      if(this.spawnCollisions[index].duration <= 0)
+      {
+        //remove spawnCollision
+        this.spawnCollisions.splice(index, 1);
+      }
+    })
   }
 
   async init() {
@@ -306,7 +532,8 @@ export default class GameStatesManager {
           loadedGameStates.playerActor.tempId,
           loadedGameStates.playerActor.actorName,
           loadedGameStates.playerActor.position,
-          loadedGameStates.playerActor.actorStats,
+          defaultPlayerActorData.defaultStats,
+          loadedGameStates.playerActor.actorCurrentStats,
           loadedGameStates.playerActor.actorState,
           defaultPlayerActorData.animation,
           loadedGameStates.playerActor.currentLevel,
@@ -324,7 +551,8 @@ export default class GameStatesManager {
           allyPawnActor.tempId,
           allyPawnActor.actorName,
           allyPawnActor.position,
-          allyPawnActor.actorStats,
+          defaultAllyPawnActorData.defaultStats,
+          allyPawnActor.actorCurrentStats,
           allyPawnActor.actorState,
           defaultAllyPawnActorData.animation,
           allyPawnActor.currentLevel,
@@ -344,7 +572,8 @@ export default class GameStatesManager {
           enemyPawnActor.tempId,
           enemyPawnActor.actorName,
           enemyPawnActor.position,
-          enemyPawnActor.actorStats,
+          defaultEnemyPawnActorData.defaultStats,
+          enemyPawnActor.actorCurrentStats,
           enemyPawnActor.actorState,
           defaultEnemyPawnActorData.animation,
           enemyPawnActor.currentLevel,
@@ -376,7 +605,7 @@ export default class GameStatesManager {
 
     const playerStartingPosition = {
       dx: 10.36,
-      dy: 288.64,
+      dy: 260.64,
     };
 
     //move the camera so that the character stay in the middle of the camera
@@ -389,6 +618,7 @@ export default class GameStatesManager {
       tempId,
       "mainCharacter",
       playerStartingPosition,
+      actorDefaultData.defaultStats,
       actorDefaultData.defaultStats,
       CharacterStateTypes.idling,
       actorDefaultData.animation,
@@ -423,36 +653,41 @@ export default class GameStatesManager {
     console.log("successfully updated IntroCassette GameStates.json");
   }
 
+  /** @param {Actor} actor */
+  moveCameraToActor(actor)
+  {
+    this.cameraPosition.x = actor.position.dx - this.clientContentCanvasBaseWidth / 2;
+    this.cameraPosition.y = actor.position.dy - this.clientContentCanvasBaseHeight / 2;
+  }
+
   sanitizeCameraPosition = (printConsole = false) => {
     let screenWidth = 0;
     let screenHeight = 0;
 
-    if (this.clientContentCanvas) {
-      screenWidth = this.clientContentCanvasBaseWidth;
-      screenHeight = this.clientContentCanvasBaseHeight;
-    }
-
+    screenWidth = this.clientContentCanvasBaseWidth;
+    screenHeight = this.clientContentCanvasBaseHeight;
+    
     //if the camera is on the edge of the map
     if (this.cameraPosition.x < 0) {
       this.cameraPosition.x = 0;
     } else if (
       this.cameraPosition.x + screenWidth >=
-      this.gameMapBackgroundCanvas.width
+      this.gameMapBackgroundCanvasBaseWidth
     ) {
-      this.cameraPosition.x = this.gameMapBackgroundCanvas.width - screenWidth;
+      this.cameraPosition.x = this.gameMapBackgroundCanvasBaseWidth - screenWidth;
     }
 
     if (this.cameraPosition.y < 0) {
       this.cameraPosition.y = 0;
     } else if (
       this.cameraPosition.y + screenHeight >=
-      this.gameMapBackgroundCanvas.height
+      this.gameMapBackgroundCanvasBaseHeight
     ) {
-      this.cameraPosition.y = this.gameMapBackgroundCanvas.height - screenHeight;
+      this.cameraPosition.y = this.gameMapBackgroundCanvasBaseHeight - screenHeight;
     }
 
     if (printConsole) {
-      console.log("game map canvas width: ", this.gameMapBackgroundCanvas.width);
+      console.log("game map canvas width: ", this.gameMapBackgroundCanvasBaseWidth);
       console.log("new sanitized camera x: ", this.cameraPosition.x);
     }
   };

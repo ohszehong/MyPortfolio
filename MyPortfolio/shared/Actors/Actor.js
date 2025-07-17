@@ -18,9 +18,12 @@ export default class Actor {
    */
 
   /** @type {Collision} */
-  collision;
+  collision = null;
 
   selectable;
+
+  //used for picking the correct spritesheet on the blob dictionary for rendering, playAnimation will issue latest render data
+  currentRenderData = {};
 
   constructor(
     tempId,
@@ -38,16 +41,23 @@ export default class Actor {
     
     this.actorName = actorName;
     this.position = { ...position };
-    this.collision = { source: this, ...collision };
+
+    if(collision && Object.keys(collision).length > 0)
+    {
+      this.collision = { source: this, ...collision };
+    }
+
     this.selectable = selectable;
   }
 
-  getCurrentActorData(deltaTime) {
-    return {
-      actorName: this.actorName,
-      position: {...this.position},
-      collisions: [...this.collision],
-    };
+  applyMovement(mapMaxWidth, mapMaxHeight, deltaTime)
+  {
+
+  }
+
+  playAnimation(deltaTime)
+  {
+
   }
 
   toJSON()

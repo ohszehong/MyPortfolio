@@ -13,6 +13,9 @@ export default class TileActor extends Actor {
   /** @type {Array<TileAnimationFrame>} */
   tiles = [];
 
+  //change according to current tileGid, just like collision
+  renderLast;
+
   currentFrameIndex = 0;
   totalDeltaTimeBeforeNextAnimationFrame = 0;
 
@@ -27,11 +30,11 @@ export default class TileActor extends Actor {
      return data;
   }
 
-
   constructor(
     tempId,
     position,
     tiles,
+    renderLast = false,
     selectable = false
   ) {
     super(
@@ -42,39 +45,34 @@ export default class TileActor extends Actor {
       selectable
     );
     this.tiles = [...tiles];
+
+    this.currentRenderData = {
+      tileGid: this.tiles[0].tileGid
+    }
+
+    this.renderLast = renderLast;
   }
 
-  getCurrentActorData(deltaTime) {
-    if(this.tiles.length < 0) return;
-
-    if(this.tiles.length === 0) {
-      return {
-        tileGid: this.tiles[0].tileGid,
-        position: {...this.position},
-        collisions: [...this.collision]
-      }
-    }
-
-    //reset back to frame 0
-    if (this.currentFrameIndex > this.tiles.length) {
-      this.currentFrameIndex = 0;
-    }
-
-    this.totalDeltaTimeBeforeNextAnimationFrame += deltaTime;
-
+  playAnimation(deltaTime)
+  {
+    if(this.tiles.length <= 1) return;
+    
     if (
       this.totalDeltaTimeBeforeNextAnimationFrame >=
       this.tiles[this.currentFrameIndex].duration
     ) {
       this.totalDeltaTimeBeforeNextAnimationFrame = 0;
       this.currentFrameIndex++;
+      
+      //reset back to frame 0
+      if (this.currentFrameIndex >= this.tiles.length) {
+        this.currentFrameIndex = 0;
+      }
       this.collision = {source: this, ...this.tiles[this.currentFrameIndex].collision};
     }
 
-    return {
-      tileGid: this.tiles[this.currentFrameIndex].tileGid,
-      position: {...this.position},
-      collisions: [...this.collision]
-    };
+    this.totalDeltaTimeBeforeNextAnimationFrame += deltaTime;
+
+    this.currentRenderData.tileGid = this.tiles[this.currentFrameIndex].tileGid;
   }
 }

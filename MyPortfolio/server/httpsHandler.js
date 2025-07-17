@@ -1,18 +1,15 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import fs from "fs";
 
 import GameStatesManager from "./GameStatesManager/GameStatesManager.js";
 import AddCharacterData from "./Utilities/addCharacterData.js";
-import CharacterStateTypes from "../shared/Standards/StringKeys/CharacterStateTypes.json" with {type: "json"};
-import FacingDirection from "../shared/Standards/StringKeys/FacingDirections.json" with {type: "json"};
+import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageTypes.json" with {type: "json"};
 
-export default function httpsInit(__serverDirPath) {
+export default function httpsInit(__serverDirPath, gameStatesTickers) {
   const app = express();
   const defaultAllowedOrigin = process.env.SERVER_DEFAULT_ALLOWED_ORIGIN;
-
-  //prototype, to be changed later...
-  let introCassetteClients = []; //store GameStatesManager of each client
 
   //middlewares
   app.use(
@@ -35,9 +32,12 @@ export default function httpsInit(__serverDirPath) {
         try {
           let clientGameStates = new GameStatesManager(req.body.cassetteIndex, req.headers.cookie["introcassette-uuid"], req.body.clientContentCanvasWidth, req.body.clientContentCanvasHeight);
           await clientGameStates.init();
-          introCassetteClients.push(clientGameStates);
 
-          //console.log("client game states json: ", clientGameStates.toJSON().pawnActorsBlobDictionary);
+          //post message to the ticker to insert the client manager to the thread
+          gameStatesTickers.introCassetteTicker.postMessage({
+            type: SocketMessageTypes.serializedClientManager,
+            value: clientGameStates.toJSON()
+          });
 
           sendHttpOnlyCookie(res, "introcassette-uuid", clientGameStates.userId, (365 * 24 * 60 * 60 * 1000)); //1 year
           sendResponse(res, statusCode.success, "successfully loaded cassette.", clientGameStates.toJSON());
@@ -68,6 +68,40 @@ export default function httpsInit(__serverDirPath) {
       );
     }
   });
+
+  app.get("/sfx/*sfxpath", (req, res) => {
+    const pathParam = req.params?.sfxpath;
+    const totalVariations = req.query?.totalVariations;
+    if(pathParam && totalVariations)
+    {
+      try
+      {
+        const SFXFolderPath = path.join(__serverDirPath, ...pathParam);
+      
+        const data = {
+          sfxBase64s: []
+        }
+      
+        for(let i = 0; i < totalVariations; i++)
+        {
+          const filename = i.toString() + ".wav";
+          const SFXFilePath = path.join(SFXFolderPath, filename);
+          const sfxBase64 = fs.readFileSync(SFXFilePath).toString("base64");
+
+          data.sfxBase64s.push(sfxBase64);
+        }
+
+        sendResponse(res, statusCode.success, "successfully retrieved audio contents.", data);
+      }
+      catch (err)
+      {
+        sendResponse(res, statusCode.invalidRequest, "invalid path.");
+      }
+    }
+    else {
+      sendResponse(res, statusCode.invalidRequest, "missing totalVariations param.");
+    }
+  })
 
   app.get("/inject-api-key", (req, res) => {
     const apiKey = process.env.SERVER_API_KEY;

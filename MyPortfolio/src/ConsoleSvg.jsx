@@ -175,7 +175,7 @@ export default function ConsoleSvg({
         </linearGradient>
 
         <clipPath id="ScreenClipPath">
-          <path d="M235 80 h450 q15 0, 15 15 v240 q0 15, -15 15 h-450 q-15 0, -15 -15 v-240 q0 -15, 15 -15" />
+          <path d="M235 80 h450 q15 0, 15 15 v250 q0 15, -15 15 h-450 q-15 0, -15 -15 v-250 q0 -15, 15 -15" />
         </clipPath>
       </defs>
 
@@ -201,7 +201,7 @@ export default function ConsoleSvg({
         className="hover:cursor-pointer"
         data-wrapped-button-id="button-L"
         data-key-is-down="0"
-        data-button-name="buttonLWrapper"
+        data-button-key-name="q"
         onPointerDown={onPointerDown}
         onPointerUp={resetPointerEvent}
         onPointerLeave={resetPointerEvent}
@@ -231,7 +231,7 @@ export default function ConsoleSvg({
         className="hover:cursor-pointer"
         data-wrapped-button-id="button-R"
         data-key-is-down="0"
-        data-button-name="buttonRWrapper"
+        data-button-key-name="e"
         onPointerDown={onPointerDown}
         onPointerUp={resetPointerEvent}
         onPointerLeave={resetPointerEvent}
@@ -254,7 +254,7 @@ export default function ConsoleSvg({
         stroke="none"
         className="hover:cursor-pointer"
         data-key-is-down="0"
-        data-button-name="buttonLeft"
+        data-button-key-name="a"
         onPointerDown={onPointerDown}
         onPointerUp={resetPointerEvent}
         onPointerLeave={resetPointerEvent}
@@ -271,7 +271,7 @@ export default function ConsoleSvg({
         stroke="none"
         className="hover:cursor-pointer"
         data-key-is-down="0"
-        data-button-name="buttonRight"
+        data-button-key-name="d"
         onPointerDown={onPointerDown}
         onPointerUp={resetPointerEvent}
         onPointerLeave={resetPointerEvent}
@@ -288,7 +288,7 @@ export default function ConsoleSvg({
         stroke="none"
         className="hover:cursor-pointer"
         data-key-is-down="0"
-        data-button-name="buttonUp"
+        data-button-key-name="w"
         onPointerDown={onPointerDown}
         onPointerUp={resetPointerEvent}
         onPointerLeave={resetPointerEvent}
@@ -305,7 +305,7 @@ export default function ConsoleSvg({
         stroke="none"
         className="hover:cursor-pointer"
         data-key-is-down="0"
-        data-button-name="buttonDown"
+        data-button-key-name="s"
         onPointerDown={onPointerDown}
         onPointerUp={resetPointerEvent}
         onPointerLeave={resetPointerEvent}
@@ -333,7 +333,7 @@ export default function ConsoleSvg({
         r="25"
         fill="#D9D9D9"
         className="hover:cursor-pointer"
-        data-button-name="buttonA"
+        data-button-key-name="p"
         onPointerDown={onPointerDown}
         onPointerUp={resetPointerEvent}
         onPointerLeave={resetPointerEvent}
@@ -357,7 +357,7 @@ export default function ConsoleSvg({
         r="25"
         fill="#D9D9D9"
         className="hover:cursor-pointer"
-        data-button-name="buttonB"
+        data-button-key-name="l"
         onPointerDown={onPointerDown}
         onPointerUp={resetPointerEvent}
         onPointerLeave={resetPointerEvent}

@@ -2,16 +2,7 @@ import Animation from "./Animation.js";
 
 export default class DirectionDependentAnimation extends Animation
 {
-    source; //Actor
-
-    currentFrameIndex = 0;
-    totalDeltaTimeBeforeNextAnimationFrame = 0;
-
     currentDirection;
-
-    animationSpritesheetName;
-
-    activeFrames = [];
 
     directionGroupedFrames = {
         up: [],
@@ -23,11 +14,11 @@ export default class DirectionDependentAnimation extends Animation
     constructor(actor, animationSpritesheetName, animationFrames, activeDirection = "right")
     {
         super(actor, animationSpritesheetName, animationFrames[activeDirection].frames);
-
+        
         const remainingDirections = Object.keys(this.directionGroupedFrames).filter((key) => key != activeDirection);
 
         remainingDirections.forEach((direction) => {
-            super.addCollisionsSourceToFrames(animationFrames[direction].frames);
+            super.initFrames(animationFrames[direction].frames);
         })
 
         this.directionGroupedFrames.up = animationFrames.up?.frames;
