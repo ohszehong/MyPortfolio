@@ -1,0 +1,91 @@
+{ "frames": [
+   {
+    "filename": "attack2.png",
+    "frame": { "x": 0, "y": 0, "w": 72, "h": 109 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 69, "y": 58, "w": 72, "h": 109 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 135
+   },
+   {
+    "filename": "attack2.png",
+    "frame": { "x": 72, "y": 0, "w": 72, "h": 107 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 94, "y": 60, "w": 72, "h": 107 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 135
+   },
+   {
+    "filename": "attack2.png",
+    "frame": { "x": 144, "y": 0, "w": 75, "h": 114 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 94, "y": 53, "w": 75, "h": 114 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 135
+   },
+   {
+    "filename": "attack2.png",
+    "frame": { "x": 219, "y": 0, "w": 75, "h": 122 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 93, "y": 45, "w": 75, "h": 122 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 135
+   },
+   {
+    "filename": "attack2.png",
+    "frame": { "x": 294, "y": 0, "w": 160, "h": 129 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 7, "y": 39, "w": 160, "h": 129 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 135
+   },
+   {
+    "filename": "attack2.png",
+    "frame": { "x": 454, "y": 0, "w": 148, "h": 139 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 14, "y": 35, "w": 148, "h": 139 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 135
+   },
+   {
+    "filename": "attack2.png",
+    "frame": { "x": 602, "y": 0, "w": 141, "h": 149 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 17, "y": 31, "w": 141, "h": 149 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 135
+   },
+   {
+    "filename": "attack2.png",
+    "frame": { "x": 743, "y": 0, "w": 66, "h": 87 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 75, "y": 81, "w": 66, "h": 87 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 135
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.13-dev",
+  "image": "attack2Sheet.png",
+  "format": "I8",
+  "size": { "w": 809, "h": 149 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+   { "name": "attackCollision1", "color": "#0000ffff", "data": "{\"target\":\"ally\",\"single\":false}", "keys": [{ "frame": 4, "bounds": {"x": 1, "y": 36, "w": 106, "h": 144 } }] }
+  ]
+ }
+}

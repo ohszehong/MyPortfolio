@@ -1,0 +1,81 @@
+{ "frames": [
+   {
+    "filename": "death.png",
+    "frame": { "x": 0, "y": 0, "w": 45, "h": 83 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 97, "y": 84, "w": 45, "h": 83 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 130
+   },
+   {
+    "filename": "death.png",
+    "frame": { "x": 45, "y": 0, "w": 52, "h": 93 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 90, "y": 74, "w": 52, "h": 93 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 130
+   },
+   {
+    "filename": "death.png",
+    "frame": { "x": 97, "y": 0, "w": 66, "h": 95 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 76, "y": 72, "w": 66, "h": 95 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 130
+   },
+   {
+    "filename": "death.png",
+    "frame": { "x": 163, "y": 0, "w": 96, "h": 103 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 46, "y": 64, "w": 96, "h": 103 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 200
+   },
+   {
+    "filename": "death.png",
+    "frame": { "x": 259, "y": 0, "w": 105, "h": 110 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 37, "y": 57, "w": 105, "h": 110 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 130
+   },
+   {
+    "filename": "death.png",
+    "frame": { "x": 364, "y": 0, "w": 96, "h": 122 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 46, "y": 45, "w": 96, "h": 122 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 130
+   },
+   {
+    "filename": "death.png",
+    "frame": { "x": 460, "y": 0, "w": 105, "h": 13 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 37, "y": 154, "w": 105, "h": 13 },
+    "sourceSize": { "w": 250, "h": 250 },
+    "duration": 300
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.13-dev",
+  "image": "deathSheet.png",
+  "format": "I8",
+  "size": { "w": 565, "h": 122 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

@@ -1,0 +1,82 @@
+{ "frames": [
+   {
+    "filename": "attack1.png",
+    "frame": { "x": 0, "y": 0, "w": 33, "h": 45 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 64, "y": 56, "w": 33, "h": 45 },
+    "sourceSize": { "w": 162, "h": 162 },
+    "duration": 100
+   },
+   {
+    "filename": "attack1.png",
+    "frame": { "x": 33, "y": 0, "w": 69, "h": 43 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 74, "y": 58, "w": 69, "h": 43 },
+    "sourceSize": { "w": 162, "h": 162 },
+    "duration": 100
+   },
+   {
+    "filename": "attack1.png",
+    "frame": { "x": 102, "y": 0, "w": 64, "h": 43 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 78, "y": 58, "w": 64, "h": 43 },
+    "sourceSize": { "w": 162, "h": 162 },
+    "duration": 100
+   },
+   {
+    "filename": "attack1.png",
+    "frame": { "x": 166, "y": 0, "w": 60, "h": 43 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 77, "y": 58, "w": 60, "h": 43 },
+    "sourceSize": { "w": 162, "h": 162 },
+    "duration": 100
+   },
+   {
+    "filename": "attack1.png",
+    "frame": { "x": 226, "y": 0, "w": 72, "h": 52 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 29, "y": 49, "w": 72, "h": 52 },
+    "sourceSize": { "w": 162, "h": 162 },
+    "duration": 100
+   },
+   {
+    "filename": "attack1.png",
+    "frame": { "x": 298, "y": 0, "w": 69, "h": 47 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 52, "y": 54, "w": 69, "h": 47 },
+    "sourceSize": { "w": 162, "h": 162 },
+    "duration": 100
+   },
+   {
+    "filename": "attack1.png",
+    "frame": { "x": 367, "y": 0, "w": 66, "h": 59 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 29, "y": 42, "w": 66, "h": 59 },
+    "sourceSize": { "w": 162, "h": 162 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.13-dev",
+  "image": "attack1Sheet.png",
+  "format": "I8",
+  "size": { "w": 433, "h": 59 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+   { "name": "attackCollision1", "color": "#0000ffff", "data": "{\"target\":\"ally\",\"single\":false}", "keys": [{ "frame": 4, "bounds": {"x": 28, "y": 46, "w": 69, "h": 55 } }] }
+  ]
+ }
+}

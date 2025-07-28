@@ -1,0 +1,73 @@
+{ "frames": [
+   {
+    "filename": "idle.png",
+    "frame": { "x": 0, "y": 0, "w": 61, "h": 25 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 39, "w": 61, "h": 25 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 135
+   },
+   {
+    "filename": "idle.png",
+    "frame": { "x": 61, "y": 0, "w": 61, "h": 25 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 39, "w": 61, "h": 25 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 135
+   },
+   {
+    "filename": "idle.png",
+    "frame": { "x": 122, "y": 0, "w": 61, "h": 24 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 40, "w": 61, "h": 24 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 135
+   },
+   {
+    "filename": "idle.png",
+    "frame": { "x": 183, "y": 0, "w": 61, "h": 24 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 40, "w": 61, "h": 24 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 135
+   },
+   {
+    "filename": "idle.png",
+    "frame": { "x": 244, "y": 0, "w": 61, "h": 24 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 40, "w": 61, "h": 24 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 135
+   },
+   {
+    "filename": "idle.png",
+    "frame": { "x": 305, "y": 0, "w": 61, "h": 24 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 2, "y": 40, "w": 61, "h": 24 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 135
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.13-dev",
+  "image": "idleSheet.png",
+  "format": "I8",
+  "size": { "w": 366, "h": 25 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+   { "name": "defaultCollision", "color": "#0000ffff", "data": "{\"target\":\"none\"}", "keys": [{ "frame": 0, "bounds": {"x": 3, "y": 40, "w": 60, "h": 24 } }] }
+  ]
+ }
+}

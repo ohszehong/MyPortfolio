@@ -1,0 +1,55 @@
+{ "frames": [
+   {
+    "filename": "idle.png",
+    "frame": { "x": 0, "y": 0, "w": 45, "h": 49 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 69, "y": 38, "w": 45, "h": 49 },
+    "sourceSize": { "w": 180, "h": 96 },
+    "duration": 170
+   },
+   {
+    "filename": "idle.png",
+    "frame": { "x": 45, "y": 0, "w": 45, "h": 48 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 69, "y": 39, "w": 45, "h": 48 },
+    "sourceSize": { "w": 180, "h": 96 },
+    "duration": 170
+   },
+   {
+    "filename": "idle.png",
+    "frame": { "x": 90, "y": 0, "w": 45, "h": 47 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 69, "y": 39, "w": 45, "h": 47 },
+    "sourceSize": { "w": 180, "h": 96 },
+    "duration": 170
+   },
+   {
+    "filename": "idle.png",
+    "frame": { "x": 135, "y": 0, "w": 45, "h": 49 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 69, "y": 39, "w": 45, "h": 49 },
+    "sourceSize": { "w": 180, "h": 96 },
+    "duration": 170
+   }
+ ],
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.13-dev",
+  "image": "idleSheet.png",
+  "format": "I8",
+  "size": { "w": 180, "h": 49 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+   { "name": "defaultCollision", "color": "#0000ffff", "data": "{\"target\":\"none\"}", "keys": [{ "frame": 0, "bounds": {"x": 70, "y": 35, "w": 46, "h": 52 } }] }
+  ]
+ }
+}
