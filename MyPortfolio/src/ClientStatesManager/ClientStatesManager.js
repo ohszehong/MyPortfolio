@@ -6,7 +6,10 @@ import SocketMessageTypes from "../../shared/Standards/StringKeys/SocketMessageT
 
 import PawnActor from "../../shared/Actors/PawnActor";
 import TileActor from "../../shared/Actors/TileActor";
+
 import IntroCassetteKeysHandler from "./InputCheckers/IntroCassetteButtonsInputChecker";
+import DefenseMarchKeysHandler from "./InputCheckers/DefenseMarchCassetteButtonsInputChecker";
+
 import {
   AIsCollidedWithB,
   PawnActorIsOnTrigger,
@@ -48,6 +51,8 @@ export default class ClientStatesManager {
     p: false,
     l: false,
   };
+
+  keysHandler = null;
 
   /** @type {{current: SVGElement}} */
   consoleSvgRef = null;
@@ -103,6 +108,10 @@ export default class ClientStatesManager {
   //array containing all types of actors that are sorted by y position
   allActorsSortedByY = [];
 
+  //for DefenseMarchCassette
+  allySummonLocations = [];
+  enemySummonLocations = [];
+
   //for gameLoop specific to a cassette
   processTick_CassetteSpecific = null;
 
@@ -140,7 +149,7 @@ export default class ClientStatesManager {
         while (this.accumulatedDeltaTime >= this.FIXED_DELTA_TIME_FROM_SERVER) {
           const shouldNotAcceptNewInput = this.reconcileDataFromServer();
           if (!shouldNotAcceptNewInput) {
-            IntroCassetteKeysHandler(this);
+            this.keysHandler();
 
             processTick_General(this, this.FIXED_DELTA_TIME_FROM_SERVER);
 
@@ -261,6 +270,8 @@ export default class ClientStatesManager {
     switch (this.cassetteIndex) {
       case 0:
         this.cassetteName = "IntroCassette";
+        this.keysHandler = IntroCassetteKeysHandler.bind(this);
+
         this.processTick_CassetteSpecific = () => {
           //check for mapJumpTriggers with playerActor
           if (this.playerActor.actorState != CharacterStateTypes.jumping) {
@@ -288,6 +299,11 @@ export default class ClientStatesManager {
           this.moveCameraToActor(this.playerActor);
           this.sanitizeCameraPosition();
         };
+        break;
+
+      case 1:
+        this.cassetteName = "DefenseMarchCassette";
+        this.keysHandler = DefenseMarchKeysHandler.bind(this);
         break;
     }
 
@@ -351,6 +367,8 @@ export default class ClientStatesManager {
       l: false,
     };
 
+    this.keysHandler = null;
+
     this.resetButtons();
 
     if (this.webSocket) {
@@ -394,6 +412,9 @@ export default class ClientStatesManager {
 
     //array containing all types of actors that are sorted by y position
     this.allActorsSortedByY = [];
+
+    this.allySummonLocations = [];
+    this.enemySummonLocations = [];
 
     this.processTick_CassetteSpecific = null;
     this.currentGameTick = 0;
@@ -721,6 +742,13 @@ export default class ClientStatesManager {
         this.tileActorsBlobDictionary[tileGid] = tileCanvas;
       });
     }
+
+    //for DefenseMarch
+    this.allySummonLocations = rawStatesData.allySummonLocations;
+    this.enemySummonLocations = rawStatesData.enemySummonLocations;
+
+    console.log("allySummonLocations: ", this.allySummonLocations);
+    console.log("enemySummonLocations: ", this.enemySummonLocations);
   }
 
   initWebSocket() {

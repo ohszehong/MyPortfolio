@@ -19,9 +19,14 @@ const port = process.env.SERVER_PORT;
 const introCassetteTicker = new Worker("./introCassetteTicker.js", {
     type: "module"
 });
+
+const defenseMarchCassetteTicker = new Worker("./defenseMarchCassetteTicker.js", {
+    type: "module"
+})
     
 let gameStatesTickers = {
-    introCassetteTicker: introCassetteTicker
+    introCassetteTicker: introCassetteTicker,
+    defenseMarchCassetteTicker: defenseMarchCassetteTicker
 }
 
 let clientWebSockets = {

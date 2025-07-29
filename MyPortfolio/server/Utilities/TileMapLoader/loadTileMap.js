@@ -1,6 +1,8 @@
 import { Canvas, createCanvas, registerFont } from "canvas";
 
 import IntroMapV2JSON from "../../CassetteContentData/IntroCassette/MapData/IntroMapV2.json" with {type: "json"};
+import DefenseMarchMapJSON from "../../CassetteContentData/DefenseMarchCassette/MapData/DefenseMarchMap.json" with {type: "json"};
+
 import TriggerTypes from "../../../shared/Standards/StringKeys/TriggerTypes.json" with {type: "json"};
 import TileActor from "../../../shared/Actors/TileActor.js";
 import loadImage from "../ImgLoader/loadImage.js";
@@ -23,6 +25,10 @@ export default async function loadTileMap(shouldAbortRef) {
   {
     case 0:
         mapJSON = IntroMapV2JSON;
+        break;
+
+    case 1:
+        mapJSON = DefenseMarchMapJSON;
         break;
 
     default:
@@ -497,6 +503,24 @@ export default async function loadTileMap(shouldAbortRef) {
       console.log(soundTriggerData);
 
       this.mapSoundTriggers.push({ ...soundTriggerData });
+    }
+  }
+
+  //for DefenseMarch 
+  const summonLocations = mapJSON.layers.find((layer) => layer.name === "SummonLocations");
+
+  if(summonLocations)
+  {
+    const allySummonLocations = summonLocations.objects.filter((locations) => locations.name === "ally");
+    if(allySummonLocations)
+    {
+      this.allySummonLocations = [...allySummonLocations];
+    }
+
+    const enemySummonLocations = summonLocations.objects.filter((locations) => locations.name === "enemy");
+    if(enemySummonLocations)
+    {
+      this.enemySummonLocations = [...enemySummonLocations];
     }
   }
 

@@ -30,16 +30,37 @@ export default function httpsInit(__serverDirPath, gameStatesTickers) {
 
     if (req.body?.cassetteIndex >= 0) {
         try {
-          let clientGameStates = new GameStatesManager(req.body.cassetteIndex, req.headers.cookie["introcassette-uuid"], req.body.clientContentCanvasWidth, req.body.clientContentCanvasHeight);
+          let uuidCookieHeaderName;
+          let cassetteTicker;
+
+          switch(req.body.cassetteIndex)
+          {
+            case 0:
+              uuidCookieHeaderName = "introcassette-uuid";
+              cassetteTicker = gameStatesTickers.introCassetteTicker;
+              break;
+
+            case 1:
+              uuidCookieHeaderName = "defensemarchcassette-uuid";
+              cassetteTicker = gameStatesTickers.defenseMarchCassetteTicker;
+              break;
+          }
+
+          if(!uuidCookieHeaderName || !cassetteTicker)
+          {
+            throw new Error("{statusCode: 400, message: 'invalid cassette index.'}");
+          }
+
+          let clientGameStates = new GameStatesManager(req.body.cassetteIndex, req.headers.cookie[uuidCookieHeaderName], req.body.clientContentCanvasWidth, req.body.clientContentCanvasHeight);
           await clientGameStates.init();
 
           //post message to the ticker to insert the client manager to the thread
-          gameStatesTickers.introCassetteTicker.postMessage({
+          cassetteTicker.postMessage({
             type: SocketMessageTypes.serializedClientManager,
             value: clientGameStates.toJSON()
           });
 
-          sendHttpOnlyCookie(res, "introcassette-uuid", clientGameStates.userId, (365 * 24 * 60 * 60 * 1000)); //1 year
+          sendHttpOnlyCookie(res, uuidCookieHeaderName, clientGameStates.userId, (365 * 24 * 60 * 60 * 1000)); //1 year
           sendResponse(res, statusCode.success, "successfully loaded cassette.", clientGameStates.toJSON());
           return;
         }

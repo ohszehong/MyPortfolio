@@ -48,7 +48,7 @@ export default function handleKeys()
   {
     if(keys[key])
     {
-      shouldIdle = false;
+      //shouldIdle = false;
 
       if(key === lastKeys[key]) continue;
 
@@ -58,19 +58,20 @@ export default function handleKeys()
       switch(key)
       {
         case "w":
-          this.playerActor.toWalkState(FacingDirection.up);
+          //clientManager.playerActor.toWalkState(FacingDirection.up);
+          console.log("pressed w on defensemarch...");
           break;
 
         case "a":
-          this.playerActor.toWalkState(FacingDirection.left);
+          //clientManager.playerActor.toWalkState(FacingDirection.left);
           break;
 
         case "s":
-          this.playerActor.toWalkState(FacingDirection.down);
+          //clientManager.playerActor.toWalkState(FacingDirection.down);
           break;
 
         case "d":
-          this.playerActor.toWalkState(FacingDirection.right);
+          //clientManager.playerActor.toWalkState(FacingDirection.right);
           break;
 
         case "q":
@@ -88,14 +89,14 @@ export default function handleKeys()
     }
   }
 
-  if (shouldIdle)
-  {
-     //send input to server
-      this.sendMessageToServer(SocketMessageTypes.userInput, "idle");
+//   if (shouldIdle)
+//   {
+//      //send input to server
+//       clientManager.sendMessageToServer(SocketMessageTypes.userInput, "idle");
 
-      //client prediction
-      this.playerActor.toIdleState();
-  }
+//       //client prediction
+//       clientManager.playerActor.toIdleState();
+//   }
 
   this.lastKeys = {...keys};
 }

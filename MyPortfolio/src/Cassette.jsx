@@ -14,13 +14,13 @@ export default function Cassette({
   const [isDraggingContainer, setIsDraggingContainer] = useState(false);
 
   const cassetteIntro = { title: "INTRO", bgColor: "bg-purple-300" };
-  const cassetteAPInDB = { title: "API & DB", bgColor: "bg-pink-200" };
+  const cassetteDefenseMarch = { title: "DEFENSE MARCH", bgColor: "bg-pink-200" };
   const cassetteWebSocket = { title: "WEBSOCKET", bgColor: "bg-yellow-100" };
   const cassetteProjects = { title: "PROJECTS", bgColor: "bg-purple-100" };
 
   const cassetteItemsProperties = [
     cassetteIntro,
-    cassetteAPInDB,
+    cassetteDefenseMarch,
     cassetteWebSocket,
     cassetteProjects,
   ];

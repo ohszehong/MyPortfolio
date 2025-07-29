@@ -428,7 +428,7 @@
                 {
                  "height":0,
                  "id":1,
-                 "name":"",
+                 "name":"ally",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -440,7 +440,7 @@
                 {
                  "height":0,
                  "id":2,
-                 "name":"",
+                 "name":"ally",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -452,7 +452,7 @@
                 {
                  "height":0,
                  "id":3,
-                 "name":"",
+                 "name":"ally",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -464,7 +464,7 @@
                 {
                  "height":0,
                  "id":4,
-                 "name":"",
+                 "name":"enemy",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -476,7 +476,7 @@
                 {
                  "height":0,
                  "id":5,
-                 "name":"",
+                 "name":"enemy",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -488,7 +488,7 @@
                 {
                  "height":0,
                  "id":6,
-                 "name":"",
+                 "name":"enemy",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -513,7 +513,7 @@
         {
          "columns":32,
          "firstgid":1,
-         "image":"..\/..\/MyPortfolio\/MyPortfolio\/server\/CassetteContentData\/DefenseMarch\/MapAssets\/TilesImages\/TX Tileset Wall.png",
+         "image":"CassetteContentData\/DefenseMarchCassette\/MapAssets\/TilesImages\/TX Tileset Wall.png",
          "imageheight":512,
          "imagewidth":512,
          "margin":0,
@@ -526,7 +526,7 @@
         {
          "columns":16,
          "firstgid":1025,
-         "image":"..\/..\/MyPortfolio\/MyPortfolio\/server\/CassetteContentData\/DefenseMarch\/MapAssets\/TilesImages\/TX Tileset Grass.png",
+         "image":"CassetteContentData\/DefenseMarchCassette\/MapAssets\/TilesImages\/TX Tileset Grass.png",
          "imageheight":256,
          "imagewidth":256,
          "margin":0,
@@ -539,7 +539,7 @@
         {
          "columns":16,
          "firstgid":1281,
-         "image":"..\/..\/MyPortfolio\/MyPortfolio\/server\/CassetteContentData\/DefenseMarch\/MapAssets\/TilesImages\/TX Tileset Stone Ground.png",
+         "image":"CassetteContentData\/DefenseMarchCassette\/MapAssets\/TilesImages\/TX Tileset Stone Ground.png",
          "imageheight":256,
          "imagewidth":256,
          "margin":0,
@@ -552,7 +552,7 @@
         {
          "columns":32,
          "firstgid":1537,
-         "image":"..\/..\/MyPortfolio\/MyPortfolio\/server\/CassetteContentData\/DefenseMarch\/MapAssets\/TilesImages\/TX Props with Shadow.png",
+         "image":"CassetteContentData\/DefenseMarchCassette\/MapAssets\/TilesImages\/TX Props with Shadow.png",
          "imageheight":512,
          "imagewidth":512,
          "margin":0,
@@ -565,7 +565,7 @@
         {
          "columns":32,
          "firstgid":2561,
-         "image":"..\/..\/MyPortfolio\/MyPortfolio\/server\/CassetteContentData\/DefenseMarch\/MapAssets\/TilesImages\/TX Plant with Shadow.png",
+         "image":"CassetteContentData\/DefenseMarchCassette\/MapAssets\/TilesImages\/TX Plant with Shadow.png",
          "imageheight":512,
          "imagewidth":512,
          "margin":0,
@@ -578,7 +578,7 @@
         {
          "columns":32,
          "firstgid":3585,
-         "image":"..\/..\/MyPortfolio\/MyPortfolio\/server\/CassetteContentData\/DefenseMarch\/MapAssets\/TilesImages\/TX Props.png",
+         "image":"CassetteContentData\/DefenseMarchCassette\/MapAssets\/TilesImages\/TX Props.png",
          "imageheight":512,
          "imagewidth":512,
          "margin":0,
@@ -591,7 +591,7 @@
         {
          "columns":32,
          "firstgid":4609,
-         "image":"..\/..\/MyPortfolio\/MyPortfolio\/server\/CassetteContentData\/DefenseMarch\/MapAssets\/TilesImages\/TX Struct.png",
+         "image":"CassetteContentData\/DefenseMarchCassette\/MapAssets\/TilesImages\/TX Struct.png",
          "imageheight":512,
          "imagewidth":512,
          "margin":0,

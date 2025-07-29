@@ -69,6 +69,10 @@ export default class GameStatesManager {
   //actors that spawn from animation
   spawnActors = [];
 
+  //for DefenseMarchCassette
+  allySummonLocations = [];
+  enemySummonLocations = [];
+
   currentGameTick = 0;
 
   getSerializedActorsData(withActorDefaultData = false)
@@ -86,9 +90,9 @@ export default class GameStatesManager {
      let serializedEnemyPawnActors = [];
      let serializedTileActors = [];
 
-     serializedPlayerActor = this.playerActor.toJSON();
+     serializedPlayerActor = this.playerActor ? this.playerActor.toJSON() : null;
 
-     if(withActorDefaultData)
+     if(serializedPlayerActor && withActorDefaultData)
      {
         serializedPlayerActor.actorDefaultData = actorDefaultData[this.playerActor.actorName];
      }
@@ -120,8 +124,8 @@ export default class GameStatesManager {
     return [serializedPlayerActor, serializedAllyPawnActors, serializedEnemyPawnActors, serializedTileActors];
   }
 
-  toJSON(mode = "all") {
-    const withActorDefaultData = mode === "all" ? true : false;
+  toJSON(mode = "init") {
+    const withActorDefaultData = mode === "init" ? true : false;
     const [playerActor, serializedAllyPawnActors, serializedEnemyPawnActors, serializedTileActors] = this.getSerializedActorsData(withActorDefaultData);
 
     const data = {
@@ -138,9 +142,11 @@ export default class GameStatesManager {
       allyPawnActors: serializedAllyPawnActors,
       enemyPawnActors: serializedEnemyPawnActors,
       tileActors: serializedTileActors,
+      allySummonLocations: this.allySummonLocations,
+      enemySummonLocations: this.enemySummonLocations
     };
 
-    if(mode === "all")
+    if(mode === "init")
     {
       const gameMapBackgroundBlob = this.gameMapBackgroundCanvas.toBuffer().toString("base64");
 
@@ -186,6 +192,10 @@ export default class GameStatesManager {
       switch (cassetteIndex) {
         case 0:
           this.cassetteName = "IntroCassette";
+          break;
+
+        case 1:
+          this.cassetteName = "DefenseMarchCassette";
           break;
       }
 
@@ -395,6 +405,12 @@ export default class GameStatesManager {
             this.createNewIntroCassetteGameStates();
           }
           //load cassette specific things here...
+          return;
+
+        case 1:
+          if(!userExists) {
+            this.createNewDefenseMarchCassetteGameStates();
+          }
           return;
 
         default:
@@ -651,6 +667,38 @@ export default class GameStatesManager {
       JSON.stringify(gameStatesData)
     );
     console.log("successfully updated IntroCassette GameStates.json");
+  }
+
+  createNewDefenseMarchCassetteGameStates() {
+    //create new data and save it immediately
+    const uuid = randomUUID();
+    const tempId = randomUUID();
+
+    this.userId = uuid;
+    this.cameraPosition.x = 0;
+    this.cameraPosition.y = 0;
+
+    const gameStatesData = JSON.parse(
+      fs.readFileSync(this.dirToGameStatesJSONFile, "utf-8")
+    );
+
+    const [playerActor, serializedAllyPawnActors, serializedEnemyPawnActors] = this.getSerializedActorsData();
+
+    delete playerActor.defaultStats;
+    delete playerActor.animation;
+    delete playerActor.defaultImageFile;
+
+    gameStatesData[uuid] = {
+      cameraPosition: this.cameraPosition,
+      playerActor: playerActor,
+      allyPawnActors: serializedAllyPawnActors,
+      enemyPawnActors: serializedEnemyPawnActors,
+    };
+    fs.writeFileSync(
+      this.dirToGameStatesJSONFile,
+      JSON.stringify(gameStatesData)
+    );
+    console.log("successfully updated DefenseMarchCassette GameStates.json");
   }
 
   /** @param {Actor} actor */
