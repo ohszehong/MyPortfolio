@@ -361,7 +361,7 @@ export default async function loadTileMap(shouldAbortRef) {
     for (const text of textsLayer.objects) {
       if (text.text) {
         context.font = `${text.text.pixelsize}px ${text.text.fontfamily}`;
-
+      
         const metrics = context.measureText(text.text?.text);
         const textActualHeight =
           metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;

@@ -16,6 +16,12 @@ import {
 } from "../../shared/CollisionsDetector/CollisionsDetector";
 import processTick_General from "../../shared/TickProcess/processTick_General";
 
+import Label from "../HUDs/Label";
+import Button from "../HUDs/Button";
+import UImage from "../HUDs/Image";
+import rootHUD from "../HUDs/rootHUD";
+import childHUD from "../HUDs/childHUD";
+
 export default class ClientStatesManager {
   userId = null;
   cassetteIndex = null;
@@ -70,6 +76,10 @@ export default class ClientStatesManager {
   //for processTick_General
   gameMapBackgroundCanvasBaseWidth = 0;
   gameMapBackgroundCanvasBaseHeight = 0;
+
+  //HUD
+  /** @type { rootHUD } */
+  gameRootHUD = null;
 
   /* data */
   cameraPosition = { x: 0, y: 0 };
@@ -154,11 +164,21 @@ export default class ClientStatesManager {
             processTick_General(this, this.FIXED_DELTA_TIME_FROM_SERVER);
 
             this.processTick_CassetteGeneral();
-            this.processTick_CassetteSpecific();
+
+            if(this.processTick_CassetteSpecific)
+            {
+              this.processTick_CassetteSpecific();
+            }
             this.sortAllActorsByY();
 
             //draw canvas...
-            this.drawContentCanvas();
+            //this.drawContentCanvas();
+
+            //draw HUDs
+            if(this.gameRootHUD)
+            {
+              this.contentCanvas.getContext("2d").drawImage(this.gameRootHUD.HUDCanvas, this.gameRootHUD.dx, this.gameRootHUD.dy, this.gameRootHUD.width, this.gameRootHUD.height);
+            }
 
             this.accumulatedDeltaTime -= this.FIXED_DELTA_TIME_FROM_SERVER;
           }
@@ -304,6 +324,26 @@ export default class ClientStatesManager {
       case 1:
         this.cassetteName = "DefenseMarchCassette";
         this.keysHandler = DefenseMarchKeysHandler.bind(this);
+
+        //creating HUDs for DefenseMarch
+        this.gameRootHUD = new rootHUD("Root", 0, 0, this.contentCanvas.width, this.contentCanvas.height);
+
+        //child HUDs
+        const CHUDStartGame = new childHUD("CHUDStartGame", 0, 0, this.contentCanvas.width, this.contentCanvas.height);
+        
+        const LTitleDefense = new Label("LTitleDefense", 136, 51, 258, 68, "DEFENSE", "left", "#53cee7", 60, "Darinia");
+        const LTitleMarch = new Label("LTitleMarch", 165, 98.5, 191, 58.5, "MARCH", "left", "#4b5012", 48, "Darinia");
+
+        const BStart = new Button("BStart", 209.17, 212.83, 107, 39.67);
+        BStart.updateLabelTextData(null, null, "START", null, "#aa4a1d", 33, null);
+        BStart.setOpacity(0.5);
+
+        CHUDStartGame.addUIElement(LTitleDefense);
+        CHUDStartGame.addUIElement(LTitleMarch);
+        CHUDStartGame.addUIElement(BStart);
+
+        this.gameRootHUD.addChildHUD(CHUDStartGame);
+        this.gameRootHUD.setHUDActive("CHUDStartGame", true);
         break;
     }
 
@@ -382,6 +422,7 @@ export default class ClientStatesManager {
     }
 
     this.gameMapBackground = null;
+    this.gameRootHUD = null;
 
     this.cameraPosition = { x: 0, y: 0 };
     this.cursorPosition = { x: 0, y: 0 };
@@ -1096,8 +1137,9 @@ export default class ClientStatesManager {
   }
 
   sortAllActorsByY() {
+    this.allActorsSortedByY = this.playerActor ? [this.playerActor] : [];
     this.allActorsSortedByY = [
-      this.playerActor,
+      ...this.allActorsSortedByY,
       ...this.allyPawnActors,
       ...this.enemyPawnActors,
       ...this.tileActors,
