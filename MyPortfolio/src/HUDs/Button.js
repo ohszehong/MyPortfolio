@@ -57,19 +57,19 @@ export default class Button extends UIElement
 
 
     /** @param { CanvasRenderingContext2D } context2d */
-    drawElement(context2d)
+    drawElement(context2d, rootDx, rootDy)
     {
         super.drawElement(context2d);
 
         if(this.backgroundColor)
         {
             context2d.fillStyle = this.backgroundColor;
-            context2d.fillRect(this.dx, this.dy, this.width, this.height);
+            context2d.fillRect(rootDx + this.dx, rootDy + this.dy, this.width, this.height);
         }
 
         if(this.buttonLabelTextData)
         {
-            this.buttonLabelTextData.drawElement(context2d);
+            this.buttonLabelTextData.drawElement(context2d, rootDx, rootDy);
         }
     }
 }

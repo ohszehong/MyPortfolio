@@ -32,9 +32,9 @@ export default class UImage extends UIElement
     }
 
     /** @param { CanvasRenderingContext2D } context2d */
-    drawElement(context2d)
+    drawElement(context2d, rootDx, rootDy)
     {
         super.drawElement(context2d);
-        context2d.drawImage(this.image, this.dx + this.imageddx, this.dy + this.imageddy);
+        context2d.drawImage(this.image, rootDx + this.dx + this.imageddx, rootDy + this.dy + this.imageddy);
     }
 }

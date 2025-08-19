@@ -177,6 +177,12 @@ export default function ConsoleSvg({
         <clipPath id="ScreenClipPath">
           <path d="M235 80 h450 q15 0, 15 15 v250 q0 15, -15 15 h-450 q-15 0, -15 -15 v-250 q0 -15, 15 -15" />
         </clipPath>
+
+        {/* Define a mask with a rounded rectangle cutout */}
+
+        <mask id="ScreenMask" x="0" y="0" width="100%" height="100%" maskUnits="userSpaceOnUse">
+          <path d="M235 80 h450 q15 0, 15 15 v250 q0 15, -15 15 h-450 q-15 0, -15 -15 v-250 q0 -15, 15 -15" fill="white" />
+        </mask>
       </defs>
 
       <rect
@@ -393,7 +399,7 @@ export default function ConsoleSvg({
         y={80}
         width={480}
         height={280}
-        clipPath="url(#ScreenClipPath)"
+        mask="url(#ScreenMask)"
       >
         {CassetteContentManager({
           consoleSvgRef: consoleSvgRef,

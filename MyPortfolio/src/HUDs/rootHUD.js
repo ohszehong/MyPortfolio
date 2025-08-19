@@ -4,9 +4,6 @@ export default class rootHUD
 {
     HUDName = null;
 
-    /** @type { OffscreenCanvas } */
-    HUDCanvas = null;
-
     dx = 0;
     dy = 0;
     width = 0;
@@ -21,8 +18,6 @@ export default class rootHUD
         this.dy = dy;
         this.width = width;
         this.height = height;
-
-        this.HUDCanvas = new OffscreenCanvas(width, height);
     }
 
     /** @param { childHUD } childHUD */
@@ -41,26 +36,42 @@ export default class rootHUD
             if(this.childHUDs[childHUDName].active != active)
             {
                 this.childHUDs[childHUDName].active = active;
-
-                //update the canvas 
-                this.drawHUDs();
             }
         }
     }
 
-    drawHUDs()
+    drawHUDs(context2d)
     {
-        const context2d = this.HUDCanvas.getContext("2d");
-
-        for(const [childHUDName, HUDData] of Object.entries(this.childHUDs))
+        for(const HUDData of Object.values(this.childHUDs))
         {
             if(HUDData.active)
             {
                 if(HUDData.HUD)
                 {
-                    HUDData.HUD.drawHUD(context2d);
+                    HUDData.HUD.drawHUD(context2d, this.dx, this.dy);
                 }
             }
         }
+    }
+
+    getCursorOverlappedElement(cursorX, cursorY)
+    {
+        for(const HUDData of Object.values(this.childHUDs))
+        {
+            if(HUDData.active && HUDData.HUD)
+            {
+                for(const element of HUDData.HUD.getAllUIElements())
+                {
+                    if(!element.focusable) continue;
+
+                    if(cursorX >= (this.dx + element.dx) && cursorX <= (this.dx + element.dx + element.width) &&
+                       cursorY >= (this.dy + element.dy) && cursorY <= (this.dy + element.dy + element.height))
+                    {
+                        return element;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

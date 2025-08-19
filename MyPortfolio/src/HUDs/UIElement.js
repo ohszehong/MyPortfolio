@@ -57,7 +57,7 @@ export default class UIElement
     }
 
     /** @param { CanvasRenderingContext2D } context2d */
-    drawElement(context2d)
+    drawElement(context2d, rootDx, rootDy)
     {
         if(this.backgroundImage)
         {
@@ -66,8 +66,8 @@ export default class UIElement
                 0, 
                 this.backgroundImage.width, 
                 this.backgroundImage.height,
-                this.dx, 
-                this.dy, 
+                rootDx + this.dx, 
+                rootDy + this.dy, 
                 this.width, 
                 this.height
             );

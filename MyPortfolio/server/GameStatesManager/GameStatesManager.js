@@ -175,8 +175,11 @@ export default class GameStatesManager {
     if(!workerMode)
     {
       this.cassetteIndex = cassetteIndex;
-      this.userId = userId;
 
+      if(userId)
+      {
+        this.userId = userId;
+      }
 
       const __currentFilePath = fileURLToPath(import.meta.url);
       const __currentDirPath = path.dirname(__currentFilePath);
@@ -242,19 +245,22 @@ export default class GameStatesManager {
     clientManager.dirToCassetteContentData = serializedJSON.dirToCassetteContentData;
     clientManager.dirToPawnActorsDataJSONFile = serializedJSON.dirToPawnActorsDataJSONFile;
     clientManager.dirToGameStatesJSONFile = serializedJSON.dirToGameStatesJSONFile;
-        
-    clientManager.playerActor = new PawnActor(
-      serializedJSON.playerActor.tempId, 
-      serializedJSON.playerActor.actorName, 
-      serializedJSON.playerActor.position, 
-      serializedJSON.playerActor.actorDefaultStats,
-      serializedJSON.playerActor.actorCurrentStats, 
-      serializedJSON.playerActor.actorState, 
-      serializedJSON.playerActor.actorDefaultData.animation, 
-      serializedJSON.playerActor.currentLevel, 
-      serializedJSON.playerActor.maxLevel, 
-      serializedJSON.playerActor.collision, 
-      serializedJSON.playerActor.selectable);
+    
+    if(serializedJSON.playerActor)
+    {
+      clientManager.playerActor = new PawnActor(
+        serializedJSON.playerActor.tempId, 
+        serializedJSON.playerActor.actorName, 
+        serializedJSON.playerActor.position, 
+        serializedJSON.playerActor.actorDefaultStats,
+        serializedJSON.playerActor.actorCurrentStats, 
+        serializedJSON.playerActor.actorState, 
+        serializedJSON.playerActor.actorDefaultData.animation, 
+        serializedJSON.playerActor.currentLevel, 
+        serializedJSON.playerActor.maxLevel, 
+        serializedJSON.playerActor.collision, 
+        serializedJSON.playerActor.selectable);
+    }
 
     serializedJSON.allyPawnActors.forEach((actorJSON) => {
       clientManager.allyPawnActors.push(new PawnActor(
@@ -438,13 +444,10 @@ export default class GameStatesManager {
       );
 
       //something is wrong
-      if (Object.keys(allActorsDefaultData).length <= 0) {
-        shouldAbortRef.current = true;
-        return;
+      if(Object.keys(allActorsDefaultData).length > 0) {
+        //load all actors blob
+        await this.loadAllActorsBlob(allActorsDefaultData);
       }
-
-      //load all actors blob
-      await this.loadAllActorsBlob(allActorsDefaultData);
 
       let loadedGameStates = null;
       if (this.userId) {
@@ -652,9 +655,12 @@ export default class GameStatesManager {
 
     const [playerActor, serializedAllyPawnActors, serializedEnemyPawnActors] = this.getSerializedActorsData();
 
-    delete playerActor.defaultStats;
-    delete playerActor.animation;
-    delete playerActor.defaultImageFile;
+    if(playerActor)
+    {
+      delete playerActor.defaultStats;
+      delete playerActor.animation;
+      delete playerActor.defaultImageFile;
+    }
 
     gameStatesData[uuid] = {
       cameraPosition: this.cameraPosition,
@@ -672,7 +678,6 @@ export default class GameStatesManager {
   createNewDefenseMarchCassetteGameStates() {
     //create new data and save it immediately
     const uuid = randomUUID();
-    const tempId = randomUUID();
 
     this.userId = uuid;
     this.cameraPosition.x = 0;
@@ -684,9 +689,12 @@ export default class GameStatesManager {
 
     const [playerActor, serializedAllyPawnActors, serializedEnemyPawnActors] = this.getSerializedActorsData();
 
-    delete playerActor.defaultStats;
-    delete playerActor.animation;
-    delete playerActor.defaultImageFile;
+    if(playerActor)
+    {
+        delete playerActor.defaultStats;
+        delete playerActor.animation;
+        delete playerActor.defaultImageFile;
+    }
 
     gameStatesData[uuid] = {
       cameraPosition: this.cameraPosition,
@@ -694,10 +702,12 @@ export default class GameStatesManager {
       allyPawnActors: serializedAllyPawnActors,
       enemyPawnActors: serializedEnemyPawnActors,
     };
+
     fs.writeFileSync(
       this.dirToGameStatesJSONFile,
       JSON.stringify(gameStatesData)
     );
+
     console.log("successfully updated DefenseMarchCassette GameStates.json");
   }
 

@@ -133,6 +133,28 @@ export default class ClientStatesManager {
     this.contentCanvas.width = 480;
     this.contentCanvas.height = 280;
 
+    this.contentCanvas.addEventListener("pointermove", (event) => {
+      event.preventDefault();
+
+      console.log("hello.....");
+
+      //update cursor position
+      this.cursorPosition.x = this.cameraPosition.x + event.offsetX;
+      this.cursorPosition.y = this.cameraPosition.y + event.offsetY;
+
+      if(this.gameRootHUD)
+      {
+        const overlappedElement = this.gameRootHUD.getCursorOverlappedElement(this.cursorPosition.x, this.cursorPosition.y);
+
+        console.log("cursor position: ", this.cursorPosition);
+
+        if(overlappedElement)
+        {
+          console.log("overlapped element: ", overlappedElement);
+        }
+      }
+    })
+
     this.setKeyActiveBound = this.setKeyActive.bind(this);
   }
 
@@ -172,13 +194,7 @@ export default class ClientStatesManager {
             this.sortAllActorsByY();
 
             //draw canvas...
-            //this.drawContentCanvas();
-
-            //draw HUDs
-            if(this.gameRootHUD)
-            {
-              this.contentCanvas.getContext("2d").drawImage(this.gameRootHUD.HUDCanvas, this.gameRootHUD.dx, this.gameRootHUD.dy, this.gameRootHUD.width, this.gameRootHUD.height);
-            }
+            this.drawContentCanvas();
 
             this.accumulatedDeltaTime -= this.FIXED_DELTA_TIME_FROM_SERVER;
           }
@@ -331,12 +347,11 @@ export default class ClientStatesManager {
         //child HUDs
         const CHUDStartGame = new childHUD("CHUDStartGame", 0, 0, this.contentCanvas.width, this.contentCanvas.height);
         
-        const LTitleDefense = new Label("LTitleDefense", 136, 51, 258, 68, "DEFENSE", "left", "#53cee7", 60, "Darinia");
-        const LTitleMarch = new Label("LTitleMarch", 165, 98.5, 191, 58.5, "MARCH", "left", "#4b5012", 48, "Darinia");
+        const LTitleDefense = new Label("LTitleDefense", 136, 51, 258, 68, "DEFENSE", "left", "rgba(83, 206, 231, 1)", 60, "Darinia");
+        const LTitleMarch = new Label("LTitleMarch", 165, 98.5, 191, 58.5, "MARCH", "left", "rgba(75, 80, 18, 1)", 48, "Darinia");
 
         const BStart = new Button("BStart", 209.17, 212.83, 107, 39.67);
-        BStart.updateLabelTextData(null, null, "START", null, "#aa4a1d", 33, null);
-        BStart.setOpacity(0.5);
+        BStart.updateLabelTextData(null, null, "START", null, "rgba(170, 74, 29, 0.5)", 33, null);
 
         CHUDStartGame.addUIElement(LTitleDefense);
         CHUDStartGame.addUIElement(LTitleMarch);
@@ -575,6 +590,11 @@ export default class ClientStatesManager {
             actor.position.dy - this.cameraPosition.y
           );
         });
+
+        if(this.gameRootHUD)
+        {
+          this.gameRootHUD.drawHUDs(context2d);
+        }
       }
     } catch (err) {
       console.log("drawContentCanvas failed: ", err);

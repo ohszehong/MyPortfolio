@@ -77,7 +77,7 @@ export default class Label extends UIElement
     }
 
     /** @param { CanvasRenderingContext2D } context2d */
-    drawElement(context2d)
+    drawElement(context2d, rootDx, rootDy)
     {
         super.drawElement(context2d);
 
@@ -86,8 +86,8 @@ export default class Label extends UIElement
         
         context2d.fillText(
           this.labelTextData.text,
-          this.dx,
-          this.dy + this.height - this.labelTextData.textActualPadding,
+          rootDx + this.dx,
+          rootDy + this.dy + this.height - this.labelTextData.textActualPadding,
           this.width
         );
     }

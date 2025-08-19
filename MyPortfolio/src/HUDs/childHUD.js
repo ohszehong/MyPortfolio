@@ -34,14 +34,19 @@ export default class childHUD
         return this.UIElements[elementName];
     }
 
+    getAllUIElements()
+    {
+        return Object.values(this.UIElements);
+    }
+
     /** @param { CanvasRenderingContext2D } context2d */
-    drawHUD(context2d)
+    drawHUD(context2d, rootDx, rootDy, rootWidth, rootHeight)
     {
         for(const [elementName, element] of Object.entries(this.UIElements))
         {
-            context2d.globalAlpha = 0.5;
-            element.drawElement(context2d);
-            //context2d.globalAlpha = 1;
+            context2d.globalAlpha = element.opacity;
+            element.drawElement(context2d, rootDx + this.dx, rootDy + this.dy);
+            context2d.globalAlpha = 1;
         }
     }
 }
