@@ -63,6 +63,11 @@ export default class Label extends UIElement
         this.labelTextData.text = newText;
     }
 
+    setLabelColor(newColor)
+    {
+        this.labelTextData.color = newColor;
+    }
+
     updateTextBounds()
     {
         const context2d = new OffscreenCanvas(this.width, this.height).getContext("2d");

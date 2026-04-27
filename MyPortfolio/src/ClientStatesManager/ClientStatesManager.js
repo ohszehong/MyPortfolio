@@ -81,6 +81,8 @@ export default class ClientStatesManager {
   /** @type { rootHUD } */
   gameRootHUD = null;
 
+  currentCursorOverlappedUIElement = null;
+
   /* data */
   cameraPosition = { x: 0, y: 0 };
   cursorPosition = { x: 0, y: 0 };
@@ -136,21 +138,33 @@ export default class ClientStatesManager {
     this.contentCanvas.addEventListener("pointermove", (event) => {
       event.preventDefault();
 
-      console.log("hello.....");
-
       //update cursor position
       this.cursorPosition.x = this.cameraPosition.x + event.offsetX;
       this.cursorPosition.y = this.cameraPosition.y + event.offsetY;
 
       if(this.gameRootHUD)
       {
-        const overlappedElement = this.gameRootHUD.getCursorOverlappedElement(this.cursorPosition.x, this.cursorPosition.y);
-
-        console.log("cursor position: ", this.cursorPosition);
-
-        if(overlappedElement)
+        const previousElem = this.currentCursorOverlappedUIElement;
+        this.currentCursorOverlappedUIElement = this.gameRootHUD.getCursorOverlappedElement(this.cursorPosition.x, this.cursorPosition.y);
+        
+        if(previousElem != this.currentCursorOverlappedUIElement)
         {
-          console.log("overlapped element: ", overlappedElement);
+          previousElem?.onPointerLeave();
+        }
+
+        this.currentCursorOverlappedUIElement?.onPointerEnter();
+      }
+    })
+
+    this.contentCanvas.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+
+      if(this.gameRootHUD)
+      {
+        if(this.currentCursorOverlappedUIElement)
+        {
+          this.currentCursorOverlappedUIElement.onClick();
+          this.contentCanvas.style.cursor = "default";
         }
       }
     })
@@ -318,7 +332,7 @@ export default class ClientStatesManager {
                   this.playerActor.actorState ===
                     trigger.actionToTrigger + "ing"
                 ) {
-                  console.log("is within jump trigger...");
+                  //console.log("is within jump trigger...");
                   this.playerActor.toJumpState(trigger.jumpMagnitude);
 
                   const audios = this.actorSoundsBlobDictionary[this.playerActor.actorName]?.jump;
@@ -344,7 +358,7 @@ export default class ClientStatesManager {
         //creating HUDs for DefenseMarch
         this.gameRootHUD = new rootHUD("Root", 0, 0, this.contentCanvas.width, this.contentCanvas.height);
 
-        //child HUDs
+        //StartGame child hud
         const CHUDStartGame = new childHUD("CHUDStartGame", 0, 0, this.contentCanvas.width, this.contentCanvas.height);
         
         const LTitleDefense = new Label("LTitleDefense", 136, 51, 258, 68, "DEFENSE", "left", "rgba(83, 206, 231, 1)", 60, "Darinia");
@@ -352,6 +366,18 @@ export default class ClientStatesManager {
 
         const BStart = new Button("BStart", 209.17, 212.83, 107, 39.67);
         BStart.updateLabelTextData(null, null, "START", null, "rgba(170, 74, 29, 0.5)", 33, null);
+        BStart.onPointerEnter = () => {
+          BStart.setLabelColor("rgba(170, 74, 29, 1");
+          this.contentCanvas.style.cursor = "pointer";
+        };
+        BStart.onPointerLeave = () => {
+          BStart.setLabelColor("rgba(170, 74, 29, 0.5");
+          this.contentCanvas.style.cursor = "default";
+        };
+
+        BStart.onClick = () => {
+          this.gameRootHUD.setHUDActive("CHUDStartGame", false);
+        }
 
         CHUDStartGame.addUIElement(LTitleDefense);
         CHUDStartGame.addUIElement(LTitleMarch);
@@ -359,13 +385,16 @@ export default class ClientStatesManager {
 
         this.gameRootHUD.addChildHUD(CHUDStartGame);
         this.gameRootHUD.setHUDActive("CHUDStartGame", true);
+
+        //Main child hud
+
         break;
     }
 
-    console.log(
-      "current cassette index from states manager: ",
-      this.cassetteIndex
-    );
+    // console.log(
+    //   "current cassette index from states manager: ",
+    //   this.cassetteIndex
+    // );
 
     try {
       //load states data
@@ -432,12 +461,13 @@ export default class ClientStatesManager {
     }
 
     if (this.contentCanvas) {
-      this.contentCanvas.remove();
-      this.contentCanvas = null;
+      this.contentCanvas.getContext("2d").reset();
     }
 
     this.gameMapBackground = null;
     this.gameRootHUD = null;
+
+    this.currentCursorOverlappedUIElement = null;
 
     this.cameraPosition = { x: 0, y: 0 };
     this.cursorPosition = { x: 0, y: 0 };
@@ -528,13 +558,13 @@ export default class ClientStatesManager {
             if (actor.renderLast) {
               renderLastTileActors.push(actor);
             } else {
-              /** @type {OffscreenCanvas} */
-              const tileCanvas =
+              /** @type {ImageBitmap} */
+              const tileBitmap =
                 this.tileActorsBlobDictionary[actor.currentRenderData.tileGid];
 
               //offset camera position as the actor.position is world space position
               context2d.drawImage(
-                tileCanvas,
+                tileBitmap,
                 actor.position.dx - this.cameraPosition.x,
                 actor.position.dy - this.cameraPosition.y
               );
@@ -542,8 +572,8 @@ export default class ClientStatesManager {
           }
           //PawnActor - future add-on: handle spawnActors...
           else {
-            /** @type {OffscreenCanvas} */
-            const actorCanvas =
+            /** @type {ImageBitmap} */
+            const actorBitmap =
               this.pawnActorsBlobDictionary[actor.actorName]?.animation?.[
                 actor.currentRenderData.animationSpritesheetName
               ];
@@ -562,9 +592,9 @@ export default class ClientStatesManager {
             //   "collisions": []
             // }
 
-            if (actorCanvas) {
+            if (actorBitmap) {
               context2d.drawImage(
-                actorCanvas,
+                actorBitmap,
                 currentFrameData.x,
                 currentFrameData.y,
                 currentFrameData.width,
@@ -579,13 +609,13 @@ export default class ClientStatesManager {
         });
 
         renderLastTileActors.forEach((actor) => {
-          /** @type {OffscreenCanvas} */
-          const tileCanvas =
+          /** @type {ImageBitmap} */
+          const tileBitmap =
             this.tileActorsBlobDictionary[actor.currentRenderData.tileGid];
 
           //offset camera position as the actor.position is world space position
           context2d.drawImage(
-            tileCanvas,
+            tileBitmap,
             actor.position.dx - this.cameraPosition.x,
             actor.position.dy - this.cameraPosition.y
           );
@@ -614,6 +644,23 @@ export default class ClientStatesManager {
       img.onerror = reject;
       img.src = `data:image/png;base64,${base64BlobString}`;
     });
+  }
+
+  async convertBlobToBitmap(base64BlobString)
+  {
+    const binaryString = atob(base64BlobString); 
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+
+    for(let i = 0; i < len; i++)
+    {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const blob = new Blob([bytes], { type: "image/png" });
+    const bitmap = await createImageBitmap(blob);
+
+    return bitmap;
   }
 
   async initRawStatesData(rawStatesData) {
@@ -677,7 +724,7 @@ export default class ClientStatesManager {
     this.cameraPosition = rawStatesData.cameraPosition;
     this.cursorPosition = rawStatesData.cursorPosition;
 
-    this.gameMapBackground = await this.convertBlobToCanvas(
+    this.gameMapBackground = await this.convertBlobToBitmap(
       rawStatesData.gameMapBackgroundBlob
     ).catch((err) => null);
 
@@ -753,7 +800,7 @@ export default class ClientStatesManager {
 
           if (actorBlobDictionary) {
             if (actorBlobDictionary.defaultActorImage) {
-              blobStruct.defaultActorImage = await this.convertBlobToCanvas(
+              blobStruct.defaultActorImage = await this.convertBlobToBitmap(
                 actorBlobDictionary.defaultActorImage
               );
             }
@@ -763,16 +810,13 @@ export default class ClientStatesManager {
 
               const entries = await Promise.all(
                 animationNames.map(async (animationName) => {
-                  const animationCanvas = await this.convertBlobToCanvas(
-                    actorBlobDictionary.animation[animationName]
-                  );
-
-                  return [animationName, animationCanvas];
+                  const animationBitmap = await this.convertBlobToBitmap(actorBlobDictionary.animation[animationName]);
+                  return [animationName, animationBitmap];
                 })
               );
 
-              entries.forEach(([animationName, animationCanvas]) => {
-                blobStruct.animation[animationName] = animationCanvas;
+              entries.forEach(([animationName, animationBitmap]) => {
+                blobStruct.animation[animationName] = animationBitmap;
               });
             }
           }
@@ -791,7 +835,7 @@ export default class ClientStatesManager {
     if (tileGids) {
       const entries = await Promise.all(
         tileGids.map(async (tileGid) => {
-          const tileCanvas = await this.convertBlobToCanvas(
+          const tileCanvas = await this.convertBlobToBitmap(
             rawStatesData.tileActorsBlobDictionary[tileGid]
           );
 
@@ -807,9 +851,6 @@ export default class ClientStatesManager {
     //for DefenseMarch
     this.allySummonLocations = rawStatesData.allySummonLocations;
     this.enemySummonLocations = rawStatesData.enemySummonLocations;
-
-    console.log("allySummonLocations: ", this.allySummonLocations);
-    console.log("enemySummonLocations: ", this.enemySummonLocations);
   }
 
   initWebSocket() {
@@ -855,7 +896,6 @@ export default class ClientStatesManager {
       this.buttonsRef.current.buttonB,
     ];
 
-    console.log("adding buttons listeners...", this.buttonsRef);
     allButtons.forEach((button) => {
       if (button) {
         this.pointerEvents.forEach((eventName) => {

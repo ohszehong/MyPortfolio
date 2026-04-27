@@ -21,7 +21,6 @@ const CassetteContentManager = ({
     );
 
     return () => {
-      console.log("resetting from []");
       ClientStatesManagerRef.current.resetStates();
     };
   }, []);
@@ -41,8 +40,6 @@ const CassetteContentManager = ({
     const shouldAbortRef = { current: false };
 
     const loadContent = async () => {
-      console.log("play index: ", cassetteInPlayIndex);
-
       try {
         if (ClientStatesManagerRef.current) {
           await ClientStatesManagerRef.current.loadCassette(
@@ -75,7 +72,6 @@ const CassetteContentManager = ({
       shouldAbortRef.current = true;
 
       if (ClientStatesManagerRef.current && cassetteInPlayIndex != null) {
-        console.log("resetting from cassetteInPlayIndex");
         ClientStatesManagerRef.current.resetStates();
       }
     };

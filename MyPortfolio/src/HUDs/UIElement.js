@@ -14,6 +14,9 @@ export default class UIElement
     focusable = false;
     isFocused = false;
 
+    onPointerEnter = () => {};
+    onPointerLeave = () => {};
+
     /** @param {HTMLImageElement} backgroundImage */
     constructor(elementName, dx, dy, width, height, focusable = false, backgroundImage = null, opacity = 1)
     {

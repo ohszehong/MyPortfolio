@@ -8,7 +8,7 @@ export default class Button extends UIElement
 
     backgroundColor = null;
 
-    pressFn = () => {};
+    onClick = () => {};
     
     constructor(elementName, dx, dy, width, height, backgroundColor = null, backgroundImage = null)
     {
@@ -50,11 +50,13 @@ export default class Button extends UIElement
         }
     }
 
-    press()
+    setLabelColor(newColor)
     {
-        this.pressFn();
+        if(this.buttonLabelTextData)
+        {
+            this.buttonLabelTextData.setLabelColor(newColor);
+        }
     }
-
 
     /** @param { CanvasRenderingContext2D } context2d */
     drawElement(context2d, rootDx, rootDy)

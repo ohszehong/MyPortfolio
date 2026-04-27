@@ -145,7 +145,7 @@ export default function httpsInit(__serverDirPath, gameStatesTickers) {
       if (cookies["api-key"] === process.env.SERVER_API_KEY) {
         sendFile(
           res,
-          path.join(__serverDirPath, "AddCharacter.html"),
+          path.join(__serverDirPath, "Utilities", "AddCharacter.html"),
           "File not found."
         );
         return;

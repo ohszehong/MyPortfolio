@@ -500,8 +500,6 @@ export default async function loadTileMap(shouldAbortRef) {
         soundTriggerData[property.name] = property.name === "priority" || property.name === "totalVariations" ? parseInt(property.value) : property.value;
       }
 
-      console.log(soundTriggerData);
-
       this.mapSoundTriggers.push({ ...soundTriggerData });
     }
   }
