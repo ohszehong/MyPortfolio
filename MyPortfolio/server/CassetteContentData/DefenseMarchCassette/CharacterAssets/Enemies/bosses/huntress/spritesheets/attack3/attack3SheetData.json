@@ -73,12 +73,19 @@
     "scale": "1",
     "frameTags": [
       {
+        "name": "left",
+        "from": 0,
+        "to": 6,
+        "direction": "forward",
+        "color": "#000000ff"
+      },
+      {
         "name": "summon",
         "from": 6,
         "to": 6,
         "direction": "forward",
         "color": "#000000ff",
-        "data": "{\"projectile\":\"p0\",\"vfx\":\"false\",\"hitVFX\":\"false\"}"
+        "data": "{\"projectile\":\"p0\",\"vfx\":false,\"hitVFX\":false}"
       }
     ],
     "layers": [

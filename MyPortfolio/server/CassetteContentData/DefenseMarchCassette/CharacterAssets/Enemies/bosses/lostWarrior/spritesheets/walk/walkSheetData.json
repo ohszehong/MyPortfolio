@@ -1,90 +1,97 @@
-{ "frames": [
-   {
-    "filename": "walk.png",
-    "frame": { "x": 0, "y": 0, "w": 52, "h": 41 },
-    "rotated": false,
-    "trimmed": true,
-    "spriteSourceSize": { "x": 58, "y": 60, "w": 52, "h": 41 },
-    "sourceSize": { "w": 162, "h": 162 },
-    "duration": 135
-   },
-   {
-    "filename": "walk.png",
-    "frame": { "x": 52, "y": 0, "w": 53, "h": 37 },
-    "rotated": false,
-    "trimmed": true,
-    "spriteSourceSize": { "x": 58, "y": 63, "w": 53, "h": 37 },
-    "sourceSize": { "w": 162, "h": 162 },
-    "duration": 135
-   },
-   {
-    "filename": "walk.png",
-    "frame": { "x": 105, "y": 0, "w": 51, "h": 37 },
-    "rotated": false,
-    "trimmed": true,
-    "spriteSourceSize": { "x": 59, "y": 64, "w": 51, "h": 37 },
-    "sourceSize": { "w": 162, "h": 162 },
-    "duration": 135
-   },
-   {
-    "filename": "walk.png",
-    "frame": { "x": 156, "y": 0, "w": 53, "h": 40 },
-    "rotated": false,
-    "trimmed": true,
-    "spriteSourceSize": { "x": 59, "y": 61, "w": 53, "h": 40 },
-    "sourceSize": { "w": 162, "h": 162 },
-    "duration": 135
-   },
-   {
-    "filename": "walk.png",
-    "frame": { "x": 209, "y": 0, "w": 57, "h": 41 },
-    "rotated": false,
-    "trimmed": true,
-    "spriteSourceSize": { "x": 55, "y": 60, "w": 57, "h": 41 },
-    "sourceSize": { "w": 162, "h": 162 },
-    "duration": 135
-   },
-   {
-    "filename": "walk.png",
-    "frame": { "x": 266, "y": 0, "w": 58, "h": 40 },
-    "rotated": false,
-    "trimmed": true,
-    "spriteSourceSize": { "x": 54, "y": 61, "w": 58, "h": 40 },
-    "sourceSize": { "w": 162, "h": 162 },
-    "duration": 135
-   },
-   {
-    "filename": "walk.png",
-    "frame": { "x": 324, "y": 0, "w": 55, "h": 36 },
-    "rotated": false,
-    "trimmed": true,
-    "spriteSourceSize": { "x": 55, "y": 63, "w": 55, "h": 36 },
-    "sourceSize": { "w": 162, "h": 162 },
-    "duration": 135
-   },
-   {
-    "filename": "walk.png",
-    "frame": { "x": 379, "y": 0, "w": 54, "h": 39 },
-    "rotated": false,
-    "trimmed": true,
-    "spriteSourceSize": { "x": 56, "y": 62, "w": 54, "h": 39 },
-    "sourceSize": { "w": 162, "h": 162 },
-    "duration": 135
-   }
- ],
- "meta": {
-  "app": "https://www.aseprite.org/",
-  "version": "1.3.13-dev",
-  "image": "walkSheet.png",
-  "format": "I8",
-  "size": { "w": 433, "h": 41 },
-  "scale": "1",
-  "frameTags": [
+{
+  "frames": [
+    {
+      "filename": "walk.png",
+      "frame": { "x": 0, "y": 0, "w": 52, "h": 41 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 58, "y": 60, "w": 52, "h": 41 },
+      "sourceSize": { "w": 162, "h": 162 },
+      "duration": 135
+    },
+    {
+      "filename": "walk.png",
+      "frame": { "x": 52, "y": 0, "w": 53, "h": 37 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 58, "y": 63, "w": 53, "h": 37 },
+      "sourceSize": { "w": 162, "h": 162 },
+      "duration": 135
+    },
+    {
+      "filename": "walk.png",
+      "frame": { "x": 105, "y": 0, "w": 51, "h": 37 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 59, "y": 64, "w": 51, "h": 37 },
+      "sourceSize": { "w": 162, "h": 162 },
+      "duration": 135
+    },
+    {
+      "filename": "walk.png",
+      "frame": { "x": 156, "y": 0, "w": 53, "h": 40 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 59, "y": 61, "w": 53, "h": 40 },
+      "sourceSize": { "w": 162, "h": 162 },
+      "duration": 135
+    },
+    {
+      "filename": "walk.png",
+      "frame": { "x": 209, "y": 0, "w": 57, "h": 41 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 55, "y": 60, "w": 57, "h": 41 },
+      "sourceSize": { "w": 162, "h": 162 },
+      "duration": 135
+    },
+    {
+      "filename": "walk.png",
+      "frame": { "x": 266, "y": 0, "w": 58, "h": 40 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 54, "y": 61, "w": 58, "h": 40 },
+      "sourceSize": { "w": 162, "h": 162 },
+      "duration": 135
+    },
+    {
+      "filename": "walk.png",
+      "frame": { "x": 324, "y": 0, "w": 55, "h": 36 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 55, "y": 63, "w": 55, "h": 36 },
+      "sourceSize": { "w": 162, "h": 162 },
+      "duration": 135
+    },
+    {
+      "filename": "walk.png",
+      "frame": { "x": 379, "y": 0, "w": 54, "h": 39 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 56, "y": 62, "w": 54, "h": 39 },
+      "sourceSize": { "w": 162, "h": 162 },
+      "duration": 135
+    }
   ],
-  "layers": [
-   { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
-  ],
-  "slices": [
-  ]
- }
+  "meta": {
+    "app": "https://www.aseprite.org/",
+    "version": "1.3.13-dev",
+    "image": "walkSheet.png",
+    "format": "I8",
+    "size": { "w": 433, "h": 41 },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "left",
+        "from": 0,
+        "to": 7,
+        "direction": "forward",
+        "color": "#000000ff"
+      }
+    ],
+    "layers": [
+      { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+    ],
+    "slices": []
+  }
 }

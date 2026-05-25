@@ -8,15 +8,13 @@ export default class UImage extends UIElement
     image = null;
 
     /** @param { HTMLImageElement } image */
-    constructor(elementName, dx, dy, width, height, image, imageddx, imageddy, imagewidth, imageheight, focusable = false, backgroundImage = null)
+    constructor(elementName, dx, dy, width, height, image, imageddx, imageddy, focusable = false, backgroundImage = null)
     {
         super(elementName, dx, dy, width, height, focusable, backgroundImage);
 
         this.imageddx = imageddx;
         this.imageddy = imageddy;
 
-        image.width = imagewidth;
-        image.height = imageheight;
         this.image = image;
     }
 
@@ -34,7 +32,9 @@ export default class UImage extends UIElement
     /** @param { CanvasRenderingContext2D } context2d */
     drawElement(context2d, rootDx, rootDy)
     {
-        super.drawElement(context2d);
-        context2d.drawImage(this.image, rootDx + this.dx + this.imageddx, rootDy + this.dy + this.imageddy);
+        const [dx, dy] = super.drawElement(context2d);
+
+        context2d.drawImage(this.image, rootDx + dx + this.imageddx, rootDy + dy + this.imageddy, this.image.width, this.image.height);
+        context2d.restore();
     }
 }

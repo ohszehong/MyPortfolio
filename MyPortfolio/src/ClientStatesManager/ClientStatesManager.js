@@ -22,6 +22,8 @@ import UImage from "../HUDs/Image";
 import rootHUD from "../HUDs/rootHUD";
 import childHUD from "../HUDs/childHUD";
 
+import loadImage from "../Utilities/loadImage";
+
 export default class ClientStatesManager {
   userId = null;
   cassetteIndex = null;
@@ -68,6 +70,9 @@ export default class ClientStatesManager {
 
   /** @type {HTMLCanvasElement} */
   contentCanvas = null;
+
+  //device screen's pixel density
+  dpr = 1;
 
   //for background tiles that don't have animation or not participate in y ordering
   /** @type {OffscreenCanvas} */
@@ -132,8 +137,30 @@ export default class ClientStatesManager {
     this.buttonsRef = buttonsRef;
 
     this.contentCanvas = document.createElement("canvas");
-    this.contentCanvas.width = 480;
-    this.contentCanvas.height = 280;
+    const context2d = this.contentCanvas.getContext("2d");
+
+    //modern screens uses multiple physical pixels to display one web pixel
+    //therefore we should scale the canvas internal resolution by the device pixel ratio
+    //then on the CSS side (for web), shrink it back
+
+    this.dpr = window.devicePixelRatio || 1;
+
+    const canvasWidth = 480;
+    const canvasHeight = 280;
+
+    this.contentCanvas.width = canvasWidth;
+    this.contentCanvas.height = canvasHeight;
+
+    this.contentCanvas.width = canvasWidth * this.dpr;
+    this.contentCanvas.height = canvasHeight * this.dpr;
+
+    this.contentCanvas.style.width = canvasWidth + "px";
+    this.contentCanvas.style.height = canvasHeight + "px";
+
+    context2d.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+
+    //disable it for higher quality on pixel arts
+    context2d.imageSmoothingEnabled = false;
 
     this.contentCanvas.addEventListener("pointermove", (event) => {
       event.preventDefault();
@@ -364,7 +391,7 @@ export default class ClientStatesManager {
         const LTitleDefense = new Label("LTitleDefense", 136, 51, 258, 68, "DEFENSE", "left", "rgba(83, 206, 231, 1)", 60, "Darinia");
         const LTitleMarch = new Label("LTitleMarch", 165, 98.5, 191, 58.5, "MARCH", "left", "rgba(75, 80, 18, 1)", 48, "Darinia");
 
-        const BStart = new Button("BStart", 209.17, 212.83, 107, 39.67);
+        const BStart = new Button("BStart", 209.17, 212.83, 107, 39.67, null, null, "START");
         BStart.updateLabelTextData(null, null, "START", null, "rgba(170, 74, 29, 0.5)", 33, null);
         BStart.onPointerEnter = () => {
           BStart.setLabelColor("rgba(170, 74, 29, 1");
@@ -377,6 +404,7 @@ export default class ClientStatesManager {
 
         BStart.onClick = () => {
           this.gameRootHUD.setHUDActive("CHUDStartGame", false);
+          this.gameRootHUD.setHUDActive("CHUDMain", true);
         }
 
         CHUDStartGame.addUIElement(LTitleDefense);
@@ -387,6 +415,117 @@ export default class ClientStatesManager {
         this.gameRootHUD.setHUDActive("CHUDStartGame", true);
 
         //Main child hud
+        const CHUDMain = new childHUD("CHUDMain", 0, 0, this.contentCanvas.width, this.contentCanvas.height);
+        this.gameRootHUD.addChildHUD(CHUDMain);
+
+        //Properties specifics for CHUDMain
+        CHUDMain.currentActiveCharacterButtonIndex = 0;
+        CHUDMain.CharacterButtonArray = [];
+
+        //UIElement for CharacterButton contain only the active one
+        CHUDMain.UIElements.SelectedCharacter = null;
+
+        //IM -> non HUD image, I -> HUD image
+        const IMCharacterPortraitContainer = await loadImage("/DefenseMarchCassette/Images/characterPortraitContainer.png");
+
+        const ICharacterPortraitContainer = new UImage("ICharacterPortraitContainer", 84.33, 194.33, IMCharacterPortraitContainer.width, IMCharacterPortraitContainer.height, IMCharacterPortraitContainer, 0, 0, false, null);
+        ICharacterPortraitContainer.setImageDimensions(0, 0, 74.67, 84.67);
+        CHUDMain.addUIElement(ICharacterPortraitContainer);
+
+        const IMArrowButton = await loadImage("/DefenseMarchCassette/Images/arrowButton.png");
+
+        const BArrowButtonPrev = new Button("BArrowButtonPrev", 71.50, 230, IMArrowButton.width, IMArrowButton.height, null, IMArrowButton, null);
+        BArrowButtonPrev.flipHorizontal = true;
+        BArrowButtonPrev.opacity = 0.5;
+
+        BArrowButtonPrev.onPointerEnter = () => {
+          this.contentCanvas.style.cursor = "pointer";
+          BArrowButtonPrev.opacity = 1.0;
+        }
+
+        BArrowButtonPrev.onPointerLeave = () => {
+          this.contentCanvas.style.cursor = "default";
+          BArrowButtonPrev.opacity = 0.5;
+        }
+
+        BArrowButtonPrev.onClick = () => {
+          CHUDMain.currentActiveCharacterButtonIndex = CHUDMain.currentActiveCharacterButtonIndex - 1;
+
+          if(CHUDMain.currentActiveCharacterButtonIndex < 0)
+          {
+            CHUDMain.currentActiveCharacterButtonIndex = CHUDMain.CharacterButtonArray.length - 1;
+          }
+
+          CHUDMain.UIElements.SelectedCharacter = CHUDMain.CharacterButtonArray[CHUDMain.currentActiveCharacterButtonIndex];
+
+          //TO-DO: remaining UI
+          //force reset the cursor style to pointer because sometimes clicking on it will cause shifting of the layers which made the pointer temporarily leaving the canvas
+          requestAnimationFrame(() => {
+            this.contentCanvas.style.cursor = "pointer";
+          });
+        }
+        CHUDMain.addUIElement(BArrowButtonPrev);
+
+
+        const BArrowButtonNext = new Button("BArrowButtonNext", 159.33, 230, IMArrowButton.width, IMArrowButton.height, null, IMArrowButton, null);
+        BArrowButtonNext.opacity = 0.5;
+
+        BArrowButtonNext.onPointerEnter = () => {
+          this.contentCanvas.style.cursor = "pointer";
+          BArrowButtonNext.opacity = 1.0;
+        }
+
+        BArrowButtonNext.onPointerLeave = () => {
+          this.contentCanvas.style.cursor = "default";
+          BArrowButtonNext.opacity = 0.5;
+        }
+
+        BArrowButtonNext.onClick = () => {
+          CHUDMain.currentActiveCharacterButtonIndex = CHUDMain.currentActiveCharacterButtonIndex + 1;
+
+          if(CHUDMain.currentActiveCharacterButtonIndex >= CHUDMain.CharacterButtonArray.length)
+          {
+            CHUDMain.currentActiveCharacterButtonIndex = 0;
+          }
+
+          CHUDMain.UIElements.SelectedCharacter = CHUDMain.CharacterButtonArray[CHUDMain.currentActiveCharacterButtonIndex];
+
+          requestAnimationFrame(() => {
+            this.contentCanvas.style.cursor = "pointer";
+          });
+        }
+        CHUDMain.addUIElement(BArrowButtonNext);
+
+        //character icons as buttons for summoning
+        const IMCleric = await loadImage("/DefenseMarchCassette/CharacterPortraits/cleric/portrait.png");
+        const BCleric = new Button("BCleric", 106.67, 222, IMCleric.width, IMCleric.height, null, IMCleric);
+        CHUDMain.CharacterButtonArray.push(BCleric);
+
+        const IMElfRangerRookie = await loadImage("/DefenseMarchCassette/CharacterPortraits/elfRangerRookie/portrait.png");
+        const BElfRangerRookie = new Button("BElfRangerRookie", 112.67, 223.33, IMElfRangerRookie.width, IMElfRangerRookie.height, null, IMElfRangerRookie);
+        CHUDMain.CharacterButtonArray.push(BElfRangerRookie);
+
+        const IMFowlGladiator = await loadImage("/DefenseMarchCassette/CharacterPortraits/fowlGladiator/portrait.png");
+        const BFowlGladiator = new Button("BFowlGladiator", 100, 227.33, IMFowlGladiator.width, IMFowlGladiator.height, null, IMFowlGladiator);
+        CHUDMain.CharacterButtonArray.push(BFowlGladiator);
+
+        const IMGolemSentinel = await loadImage("/DefenseMarchCassette/CharacterPortraits/golemSentinel/portrait.png");
+        const BGolemSentinel = new Button("BGolemSentinel", 95, 203.33, IMGolemSentinel.width, IMGolemSentinel.height, null, IMGolemSentinel);
+        CHUDMain.CharacterButtonArray.push(BGolemSentinel);
+
+        const IMKnight = await loadImage("/DefenseMarchCassette/CharacterPortraits/knight/portrait.png");
+        const BKnight = new Button("BKnight", 110.67, 216.33, IMKnight.width, IMKnight.height, null, IMKnight);
+        CHUDMain.CharacterButtonArray.push(BKnight);
+
+        const IMElfRangerVeteran = await loadImage("/DefenseMarchCassette/CharacterPortraits/elfRangerVeteran/portrait.png");
+        const BElfRangerVeteran = new Button("BElfRangerVeteran", 100.67, 217.67, IMElfRangerVeteran.width, IMElfRangerVeteran.height, null, IMElfRangerVeteran);
+        CHUDMain.CharacterButtonArray.push(BElfRangerVeteran);
+
+        const IMWizard = await loadImage("/DefenseMarchCassette/CharacterPortraits/wizard/portrait.png");
+        const BWizard = new Button("BWizard", 111.33, 217.33, IMWizard.width, IMWizard.height, null, IMWizard);
+        CHUDMain.CharacterButtonArray.push(BWizard);
+
+        CHUDMain.UIElements.SelectedCharacter = CHUDMain.CharacterButtonArray[0];
 
         break;
     }
@@ -1276,12 +1415,12 @@ export default class ClientStatesManager {
       totalAudios = parseInt(await totalAudios.text());
 
       if (isNaN(totalAudios)) {
-        console.log(
-          "unable to parse totalAudios to integer, actor: ",
-          actorName,
-          "state/ability name: ",
-          stateOrAbilityName
-        );
+        // console.log(
+        //   "unable to parse totalAudios to integer, actor: ",
+        //   actorName,
+        //   "state/ability name: ",
+        //   stateOrAbilityName
+        // );
       } else {
         const audios = [];
 

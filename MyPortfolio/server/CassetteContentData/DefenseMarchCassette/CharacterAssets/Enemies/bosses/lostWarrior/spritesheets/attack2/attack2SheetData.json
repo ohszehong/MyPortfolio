@@ -71,7 +71,15 @@
     "format": "I8",
     "size": { "w": 557, "h": 77 },
     "scale": "1",
-    "frameTags": [],
+    "frameTags": [
+      {
+        "name": "left",
+        "from": 0,
+        "to": 6,
+        "direction": "forward",
+        "color": "#000000ff"
+      }
+    ],
     "layers": [
       { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
     ],
@@ -79,7 +87,7 @@
       {
         "name": "attackCollision",
         "color": "#0000ffff",
-        "data": "{\"target\":\"ally\",\"single\":\"false\"}",
+        "data": "{\"target\":\"ally\",\"single\":false}",
         "keys": [
           { "frame": 2, "bounds": { "x": 31, "y": 37, "w": 109, "h": 66 } }
         ]

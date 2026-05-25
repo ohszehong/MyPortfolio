@@ -48,7 +48,7 @@ export default class rootHUD
             {
                 if(HUDData.HUD)
                 {
-                    HUDData.HUD.drawHUD(context2d, this.dx, this.dy);
+                    HUDData.HUD.drawHUD(context2d, this.dx, this.dy, this.width, this.height);
                 }
             }
         }

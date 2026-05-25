@@ -114,7 +114,7 @@
       {
         "name": "attackCollision",
         "color": "#0000ffff",
-        "data": "{\"target\":\"enemy\",\"single\":\"false\"}",
+        "data": "{\"target\":\"enemy\",\"single\":false}",
         "keys": [
           { "frame": 5, "bounds": { "x": 38, "y": 3, "w": 45, "h": 52 } }
         ]

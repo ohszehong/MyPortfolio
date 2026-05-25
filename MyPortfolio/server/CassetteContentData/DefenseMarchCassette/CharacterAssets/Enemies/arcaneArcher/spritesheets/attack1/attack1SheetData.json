@@ -1,0 +1,102 @@
+{
+  "frames": [
+    {
+      "filename": "attack1.aseprite",
+      "frame": { "x": 0, "y": 0, "w": 43, "h": 32 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 4, "y": 16, "w": 43, "h": 32 },
+      "sourceSize": { "w": 64, "h": 64 },
+      "duration": 100
+    },
+    {
+      "filename": "attack1.aseprite",
+      "frame": { "x": 43, "y": 0, "w": 36, "h": 32 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 7, "y": 16, "w": 36, "h": 32 },
+      "sourceSize": { "w": 64, "h": 64 },
+      "duration": 100
+    },
+    {
+      "filename": "attack1.aseprite",
+      "frame": { "x": 79, "y": 0, "w": 30, "h": 31 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 12, "y": 17, "w": 30, "h": 31 },
+      "sourceSize": { "w": 64, "h": 64 },
+      "duration": 100
+    },
+    {
+      "filename": "attack1.aseprite",
+      "frame": { "x": 109, "y": 0, "w": 36, "h": 39 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 6, "y": 9, "w": 36, "h": 39 },
+      "sourceSize": { "w": 64, "h": 64 },
+      "duration": 100
+    },
+    {
+      "filename": "attack1.aseprite",
+      "frame": { "x": 145, "y": 0, "w": 39, "h": 42 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 5, "y": 6, "w": 39, "h": 42 },
+      "sourceSize": { "w": 64, "h": 64 },
+      "duration": 100
+    },
+    {
+      "filename": "attack1.aseprite",
+      "frame": { "x": 184, "y": 0, "w": 41, "h": 41 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 5, "y": 7, "w": 41, "h": 41 },
+      "sourceSize": { "w": 64, "h": 64 },
+      "duration": 250
+    },
+    {
+      "filename": "attack1.aseprite",
+      "frame": { "x": 225, "y": 0, "w": 36, "h": 41 },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": { "x": 9, "y": 7, "w": 36, "h": 41 },
+      "sourceSize": { "w": 64, "h": 64 },
+      "duration": 100
+    }
+  ],
+  "meta": {
+    "app": "https://www.aseprite.org/",
+    "version": "1.3.13-dev",
+    "image": "attack1Sheet.png",
+    "format": "I8",
+    "size": { "w": 261, "h": 42 },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "left",
+        "from": 0,
+        "to": 6,
+        "direction": "forward",
+        "color": "#000000ff"
+      },
+      {
+        "name": "summon",
+        "from": 6,
+        "to": 6,
+        "direction": "forward",
+        "color": "#000000ff",
+        "data": "{\"projectile\":\"p0\",\"vfx\":false,\"hitVFX\":false}"
+      }
+    ],
+    "layers": [
+      { "name": "Sprite Sheet", "opacity": 255, "blendMode": "normal" }
+    ],
+    "slices": [
+      {
+        "name": "projectileSL",
+        "color": "#0000ffff",
+        "keys": [{ "frame": 6, "bounds": { "x": 5, "y": 23, "w": 7, "h": 7 } }]
+      }
+    ]
+  }
+}

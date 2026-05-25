@@ -84,16 +84,18 @@ export default class Label extends UIElement
     /** @param { CanvasRenderingContext2D } context2d */
     drawElement(context2d, rootDx, rootDy)
     {
-        super.drawElement(context2d);
+        const [dx, dy] = super.drawElement(context2d);
 
         context2d.font = `${this.labelTextData.pixelSize}px ${this.labelTextData.fontFamily}`;
         context2d.fillStyle = this.labelTextData.color;
         
         context2d.fillText(
           this.labelTextData.text,
-          rootDx + this.dx,
-          rootDy + this.dy + this.height - this.labelTextData.textActualPadding,
+          rootDx + dx,
+          rootDy + dy + this.height - this.labelTextData.textActualPadding,
           this.width
         );
+
+        context2d.restore();
     }
 }

@@ -10,12 +10,12 @@ export default class Button extends UIElement
 
     onClick = () => {};
     
-    constructor(elementName, dx, dy, width, height, backgroundColor = null, backgroundImage = null)
+    constructor(elementName, dx, dy, width, height, backgroundColor = null, backgroundImage = null, labelText = null)
     {
         super(elementName, dx, dy, width, height, true, backgroundImage);
         this.backgroundColor = backgroundColor;
 
-        this.buttonLabelTextData =  new Label(null, dx, dy, width, height, "button", "center", "black", width/2, "Darinia");
+        if(labelText) this.buttonLabelTextData =  new Label(null, dx, dy, width, height, labelText, "center", "black", width/2, "Darinia");
     }
 
     // /** @param {Label} newLabel */
@@ -47,7 +47,10 @@ export default class Button extends UIElement
         if(this.buttonLabelTextData)
         {
             this.buttonLabelTextData.setLabelText(newText);
+            return;
         }
+
+        this.buttonLabelTextData =  new Label(null, dx, dy, width, height, newText, "center", "black", width/2, "Darinia");
     }
 
     setLabelColor(newColor)
@@ -61,17 +64,19 @@ export default class Button extends UIElement
     /** @param { CanvasRenderingContext2D } context2d */
     drawElement(context2d, rootDx, rootDy)
     {
-        super.drawElement(context2d);
+        const [dx, dy] = super.drawElement(context2d, rootDx, rootDy);
 
         if(this.backgroundColor)
         {
             context2d.fillStyle = this.backgroundColor;
-            context2d.fillRect(rootDx + this.dx, rootDy + this.dy, this.width, this.height);
+            context2d.fillRect(rootDx + dx, rootDy + dy, this.width, this.height);
         }
 
         if(this.buttonLabelTextData)
         {
             this.buttonLabelTextData.drawElement(context2d, rootDx, rootDy);
         }
+
+        context2d.restore();
     }
 }

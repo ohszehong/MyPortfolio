@@ -163,6 +163,7 @@ export default function httpsInit(__serverDirPath, gameStatesTickers) {
       health: parseFloat(req.body?.health),
       defense: parseFloat(req.body?.defense),
       attack: parseFloat(req.body?.attack),
+      attackrange: parseFloat(req.body?.attackrange),
       movespeed: parseFloat(req.body?.movespeed),
       attackspeed: parseFloat(req.body?.attackspeed),
       healing: parseFloat(req.body?.healing),

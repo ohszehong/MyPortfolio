@@ -101,6 +101,15 @@
         id="attack"
         name="attack"
       />
+       <br /><br /><br />
+      <label for="attackrange">
+        attackrange
+      </label>
+      <input
+        type="text"
+        id="attackrange"
+        name="attackrange"
+      />
       <br /><br /><br />
       <label for="movespeed">
         movespeed
@@ -172,7 +181,7 @@
           const formData = new URLSearchParams(
             new FormData(event.currentTarget)
           );
-
+          console.log("formData: ", [...formData.entries()]);
           const responseJSON = await fetch("/add-character-data", {
             method: "POST",
             headers: {
