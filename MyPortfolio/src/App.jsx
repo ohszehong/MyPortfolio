@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./App.css";
 import BlockInputModal from "./BlockInputModal";
 import BgBlocks from "./BgBlocks";
@@ -13,9 +13,29 @@ function App() {
   const [cassetteInPlayIndex, setCassetteInPlayIndex] = useState(null);
 
   const consoleSvgRef = useRef(null);
+  const cursorRef = useRef(null);
+
+  useEffect(() => {
+    const handleMouseMove = (event) => {
+      if (cursorRef.current) {
+        //cursorRef.current.style.left = event.clientX + "px";
+        //cursorRef.current.style.top = event.clientY + "px";
+
+        //Use transform for GPU acceleration
+        cursorRef.current.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
 
   return (
     <>
+      <div className="cursor" ref={cursorRef}></div>
       <BlockInputModal shouldBlockInput={shouldBlockInput} />
       <p className="p-7">Hi, Welcome to my portfolio.</p>
       <BgBlocks />

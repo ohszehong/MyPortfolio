@@ -1,3 +1,7 @@
+body {
+  cursor: none;
+}
+
 #root {
   margin: 0;
   text-align: center;
@@ -14,6 +18,29 @@
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+.cursor {
+  width: 21px;
+  height: 21px;
+  pointer-events: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("DefenseMarchCassette/Cursor/cursor.png");
+  position: fixed;
+  z-index: 9999;
+}
+
+body:has([data-hoverable="pointer"]:hover) .cursor {
+  background-image: url("DefenseMarchCassette/Cursor/cursor_pointer.png");
+}
+
+body:has([data-hoverable="grab"]:hover) .cursor {
+  background-image: url("DefenseMarchCassette/Cursor/cursor_grabable.png");
+}
+
+body:has([data-hoverable="grab"]:active) .cursor {
+  background-image: url("DefenseMarchCassette/Cursor/cursor_grabbing.png");
 }
 
 @keyframes logo-spin {

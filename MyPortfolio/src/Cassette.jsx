@@ -14,7 +14,10 @@ export default function Cassette({
   const [isDraggingContainer, setIsDraggingContainer] = useState(false);
 
   const cassetteIntro = { title: "INTRO", bgColor: "bg-purple-300" };
-  const cassetteDefenseMarch = { title: "DEFENSE MARCH", bgColor: "bg-pink-200" };
+  const cassetteDefenseMarch = {
+    title: "DEFENSE MARCH",
+    bgColor: "bg-pink-200",
+  };
   const cassetteWebSocket = { title: "WEBSOCKET", bgColor: "bg-yellow-100" };
   const cassetteProjects = { title: "PROJECTS", bgColor: "bg-purple-100" };
 
@@ -54,7 +57,7 @@ export default function Cassette({
       }
 
       const cassetteInShelf = document.getElementById(
-        `cassette${cassetteIndex}`
+        `cassette${cassetteIndex}`,
       );
 
       if (cassetteInShelf) {
@@ -89,12 +92,12 @@ export default function Cassette({
 
         cassetteInPlay.current.style.setProperty(
           "--slide-distance",
-          `${slideDistance}px`
+          `${slideDistance}px`,
         );
 
         if (
           cassetteInPlay.current.style.getPropertyValue(
-            "--transition-duration"
+            "--transition-duration",
           ) != "0s"
         ) {
           startCassetteGameOnScreen(cassetteInPlay.current);
@@ -257,7 +260,7 @@ export default function Cassette({
 
       cassetteInPlay.current.style.setProperty(
         "--slide-distance",
-        `${slideDistance}px`
+        `${slideDistance}px`,
       );
       cassetteInPlay.current.style.setProperty("--transition-duration", "3s");
     } else {
@@ -317,7 +320,8 @@ export default function Cassette({
         id="cassette-flexbox-container"
         onPointerDown={handleContainerPointerDown}
         onPointerMove={handleContainerPointerMove}
-        className="inline-flex w-[80%] gap-x-16 lg:gap-x-32 mb-10 mt-4 md:w-[70%] lg:w-[80%] hover:cursor-grab"
+        className="inline-flex w-[80%] gap-x-16 lg:gap-x-32 mb-10 mt-4 md:w-[70%] lg:w-[80%]"
+        data-hoverable="grab"
       >
         {cassetteItemsProperties.map((Item, index) => (
           <div

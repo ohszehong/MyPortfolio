@@ -41,7 +41,7 @@ export default function ConsoleSvg({
         button.id === "button-R-wrapper"
       ) {
         const wrappedButton = document.getElementById(
-          button.dataset.wrappedButtonId
+          button.dataset.wrappedButtonId,
         );
 
         if (wrappedButton) {
@@ -180,8 +180,18 @@ export default function ConsoleSvg({
 
         {/* Define a mask with a rounded rectangle cutout */}
 
-        <mask id="ScreenMask" x="0" y="0" width="100%" height="100%" maskUnits="userSpaceOnUse">
-          <path d="M235 80 h450 q15 0, 15 15 v250 q0 15, -15 15 h-450 q-15 0, -15 -15 v-250 q0 -15, 15 -15" fill="white" />
+        <mask
+          id="ScreenMask"
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          maskUnits="userSpaceOnUse"
+        >
+          <path
+            d="M235 80 h450 q15 0, 15 15 v250 q0 15, -15 15 h-450 q-15 0, -15 -15 v-250 q0 -15, 15 -15"
+            fill="white"
+          />
         </mask>
       </defs>
 
@@ -204,7 +214,7 @@ export default function ConsoleSvg({
         width="150"
         height="100"
         fill="transparent"
-        className="hover:cursor-pointer"
+        data-hoverable="pointer"
         data-wrapped-button-id="button-L"
         data-key-is-down="0"
         data-button-key-name="q"
@@ -234,7 +244,7 @@ export default function ConsoleSvg({
         width="150"
         height="100"
         fill="transparent"
-        className="hover:cursor-pointer"
+        data-hoverable="pointer"
         data-wrapped-button-id="button-R"
         data-key-is-down="0"
         data-button-key-name="e"
@@ -258,7 +268,7 @@ export default function ConsoleSvg({
         height="45"
         fill="#D9D9D9"
         stroke="none"
-        className="hover:cursor-pointer"
+        data-hoverable="pointer"
         data-key-is-down="0"
         data-button-key-name="a"
         onPointerDown={onPointerDown}
@@ -275,7 +285,7 @@ export default function ConsoleSvg({
         height="45"
         fill="#D9D9D9"
         stroke="none"
-        className="hover:cursor-pointer"
+        data-hoverable="pointer"
         data-key-is-down="0"
         data-button-key-name="d"
         onPointerDown={onPointerDown}
@@ -292,7 +302,7 @@ export default function ConsoleSvg({
         height="45"
         fill="#D9D9D9"
         stroke="none"
-        className="hover:cursor-pointer"
+        data-hoverable="pointer"
         data-key-is-down="0"
         data-button-key-name="w"
         onPointerDown={onPointerDown}
@@ -309,7 +319,7 @@ export default function ConsoleSvg({
         height="45"
         fill="#D9D9D9"
         stroke="none"
-        className="hover:cursor-pointer"
+        data-hoverable="pointer"
         data-key-is-down="0"
         data-button-key-name="s"
         onPointerDown={onPointerDown}
@@ -328,7 +338,7 @@ export default function ConsoleSvg({
         height="45"
         fill="#D9D9D9"
         stroke="none"
-        className="hover:cursor-pointer"
+        data-hoverable="pointer"
         id="button-middle"
       />
 
@@ -338,7 +348,7 @@ export default function ConsoleSvg({
         cy="200"
         r="25"
         fill="#D9D9D9"
-        className="hover:cursor-pointer"
+        data-hoverable="pointer"
         data-button-key-name="p"
         onPointerDown={onPointerDown}
         onPointerUp={resetPointerEvent}
@@ -362,7 +372,7 @@ export default function ConsoleSvg({
         cy="280"
         r="25"
         fill="#D9D9D9"
-        className="hover:cursor-pointer"
+        data-hoverable="pointer"
         data-button-key-name="l"
         onPointerDown={onPointerDown}
         onPointerUp={resetPointerEvent}
