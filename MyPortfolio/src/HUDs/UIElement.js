@@ -9,6 +9,7 @@ export default class UIElement
     
     opacity = 1;
 
+    /** @type {HTMLImageElement} */
     backgroundImage = null;
 
     focusable = false;
@@ -36,8 +37,11 @@ export default class UIElement
 
         if(backgroundImage)
         {
-            backgroundImage.width = width;
-            backgroundImage.height = height;
+            // backgroundImage.width = width;
+            // backgroundImage.height = height;
+            //^ changing the dimension like this on html image element directly only works when it is shown in html context
+            // but it doesn't really work if you plan to use it on canvas
+            // use naturalWidth and naturalHeight of the image and then set larger/smaller destination width and height in canvas drawImage() method to actually scale the image
             this.backgroundImage = backgroundImage;
         }
     }
@@ -56,12 +60,6 @@ export default class UIElement
         this.dy = dy;
         this.width = width;
         this.height = height;
-
-        if(this.backgroundImage)
-        {
-            this.backgroundImage.width = width;
-            this.backgroundImage.height = height;
-        }
     }
 
     /** @param { CanvasRenderingContext2D } context2d */
@@ -84,7 +82,6 @@ export default class UIElement
         if(this.flipVertical)
         {
             //context2d.translate(this.dx, this.dy + this.height);
-
             context2d.scale(1, -1);
             dy = -this.dy - this.height;
         }
@@ -96,8 +93,8 @@ export default class UIElement
             context2d.drawImage(this.backgroundImage, 
                 0, 
                 0, 
-                this.backgroundImage.width, 
-                this.backgroundImage.height,
+                this.backgroundImage.naturalWidth, 
+                this.backgroundImage.naturalHeight,
                 rootDx + dx, 
                 rootDy + dy, 
                 this.width, 

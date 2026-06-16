@@ -30,9 +30,10 @@ export default class Label extends UIElement
 
     updateLabelTextData(labelText, labelTextAlignment, labelColor, labelPixelSize, labelFontFamily)
     {
-        if(labelText)
+        //allow number like 0 and etc which are deemed to be not truthy
+        if(labelText != null)
         {
-            this.labelTextData.text = labelText;
+            this.setLabelText(labelText);
         }
 
         if(labelTextAlignment)
@@ -42,7 +43,7 @@ export default class Label extends UIElement
 
         if(labelColor)
         {
-            this.labelTextData.color = labelColor;
+            this.setLabelColor(labelColor);
         }
 
         if(labelPixelSize)
@@ -58,8 +59,29 @@ export default class Label extends UIElement
         this.updateTextBounds();
     }
 
-    setLabelText(newText)
+    //by default, show K for number exceeds thousand and M for number exceeds million
+    setLabelText(newText, shouldFormatNumber = false)
     {
+        if(Number.isFinite(newText))
+        {
+            if(shouldFormatNumber)
+            {
+                let roundedValueText = newText;
+                if(newText >= 1000000)
+                {
+                    roundedValueText = `${(newText / 1000000).toFixed(2)}M`;
+                }
+                else if(newText >= 1000)
+                {
+                    roundedValueText = `${(newText / 1000).toFixed(2)}K`;
+                }
+                newText = roundedValueText;
+            }
+            else
+            {
+                newText = String(newText);
+            }
+        }
         this.labelTextData.text = newText;
     }
 
@@ -84,11 +106,12 @@ export default class Label extends UIElement
     /** @param { CanvasRenderingContext2D } context2d */
     drawElement(context2d, rootDx, rootDy)
     {
-        const [dx, dy] = super.drawElement(context2d);
+        const [dx, dy] = super.drawElement(context2d, rootDx, rootDy);
 
+        context2d.textAlign = this.labelTextData.alignment;
         context2d.font = `${this.labelTextData.pixelSize}px ${this.labelTextData.fontFamily}`;
         context2d.fillStyle = this.labelTextData.color;
-        
+
         context2d.fillText(
           this.labelTextData.text,
           rootDx + dx,

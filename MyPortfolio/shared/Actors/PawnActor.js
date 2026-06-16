@@ -66,6 +66,7 @@ export default class PawnActor extends Actor
             idle: null,
             walk: null,
             jump: null,
+            death: null,
             receiveDamage: null,
         }
 
@@ -93,6 +94,7 @@ export default class PawnActor extends Actor
             idle: animationSets.idle,
             walk: animationSets.walk,
             jump: animationSets.jump,
+            death: animationSets.death,
             receiveDamage: animationSets.receiveDamage
         }
 
@@ -157,6 +159,16 @@ export default class PawnActor extends Actor
             this.activeStateAnimationName = "jump";
             
             if(jumpMagnitude) this.actorCurrentStats.movespeed = jumpMagnitude;
+        }
+    }
+
+    toDeathState(force = false)
+    {
+        if(force || this.canChangeState())
+        {
+            this.actorState = CharacterStateTypes.dying;
+            this.activeAbilityName = null;
+            this.activeStateAnimationName = "death";
         }
     }
 

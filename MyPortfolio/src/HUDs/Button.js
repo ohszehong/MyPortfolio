@@ -24,16 +24,24 @@ export default class Button extends UIElement
     //     this.buttonLabelTextData = new Label(null, ddx, ddy, width, height, labelText, labelTextAlignment, labelColor, labelPixelSize, labelFontFamily, false, null);
     // }
 
-    updateLabelTextData(width, height, labelText, labelTextAlignment, labelColor, labelPixelSize, labelFontFamily)
+    updateLabelTextData(dx, dy, width, height, labelText, labelTextAlignment, labelColor, labelPixelSize, labelFontFamily)
     {
         if(this.buttonLabelTextData)
         {
-            if(width)
+            if(Number.isFinite(dx))
+            {
+                this.buttonLabelTextData.dx = dx;
+            }
+            if(Number.isFinite(dy))
+            {
+                this.buttonLabelTextData.dy = dy;
+            }   
+            if(Number.isFinite(width))
             {
                 this.buttonLabelTextData.width = width;
             }
 
-            if(height)
+            if(Number.isFinite(height))
             {
                 this.buttonLabelTextData.height = height;
             }
@@ -49,8 +57,6 @@ export default class Button extends UIElement
             this.buttonLabelTextData.setLabelText(newText);
             return;
         }
-
-        this.buttonLabelTextData =  new Label(null, dx, dy, width, height, newText, "center", "black", width/2, "Darinia");
     }
 
     setLabelColor(newColor)

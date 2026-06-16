@@ -25,7 +25,6 @@ function _checkPawnActorsWithCollisions(pawnActors, collisions, clientManager, d
     {
       if(collision.source === actor) continue;
 
-
       if(AIsCollidedWithB(actor.collision, collision))
       {
         //rewind actor position

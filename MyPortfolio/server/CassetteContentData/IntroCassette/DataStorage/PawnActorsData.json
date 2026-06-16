@@ -3,6 +3,7 @@
     "defaultImageFile": "",
     "selectable": false,
     "targetType": "ally",
+    "motionValues": [0, 0, 0, 0, 0, 0],
     "defaultStats": {
       "health": 100,
       "defense": 10,
@@ -21,7 +22,7 @@
       "width": 18,
       "height": 24
     },
-    "animation": {
+    "animations": {
       "idle": {
         "spritesheetFile": "idleSheet.png",
         "down": {

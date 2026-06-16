@@ -2,6 +2,7 @@
   "cleric": {
     "selectable": true,
     "targetType": "ally",
+    "motionValues": [10, 1, 0, 0, 0, 0, 20],
     "defaultStats": {
       "health": 100,
       "defense": 5,
@@ -12,7 +13,8 @@
       "healing": 20
     },
     "maxLevel": 50,
-    "animation": {
+    "goldCoins": 250,
+    "animations": {
       "death": {
         "spritesheetFile": "deathSheet.png",
         "right": {
@@ -539,6 +541,7 @@
   "elfRangerRookie": {
     "selectable": true,
     "targetType": "ally",
+    "motionValues": [15, 2, 5, 0, 0, 0, 0],
     "defaultStats": {
       "health": 80,
       "defense": 10,
@@ -546,10 +549,11 @@
       "attackRange": 250,
       "movespeed": 60,
       "attackspeed": 1,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 50,
-    "animation": {
+    "goldCoins": 120,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "right": {
@@ -938,6 +942,7 @@
   "elfRangerVeteran": {
     "selectable": true,
     "targetType": "ally",
+    "motionValues": [25, 5, 15, 0, 0, 0, 0],
     "defaultStats": {
       "health": 200,
       "defense": 30,
@@ -945,10 +950,11 @@
       "attackRange": 250,
       "movespeed": 100,
       "attackspeed": 0.5,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 50,
-    "animation": {
+    "goldCoins": 800,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "right": {
@@ -1651,6 +1657,7 @@
   "fowlGladiator": {
     "selectable": true,
     "targetType": "ally",
+    "motionValues": [25, 1, 20, 0, 0, 0, 0],
     "defaultStats": {
       "health": 130,
       "defense": 20,
@@ -1658,10 +1665,11 @@
       "attackRange": 50,
       "movespeed": 50,
       "attackspeed": 1.5,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 50,
-    "animation": {
+    "goldCoins": 160,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "right": {
@@ -2227,6 +2235,7 @@
   "golemSentinel": {
     "selectable": true,
     "targetType": "ally",
+    "motionValues": [50, 10, 2, 0, 0, 0, 0],
     "defaultStats": {
       "health": 300,
       "defense": 50,
@@ -2234,10 +2243,11 @@
       "attackRange": 25,
       "movespeed": 45,
       "attackspeed": 2,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 50,
-    "animation": {
+    "goldCoins": 300,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "right": {
@@ -2608,6 +2618,7 @@
   "knight": {
     "selectable": true,
     "targetType": "ally",
+    "motionValues": [30, 10, 20, 0, 0, 0, 0],
     "defaultStats": {
       "health": 270,
       "defense": 70,
@@ -2615,10 +2626,11 @@
       "attackRange": 30,
       "movespeed": 120,
       "attackspeed": 0.5,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 50,
-    "animation": {
+    "goldCoins": 900,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "right": {
@@ -3164,6 +3176,7 @@
   "wizard": {
     "selectable": true,
     "targetType": "ally",
+    "motionValues": [15, 5, 35, 0, 0, 0, 0],
     "defaultStats": {
       "health": 180,
       "defense": 40,
@@ -3171,10 +3184,11 @@
       "attackrange": 230,
       "movespeed": 65,
       "attackspeed": 2,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 50,
-    "animation": {
+    "goldCoins": 850,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "right": {
@@ -3684,6 +3698,7 @@
   "arcaneArcher": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [5, 1, 5, 0, 0, 0, 0],
     "defaultStats": {
       "health": 20,
       "defense": 10,
@@ -3691,10 +3706,11 @@
       "attackrange": 250,
       "movespeed": 50,
       "attackspeed": 1,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 80,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
@@ -4071,6 +4087,7 @@
   "bat": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [10, 1, 5, 0, 0, 0, 0],
     "defaultStats": {
       "health": 30,
       "defense": 5,
@@ -4078,10 +4095,11 @@
       "attackrange": 25,
       "movespeed": 100,
       "attackspeed": 0.5,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 50,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
@@ -4566,6 +4584,7 @@
   "evilWizard": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [10, 2, 15, 0, 0, 0, 0],
     "defaultStats": {
       "health": 25,
       "defense": 10,
@@ -4573,10 +4592,11 @@
       "attackrange": 210,
       "movespeed": 45,
       "attackspeed": 2,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 120,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
@@ -5217,6 +5237,7 @@
   "ancientGolem": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [20, 5, 2, 0, 0, 0, 0],
     "defaultStats": {
       "health": 150,
       "defense": 30,
@@ -5224,10 +5245,11 @@
       "attackrange": 20,
       "movespeed": 50,
       "attackspeed": 2,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 200,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
@@ -5781,6 +5803,7 @@
   "hermitCrab": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [1, 10, 2, 0, 0, 0, 0],
     "defaultStats": {
       "health": 20,
       "defense": 100,
@@ -5788,10 +5811,11 @@
       "attackrange": 15,
       "movespeed": 60,
       "attackspeed": 1,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 220,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
@@ -6297,6 +6321,7 @@
   "skullWolf": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [5, 2, 15, 0, 0, 0, 0],
     "defaultStats": {
       "health": 20,
       "defense": 10,
@@ -6304,10 +6329,11 @@
       "attackrange": 10,
       "movespeed": 120,
       "attackspeed": 0.5,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 75,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
@@ -6609,6 +6635,7 @@
   "battlemage": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [20, 5, 15, 0, 0, 0, 0],
     "defaultStats": {
       "health": 800,
       "defense": 20,
@@ -6616,10 +6643,11 @@
       "attackrange": 30,
       "movespeed": 50,
       "attackspeed": 1.5,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 650,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
@@ -7153,6 +7181,7 @@
   "demonSlime": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [50, 0, 10, 0, 0, 0, 0],
     "defaultStats": {
       "health": 2000,
       "defense": 0,
@@ -7160,10 +7189,11 @@
       "attackrange": 50,
       "movespeed": 60,
       "attackspeed": 2,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 800,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
@@ -7873,6 +7903,7 @@
   "fireWorm": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [15, 0, 10, 0, 0, 0, 0],
     "defaultStats": {
       "health": 500,
       "defense": 10,
@@ -7880,10 +7911,11 @@
       "attackrange": 300,
       "movespeed": 65,
       "attackspeed": 1.5,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 1150,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
@@ -8440,6 +8472,7 @@
   "huntress": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [15, 5, 10, 0, 0, 0, 0],
     "defaultStats": {
       "health": 700,
       "defense": 30,
@@ -8447,10 +8480,11 @@
       "attackrange": 30,
       "movespeed": 110,
       "attackspeed": 0.75,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 1300,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
@@ -9027,6 +9061,7 @@
   "lostWarrior": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [10, 10, 10, 0, 0, 0, 0],
     "defaultStats": {
       "health": 500,
       "defense": 50,
@@ -9034,10 +9069,11 @@
       "attackrange": 30,
       "movespeed": 100,
       "attackspeed": 0.5,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 1600,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
@@ -9755,6 +9791,7 @@
   "rogueSamurai": {
     "selectable": true,
     "targetType": "enemy",
+    "motionValues": [10, 1, 10, 0, 0, 0, 0],
     "defaultStats": {
       "health": 650,
       "defense": 15,
@@ -9762,10 +9799,11 @@
       "attackrange": 40,
       "movespeed": 120,
       "attackspeed": 0.25,
-      "healing": null
+      "healing": 0
     },
     "maxLevel": 100,
-    "animation": {
+    "goldCoins": 2000,
+    "animations": {
       "attack1": {
         "spritesheetFile": "attack1Sheet.png",
         "left": {
