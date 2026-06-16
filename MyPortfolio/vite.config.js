@@ -11,8 +11,8 @@ export default defineConfig(({mode}) => {
 
   let keyPath;
   let certPath;
-  if(platform() === "win32")
-  {
+  if(platform() === "win32" || platform() === "linux")
+  { 
     keyPath = "cert/localhost.key";
     certPath = "cert/localhost.crt";
   }
