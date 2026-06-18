@@ -500,7 +500,6 @@ export default class GameStatesManager {
 
     if (actorBlobDictionary.animations) {
       const pathToSpritesheetFolder = `${serverFolderToCharacterAssets}${actorName}/spritesheets/`;
-
       const keys = Object.keys(actorBlobDictionary.animations);
 
       for(let i = 0; i < keys.length; i++)
