@@ -481,11 +481,7 @@ export default class GameStatesManager {
   //there's Allies or Enemies folder before the actorName in DefenseMarchCassette, use extraDirectoryBeforeActorName for that
   async addDefaultActorImageAndAnimationBlobsToActorBlobDictionary(actorName, actorBlobDictionary, extraDirectoryBeforeActorName) {
     //motion values are used to calculate the current stats based on the current level
-    let refinedActorBlobDictionary = {
-      defaultActorImage: null,
-      animationBlobs: {},
-      ...actorBlobDictionary
-    };
+    actorBlobDictionary.animationBlobs = {};
 
     /** DEFAULT IMAGES AND ANIMATIONS **/
     const serverFolderToCharacterAssets =
