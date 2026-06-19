@@ -27,8 +27,8 @@ export default function httpsInit(__serverDirPath, gameStatesTickers) {
       sendResponse(res, statusCode.invalidRequest, "missing clientContentCanvasWidth/clientContentCanvasHeight.");
       return;
     }
-
-    if (req.body?.cassetteIndex >= 0) {
+   
+    if (req.body?.cassetteIndex != null && req.body?.cassetteIndex >= 0) {
         try {
           let uuidCookieHeaderName;
           let cassetteTicker;

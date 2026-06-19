@@ -4,6 +4,7 @@ import ClientStatesManager from "./ClientStatesManager/ClientStatesManager";
 
 const CassetteContentManager = ({
   cassetteInPlayIndex,
+  setCassetteInPlayIndex,
   setIsLoadingContent,
   consoleSvgRef,
   buttonsRef,
@@ -21,7 +22,16 @@ const CassetteContentManager = ({
     );
 
     return () => {
+      console.log("destroy...");
+      //should destroy the entire ClientStatesManager as [] means entirely new reload
+      //remember that any event listener that has reference to the ClientStatesManager might made it stay alive
+      //which mean you need to have a destroy method to remove the event listeners so that the CSM can finally be collected by the GC
+      //ClientStatesManagerRef.current.resetStates();
+      //TO-DO: something is wrong when hot reloading...
       ClientStatesManagerRef.current.resetStates();
+      ClientStatesManagerRef.current.destroy(); 
+      ClientStatesManagerRef.current = null;
+      setCassetteInPlayIndex(null); 
     };
   }, []);
 
@@ -40,11 +50,11 @@ const CassetteContentManager = ({
     const shouldAbortRef = { current: false };
 
     const loadContent = async () => {
+      console.log("playindexxx: ", cassetteInPlayIndex);
       try {
         if (ClientStatesManagerRef.current) {
           await ClientStatesManagerRef.current.loadCassette(
-            cassetteInPlayIndex,
-            shouldAbortRef
+            cassetteInPlayIndex
           );
           setIsLoadingContent(false);
 

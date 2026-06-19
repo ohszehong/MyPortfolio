@@ -47,6 +47,7 @@ function App() {
           <CassetteContentManager
             {...props}
             cassetteInPlayIndex={cassetteInPlayIndex}
+            setCassetteInPlayIndex={setCassetteInPlayIndex}
             setIsLoadingContent={setIsLoadingContent}
           />
         )}

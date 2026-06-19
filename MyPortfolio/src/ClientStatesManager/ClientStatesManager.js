@@ -70,6 +70,11 @@ export default class ClientStatesManager {
 
   /** @type {HTMLCanvasElement} */
   contentCanvas = null;
+  //content canvas screen base width and height, it should be the same as the value in CSS width and height for the canvas
+  //any game logic that need to work with the screen width and height should use this
+  //instead of the w/h that is multiplied by the dpr, because in the final output the CSS (or the display width and height) will take that into account
+  contentCanvasDisplayWidth = 480;
+  contentCanvasDisplayHeight = 280;
 
   //device screen's pixel density
   dpr = 1;
@@ -81,6 +86,7 @@ export default class ClientStatesManager {
   //for processTick_General
   gameMapBackgroundCanvasBaseWidth = 0;
   gameMapBackgroundCanvasBaseHeight = 0;
+
 
   //HUD
   /** @type { rootHUD } */
@@ -144,41 +150,39 @@ export default class ClientStatesManager {
     this.buttonsRef = buttonsRef;
 
     this.contentCanvas = document.createElement("canvas");
-
+    this.contentCanvas.style.width = this.contentCanvasDisplayWidth + "px";
+    this.contentCanvas.style.height = this.contentCanvasDisplayHeight + "px";      
     this.contentCanvas.dataset.hoverable = "default";
-    const context2d = this.contentCanvas.getContext("2d");
+    this.setupInnerContextForContentCanvas();
+    
+    this.contentCanvas.addEventListener("pointermove", this.handlePointerMoveOnCanvas);
+    this.contentCanvas.addEventListener("pointerdown", this.handlePointerDownOnCanvas);
+    
+    //zooming in/out will change the value of dpr
+    window.addEventListener("resize", this.setupInnerContextForContentCanvas);
 
-    //modern screens uses multiple physical pixels to display one web pixel
-    //therefore we should scale the canvas internal resolution by the device pixel ratio
-    //then on the CSS side (for web), shrink it back
+    this.setKeyActiveBound = this.setKeyActive.bind(this);
+  }
 
-    this.dpr = window.devicePixelRatio || 1;
+  destroy()
+  {
+    this.contentCanvas.removeEventListener("pointermove", this.handlePointerMoveOnCanvas);
+    this.contentCanvas.removeEventListener("pointerdown", this.handlePointerDownOnCanvas);
+    window.removeEventListener("resize", this.setupInnerContextForContentCanvas);
 
-    const canvasWidth = 480;
-    const canvasHeight = 280;
+    this.resetStates();
+  }
 
-    this.contentCanvas.width = canvasWidth * this.dpr;
-    this.contentCanvas.height = canvasHeight * this.dpr;
+  handlePointerMoveOnCanvas = (event) =>
+  {
+    event.preventDefault();
 
-    this.contentCanvas.style.width = canvasWidth + "px";
-    this.contentCanvas.style.height = canvasHeight + "px";
+    //update cursor 
+    this.cursorPosition.x = this.cameraPosition.x + event.offsetX;
+    this.cursorPosition.y = this.cameraPosition.y + event.offsetY;
 
-    //this is needed so that you can use the values from a 480 x 280 standpoint directly in the context 
-    //so that you don't have to manually multiply by the dpr for every values used in the context later
-    context2d.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-
-    //disable it for higher quality on pixel arts
-    context2d.imageSmoothingEnabled = false;
-
-    this.contentCanvas.addEventListener("pointermove", (event) => {
-      event.preventDefault();
-
-      //update cursor position
-      this.cursorPosition.x = this.cameraPosition.x + event.offsetX;
-      this.cursorPosition.y = this.cameraPosition.y + event.offsetY;
-
-      if(this.gameRootHUD)
-      {
+    if(this.gameRootHUD)
+    {
         const previousElem = this.currentCursorOverlappedUIElement;
         this.currentCursorOverlappedUIElement = this.gameRootHUD.getCursorOverlappedElement(this.cursorPosition.x, this.cursorPosition.y);
         
@@ -186,24 +190,43 @@ export default class ClientStatesManager {
         {
           previousElem?.onPointerLeave();
         }
-
         this.currentCursorOverlappedUIElement?.onPointerEnter();
-      }
-    })
+    }
+  }
 
-    this.contentCanvas.addEventListener("pointerdown", (event) => {
-      event.preventDefault();
+  handlePointerDownOnCanvas = (event) =>
+  {
+    event.preventDefault();
 
-      if(this.gameRootHUD)
-      {
-        if(this.currentCursorOverlappedUIElement)
+    if(this.gameRootHUD)
+    {
+      if(this.currentCursorOverlappedUIElement)
         {
           this.currentCursorOverlappedUIElement.onClick();
         }
       }
-    })
+  }
 
-    this.setKeyActiveBound = this.setKeyActive.bind(this);
+  //InnerContext refers to the canvas internal data instead of the CSS data from .style
+  setupInnerContextForContentCanvas = () =>
+  {
+    if(!this.contentCanvas) return;
+    //modern screens uses multiple physical pixels to display one web pixel
+    //therefore we should scale the canvas internal resolution by the device pixel ratio
+    //then on the CSS side (for web), shrink it back
+    this.dpr = window.devicePixelRatio <= 1 ? 1 : window.devicePixelRatio;
+
+    const context2d = this.contentCanvas.getContext("2d");
+
+    this.contentCanvas.width = this.contentCanvasDisplayWidth * this.dpr;
+    this.contentCanvas.height = this.contentCanvasDisplayHeight * this.dpr;
+
+    //this is needed so that you can use the values from a 480 x 280 standpoint directly in the context 
+    //so that you don't have to manually multiply by the dpr for every values used in the context later
+    context2d.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+
+    //disable it for higher quality on pixel arts
+    context2d.imageSmoothingEnabled = false;
   }
 
   FIXED_DELTA_TIME_FROM_SERVER = 1000 / 60;
@@ -750,8 +773,8 @@ export default class ClientStatesManager {
         },
         body: JSON.stringify({
           cassetteIndex: this.cassetteIndex,
-          clientContentCanvasWidth: this.contentCanvas.width / this.dpr,
-          clientContentCanvasHeight: this.contentCanvas.height / this.dpr,
+          clientContentCanvasWidth: this.contentCanvasDisplayWidth,
+          clientContentCanvasHeight: this.contentCanvasDisplayHeight,
         }),
       }).then((res) => res.json());
 
@@ -811,6 +834,7 @@ export default class ClientStatesManager {
 
     if (this.contentCanvas) {
       this.contentCanvas.getContext("2d").reset();
+      this.setupInnerContextForContentCanvas();
     }
 
     this.gameMapBackground = null;
@@ -1582,19 +1606,13 @@ export default class ClientStatesManager {
 
   /** @param {Actor} actor */
   moveCameraToActor(actor) {
-    this.cameraPosition.x = actor.position.dx - this.contentCanvas.width / 2;
-    this.cameraPosition.y = actor.position.dy - this.contentCanvas.height / 2;
+    this.cameraPosition.x = actor.position.dx - this.contentCanvasDisplayWidth / 2;
+    this.cameraPosition.y = actor.position.dy - this.contentCanvasDisplayHeight / 2;
   }
 
   sanitizeCameraPosition = (printConsole = false) => {
-    let screenWidth = 0;
-    let screenHeight = 0;
-
-    //don't use the direct canvas width and height properties as they are scaled by the dpr
-    if (this.contentCanvas) {
-      screenWidth = this.contentCanvas.width / this.dpr;
-      screenHeight = this.contentCanvas.height / this.dpr;
-    }
+    let screenWidth = this.contentCanvasDisplayWidth;
+    let screenHeight = this.contentCanvasDisplayHeight;
 
     //if the camera is on the edge of the map
     if (this.cameraPosition.x < 0) {
