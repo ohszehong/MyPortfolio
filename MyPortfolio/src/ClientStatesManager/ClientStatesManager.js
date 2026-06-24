@@ -16,6 +16,7 @@ import {
 } from "../../shared/CollisionsDetector/CollisionsDetector";
 import processTick_General from "../../shared/TickProcess/processTick_General";
 
+import Block from "../HUDs/Block";
 import Label from "../HUDs/Label";
 import Button from "../HUDs/Button";
 import UImage from "../HUDs/Image";
@@ -87,7 +88,6 @@ export default class ClientStatesManager {
   gameMapBackgroundCanvasBaseWidth = 0;
   gameMapBackgroundCanvasBaseHeight = 0;
 
-
   //HUD
   /** @type { rootHUD } */
   gameRootHUD = null;
@@ -151,66 +151,77 @@ export default class ClientStatesManager {
 
     this.contentCanvas = document.createElement("canvas");
     this.contentCanvas.style.width = this.contentCanvasDisplayWidth + "px";
-    this.contentCanvas.style.height = this.contentCanvasDisplayHeight + "px";      
+    this.contentCanvas.style.height = this.contentCanvasDisplayHeight + "px";
     this.contentCanvas.dataset.hoverable = "default";
     this.setupInnerContextForContentCanvas();
-    
-    this.contentCanvas.addEventListener("pointermove", this.handlePointerMoveOnCanvas);
-    this.contentCanvas.addEventListener("pointerdown", this.handlePointerDownOnCanvas);
-    
+
+    this.contentCanvas.addEventListener(
+      "pointermove",
+      this.handlePointerMoveOnCanvas,
+    );
+    this.contentCanvas.addEventListener(
+      "pointerdown",
+      this.handlePointerDownOnCanvas,
+    );
+
     //zooming in/out will change the value of dpr
     window.addEventListener("resize", this.setupInnerContextForContentCanvas);
 
     this.setKeyActiveBound = this.setKeyActive.bind(this);
   }
 
-  destroy()
-  {
-    this.contentCanvas.removeEventListener("pointermove", this.handlePointerMoveOnCanvas);
-    this.contentCanvas.removeEventListener("pointerdown", this.handlePointerDownOnCanvas);
-    window.removeEventListener("resize", this.setupInnerContextForContentCanvas);
+  destroy() {
+    this.contentCanvas.removeEventListener(
+      "pointermove",
+      this.handlePointerMoveOnCanvas,
+    );
+    this.contentCanvas.removeEventListener(
+      "pointerdown",
+      this.handlePointerDownOnCanvas,
+    );
+    window.removeEventListener(
+      "resize",
+      this.setupInnerContextForContentCanvas,
+    );
 
     this.resetStates();
   }
 
-  handlePointerMoveOnCanvas = (event) =>
-  {
+  handlePointerMoveOnCanvas = (event) => {
     event.preventDefault();
 
-    //update cursor 
+    //update cursor
     this.cursorPosition.x = this.cameraPosition.x + event.offsetX;
     this.cursorPosition.y = this.cameraPosition.y + event.offsetY;
 
-    if(this.gameRootHUD)
-    {
-        const previousElem = this.currentCursorOverlappedUIElement;
-        this.currentCursorOverlappedUIElement = this.gameRootHUD.getCursorOverlappedElement(this.cursorPosition.x, this.cursorPosition.y);
-        
-        if(previousElem != this.currentCursorOverlappedUIElement)
-        {
-          previousElem?.onPointerLeave();
-        }
-        this.currentCursorOverlappedUIElement?.onPointerEnter();
-    }
-  }
+    if (this.gameRootHUD) {
+      const previousElem = this.currentCursorOverlappedUIElement;
+      this.currentCursorOverlappedUIElement =
+        this.gameRootHUD.getCursorOverlappedElement(
+          this.cursorPosition.x,
+          this.cursorPosition.y,
+        );
 
-  handlePointerDownOnCanvas = (event) =>
-  {
+      if (previousElem != this.currentCursorOverlappedUIElement) {
+        previousElem?.onPointerLeave();
+      }
+      this.currentCursorOverlappedUIElement?.onPointerEnter();
+    }
+  };
+
+  handlePointerDownOnCanvas = (event) => {
     event.preventDefault();
 
-    if(this.gameRootHUD)
-    {
-      if(this.currentCursorOverlappedUIElement)
-        {
-          this.currentCursorOverlappedUIElement.onClick();
-        }
+    if (this.gameRootHUD) {
+      if (this.currentCursorOverlappedUIElement) {
+        this.currentCursorOverlappedUIElement.onClick();
       }
-  }
+    }
+  };
 
   //InnerContext refers to the canvas internal data instead of the CSS data from .style
-  setupInnerContextForContentCanvas = () =>
-  {
-    if(!this.contentCanvas) return;
+  setupInnerContextForContentCanvas = () => {
+    if (!this.contentCanvas) return;
     //modern screens uses multiple physical pixels to display one web pixel
     //therefore we should scale the canvas internal resolution by the device pixel ratio
     //then on the CSS side (for web), shrink it back
@@ -221,13 +232,13 @@ export default class ClientStatesManager {
     this.contentCanvas.width = this.contentCanvasDisplayWidth * this.dpr;
     this.contentCanvas.height = this.contentCanvasDisplayHeight * this.dpr;
 
-    //this is needed so that you can use the values from a 480 x 280 standpoint directly in the context 
+    //this is needed so that you can use the values from a 480 x 280 standpoint directly in the context
     //so that you don't have to manually multiply by the dpr for every values used in the context later
     context2d.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
 
     //disable it for higher quality on pixel arts
     context2d.imageSmoothingEnabled = false;
-  }
+  };
 
   FIXED_DELTA_TIME_FROM_SERVER = 1000 / 60;
   prevTime;
@@ -258,8 +269,7 @@ export default class ClientStatesManager {
 
             this.processTick_CassetteGeneral();
 
-            if(this.processTick_CassetteSpecific)
-            {
+            if (this.processTick_CassetteSpecific) {
               this.processTick_CassetteSpecific();
             }
             this.sortAllActorsByY();
@@ -339,11 +349,11 @@ export default class ClientStatesManager {
     });
 
     let spawnBlockCollisions = this.spawnCollisions.filter(
-      (collision) => collision.collisionType === CollisionTypes.blockCollision
+      (collision) => collision.collisionType === CollisionTypes.blockCollision,
     );
 
     let mapBlockCollisions = this.mapCollisions.filter(
-      (collision) => collision.collisionType === CollisionTypes.blockCollision
+      (collision) => collision.collisionType === CollisionTypes.blockCollision,
     );
 
     collisions = [
@@ -367,394 +377,12 @@ export default class ClientStatesManager {
   async loadCassette(cassetteIndex) {
     if (cassetteIndex === null) {
       console.log(
-        "invalid cassette index, please try with valid cassette index."
+        "invalid cassette index, please try with valid cassette index.",
       );
       return;
     }
 
     this.cassetteIndex = cassetteIndex;
-
-    switch (this.cassetteIndex) {
-      case 0:
-        this.cassetteName = "IntroCassette";
-        this.keysHandler = IntroCassetteKeysHandler.bind(this);
-
-        this.processTick_CassetteSpecific = () => {
-          //check for mapJumpTriggers with playerActor
-          if (this.playerActor.actorState != CharacterStateTypes.jumping) {
-            this.mapJumpTriggers.some((trigger) => {
-              if (PawnActorIsOnTrigger(this.playerActor, trigger)) {
-                if (
-                  this.playerActor.facingDirection === trigger.jumpDirection &&
-                  this.playerActor.actorState ===
-                    trigger.actionToTrigger + "ing"
-                ) {
-                  //console.log("is within jump trigger...");
-                  this.playerActor.toJumpState(trigger.jumpMagnitude);
-
-                  const audios = this.actorSoundsBlobDictionary[this.playerActor.actorName]?.jump;
-                  if(audios)
-                  {
-                    this.playAudioRandomWithRandomVolume(audios);
-                  }
-                }
-                return true;
-              }
-            });
-          }
-
-          this.moveCameraToActor(this.playerActor);
-          this.sanitizeCameraPosition();
-        };
-        break;
-
-      case 1:
-        //default settings for ease of change
-        const defaultTextAlignment = "start";
-        const defaultFontFamily = "Darinia";
-        const defaultMainFontColor = "rgba(73, 51, 51, 1)";
-        const defaultSecondaryFontColor = "rgba(170, 74, 29, 1)";
-        const defaultGoldCoinValueColor = "rgba(255, 255, 255, 1)";
-
-        this.cassetteName = "DefenseMarchCassette";
-        this.keysHandler = DefenseMarchKeysHandler.bind(this);
-
-        //creating HUDs for DefenseMarch
-        this.gameRootHUD = new rootHUD("Root", 0, 0, this.contentCanvas.width, this.contentCanvas.height);
-
-        //StartGame child hud
-        const CHUDStartGame = new childHUD("CHUDStartGame", 0, 0, this.contentCanvas.width, this.contentCanvas.height);
-        
-        const LTitleDefense = new Label("LTitleDefense", 136, 51, 258, 68, "DEFENSE", defaultTextAlignment, "rgba(83, 206, 231, 1)", 60, defaultFontFamily);
-        const LTitleMarch = new Label("LTitleMarch", 165, 98.5, 191, 58.5, "MARCH", defaultTextAlignment, "rgba(75, 80, 18, 1)", 48, defaultFontFamily);
-
-        const BStart = new Button("BStart", 209.17, 212.83, 107, 39.67, null, null, "START");
-        BStart.updateLabelTextData(null, null, null, null, "START", defaultTextAlignment, "rgba(170, 74, 29, 0.5)", 33, null);
-        BStart.onPointerEnter = () => {
-          BStart.setLabelColor(defaultSecondaryFontColor);
-          this.contentCanvas.dataset.hoverable = "pointer";
-        };
-        BStart.onPointerLeave = () => {
-          BStart.setLabelColor("rgba(170, 74, 29, 0.5)");
-          this.contentCanvas.dataset.hoverable = "default";
-        };
-
-        BStart.onClick = () => {
-          this.gameRootHUD.setHUDActive("CHUDStartGame", false);
-          this.gameRootHUD.setHUDActive("CHUDMain", true);
-          this.contentCanvas.dataset.hoverable = "default";
-        }
-
-        CHUDStartGame.addUIElement(LTitleDefense);
-        CHUDStartGame.addUIElement(LTitleMarch);
-        CHUDStartGame.addUIElement(BStart);
-
-        this.gameRootHUD.addChildHUD(CHUDStartGame);
-        this.gameRootHUD.setHUDActive("CHUDStartGame", true);
-
-        //Main child hud
-        const CHUDMain = new childHUD("CHUDMain", 0, 0, this.contentCanvas.width, this.contentCanvas.height);
-        this.gameRootHUD.addChildHUD(CHUDMain);
-
-        //Properties specifics for CHUDMain
-        CHUDMain.currentActiveCharacterButtonIndex = 0;
-        CHUDMain.CharacterButtonArray = [];
-
-        //UIElement for CharacterButton contain only the active one
-        CHUDMain.UIElements.SelectedCharacter = null;
-
-        //IM -> non HUD image, I -> HUD image
-        const IMCharacterPortraitContainer = await loadImage("/DefenseMarchCassette/Images/characterPortraitContainer.png");
-
-        const ICharacterPortraitContainer = new UImage("ICharacterPortraitContainer", 84.33, 194.33, IMCharacterPortraitContainer.width, IMCharacterPortraitContainer.height, IMCharacterPortraitContainer, 0, 0, false, null);
-        ICharacterPortraitContainer.setImageDimensions(0, 0, 74.67, 84.67);
-        CHUDMain.addUIElement(ICharacterPortraitContainer);
-
-        const IMArrowButton = await loadImage("/DefenseMarchCassette/Images/arrowButton.png");
-
-        const BArrowButtonPrev = new Button("BArrowButtonPrev", 61, 230, IMArrowButton.width + 5.50, IMArrowButton.height + 5.50, null, IMArrowButton, null);
-        BArrowButtonPrev.flipHorizontal = true;
-        BArrowButtonPrev.opacity = 0.5;
-
-        BArrowButtonPrev.onPointerEnter = () => {
-          this.contentCanvas.dataset.hoverable = "pointer";
-          BArrowButtonPrev.opacity = 1.0;
-        }
-
-        BArrowButtonPrev.onPointerLeave = () => {
-          this.contentCanvas.dataset.hoverable = "default";
-          BArrowButtonPrev.opacity = 0.5;
-        }
-
-        BArrowButtonPrev.onClick = () => {
-          CHUDMain.currentActiveCharacterButtonIndex = CHUDMain.currentActiveCharacterButtonIndex - 1;
-
-          if(CHUDMain.currentActiveCharacterButtonIndex < 0)
-          {
-            CHUDMain.currentActiveCharacterButtonIndex = CHUDMain.CharacterButtonArray.length - 1;
-          }
-
-          CHUDMain.UIElements.SelectedCharacter = CHUDMain.CharacterButtonArray[CHUDMain.currentActiveCharacterButtonIndex];
-          CHUDMain.updateCharacterStatsAndCostsLabels();
-
-          //force reset the cursor style to pointer because sometimes clicking on it will cause shifting of the layers which made the pointer temporarily leaving the canvas
-          // requestAnimationFrame(() => {
-          //   this.contentCanvas.style.cursor = "pointer";
-          // });
-          //^ don't need this anymore since we are using custom cursor
-        }
-        CHUDMain.addUIElement(BArrowButtonPrev);
-
-        const BArrowButtonNext = new Button("BArrowButtonNext", 161.33, 230, IMArrowButton.width + 5.50, IMArrowButton.height + 5.50, null, IMArrowButton, null);
-        BArrowButtonNext.opacity = 0.5;
-
-        BArrowButtonNext.onPointerEnter = () => {
-          this.contentCanvas.dataset.hoverable = "pointer";
-          BArrowButtonNext.opacity = 1.0;
-        }
-
-        BArrowButtonNext.onPointerLeave = () => {
-          this.contentCanvas.dataset.hoverable = "default";
-          BArrowButtonNext.opacity = 0.5;
-        }
-
-        BArrowButtonNext.onClick = () => {
-          CHUDMain.currentActiveCharacterButtonIndex = CHUDMain.currentActiveCharacterButtonIndex + 1;
-
-          if(CHUDMain.currentActiveCharacterButtonIndex >= CHUDMain.CharacterButtonArray.length)
-          {
-            CHUDMain.currentActiveCharacterButtonIndex = 0;
-          }
-
-          CHUDMain.UIElements.SelectedCharacter = CHUDMain.CharacterButtonArray[CHUDMain.currentActiveCharacterButtonIndex];
-          CHUDMain.updateCharacterStatsAndCostsLabels();
-        }
-        CHUDMain.addUIElement(BArrowButtonNext);
-
-        //character icons as buttons for summoning 
-        //no prefixes and use camelCase for character button names for ease of accessing the actual character names from blobs dictionary
-        const IMCleric = await loadImage("/DefenseMarchCassette/CharacterPortraits/cleric/portrait.png");
-        const BCleric = new Button("cleric", 106.67, 222, IMCleric.width, IMCleric.height, null, IMCleric);
-        CHUDMain.CharacterButtonArray.push(BCleric);
-
-        const IMElfRangerRookie = await loadImage("/DefenseMarchCassette/CharacterPortraits/elfRangerRookie/portrait.png");
-        const BElfRangerRookie = new Button("elfRangerRookie", 112.67, 223.33, IMElfRangerRookie.width, IMElfRangerRookie.height, null, IMElfRangerRookie);
-        CHUDMain.CharacterButtonArray.push(BElfRangerRookie);
-
-        const IMFowlGladiator = await loadImage("/DefenseMarchCassette/CharacterPortraits/fowlGladiator/portrait.png");
-        const BFowlGladiator = new Button("fowlGladiator", 100, 227.33, IMFowlGladiator.width, IMFowlGladiator.height, null, IMFowlGladiator);
-        CHUDMain.CharacterButtonArray.push(BFowlGladiator);
-
-        const IMGolemSentinel = await loadImage("/DefenseMarchCassette/CharacterPortraits/golemSentinel/portrait.png");
-        const BGolemSentinel = new Button("golemSentinel", 95, 203.33, IMGolemSentinel.width, IMGolemSentinel.height, null, IMGolemSentinel);
-        CHUDMain.CharacterButtonArray.push(BGolemSentinel);
-
-        const IMKnight = await loadImage("/DefenseMarchCassette/CharacterPortraits/knight/portrait.png");
-        const BKnight = new Button("knight", 110.67, 216.33, IMKnight.width, IMKnight.height, null, IMKnight);
-        CHUDMain.CharacterButtonArray.push(BKnight);
-
-        const IMElfRangerVeteran = await loadImage("/DefenseMarchCassette/CharacterPortraits/elfRangerVeteran/portrait.png");
-        const BElfRangerVeteran = new Button("elfRangerVeteran", 100.67, 217.67, IMElfRangerVeteran.width, IMElfRangerVeteran.height, null, IMElfRangerVeteran);
-        CHUDMain.CharacterButtonArray.push(BElfRangerVeteran);
-
-        const IMWizard = await loadImage("/DefenseMarchCassette/CharacterPortraits/wizard/portrait.png");
-        const BWizard = new Button("wizard", 111.33, 217.33, IMWizard.width, IMWizard.height, null, IMWizard);
-        CHUDMain.CharacterButtonArray.push(BWizard);
-
-        CHUDMain.UIElements.SelectedCharacter = CHUDMain.CharacterButtonArray[0];
-
-        //character stats banner and detail texts
-        const IMCharacterStatsBanner = await loadImage("/DefenseMarchCassette/Images/characterStatsBanner.png");
-        //the width and height of the element itself only affects background image, use setImageDimensions to modify the image itself
-        const ICharacterStatsBanner = new UImage("ICharacterStatsBanner", 206.50, 193.33, 211.50, 85, IMCharacterStatsBanner, 0, 0, false, null);
-        ICharacterStatsBanner.setImageDimensions(0, 0, 211.50, 85);
-        CHUDMain.addUIElement(ICharacterStatsBanner);
-
-        const LCharacterName = new Label("LCharacterName", 229, 197.33, 160, 13, "Lorem Ipsum", defaultTextAlignment, defaultSecondaryFontColor, 12, defaultFontFamily, false);
-        CHUDMain.addUIElement(LCharacterName);
-
-        const LLevelTag = new Label("LLevelTag", 229, 211.17, 19.67, 13, "LV:", defaultTextAlignment, defaultMainFontColor, 10, defaultFontFamily, false);
-        const LCharacterLevel = new Label("LCharacterLevel", 245, 211.17, 19.67, 13, 1, defaultTextAlignment, defaultSecondaryFontColor, 10, defaultFontFamily, false);
-        CHUDMain.addUIElement(LLevelTag);
-        CHUDMain.addUIElement(LCharacterLevel);
-
-        const LHPTag = new Label("LHPTag", 229.16, 225.67, 18.45, 13, "HP:", defaultTextAlignment, defaultMainFontColor, 10, defaultFontFamily, false);
-        const LCharacterHP = new Label("LCharacterHP", 248.49, 225.67, 31, 13, 100, defaultTextAlignment, defaultSecondaryFontColor, 10, defaultFontFamily, false);
-        CHUDMain.addUIElement(LHPTag);
-        CHUDMain.addUIElement(LCharacterHP);
-
-        const LDefTag = new Label("LDefTag", 229.33, 236.67, 22.21, 13, "DEF:", defaultTextAlignment, defaultMainFontColor, 10, defaultFontFamily, false);
-        const LCharacterDef = new Label("LCharacterDef", 253, 236.67, 29, 13, 10, defaultTextAlignment, defaultSecondaryFontColor, 10, defaultFontFamily, false);
-        CHUDMain.addUIElement(LDefTag);
-        CHUDMain.addUIElement(LCharacterDef);
-
-        const LAtkTag = new Label("LAtkTag", 314.58, 225.67, 25, 13, "ATK:", defaultTextAlignment, defaultMainFontColor, 10, defaultFontFamily, false);
-        const LCharacterAtk = new Label("LCharacterAtk", 341.33, 225.67, 31, 13, 1, defaultTextAlignment, defaultSecondaryFontColor, 10, defaultFontFamily, false);
-        CHUDMain.addUIElement(LAtkTag);
-        CHUDMain.addUIElement(LCharacterAtk);
-
-        const LHealTag = new Label("LHealTag", 314.58, 236.67, 33, 13, "HEAL:", defaultTextAlignment, defaultMainFontColor, 10, defaultFontFamily, false);
-        const LCharacterHeal = new Label("LCharacterHeal", 347.66, 236.67, 31, 13, "N/A", defaultTextAlignment, defaultSecondaryFontColor, 10, defaultFontFamily, false);
-        CHUDMain.addUIElement(LHealTag);
-        CHUDMain.addUIElement(LCharacterHeal);
-
-        //create an array of characters name with space to show in the banner
-        CHUDMain.charactersDisplayName = [
-          "Cleric",
-          "Elf Ranger Rookie",
-          "Fowl Gladiator",
-          "Golem Sentinel",
-          "Knight",
-          "Elf Ranger Veteran",
-          "Wizard"
-        ];
-
-        //create functions for CHUDMain to update the labels 
-        CHUDMain.updateCharacterStatsAndCostsLabels = () => {
-          let selectedCharacter = CHUDMain.UIElements.SelectedCharacter;
-
-          if(selectedCharacter)
-          {
-            let selectedCharacterBlobDictionary = this.pawnActorsBlobDictionary[selectedCharacter.elementName];
-
-            if(selectedCharacterBlobDictionary)
-            {
-              //character stats
-              let selectedCharacterCurrentLevel = selectedCharacterBlobDictionary.currentLevel;
-              CHUDMain.UIElements.LCharacterName.setLabelText(CHUDMain.charactersDisplayName[CHUDMain.currentActiveCharacterButtonIndex]);
-              CHUDMain.UIElements.LCharacterLevel.setLabelText(selectedCharacterBlobDictionary.currentLevel);
-
-              let selectedCharacterCurrentStats = selectedCharacterBlobDictionary.defaultStats;
-
-              CHUDMain.UIElements.LCharacterHP.setLabelText(selectedCharacterCurrentStats.health + (selectedCharacterCurrentLevel * selectedCharacterBlobDictionary.motionValues[0]));
-              CHUDMain.UIElements.LCharacterDef.setLabelText(selectedCharacterCurrentStats.defense + (selectedCharacterCurrentLevel * selectedCharacterBlobDictionary.motionValues[1]));
-              CHUDMain.UIElements.LCharacterAtk.setLabelText(selectedCharacterCurrentStats.attack + (selectedCharacterCurrentLevel * selectedCharacterBlobDictionary.motionValues[2]));
-
-              let healing = selectedCharacterCurrentStats.healing + (selectedCharacterCurrentLevel * selectedCharacterBlobDictionary.motionValues[5]);
-              CHUDMain.UIElements.LCharacterHeal.setLabelText(healing === 0 ? "N/A" : healing);
-
-              //if character level is maxed
-              if(selectedCharacterCurrentLevel >= selectedCharacterBlobDictionary.maxLevel)
-              {
-                CHUDMain.UIElements.LCharacterUpgradeCost.setLabelText("N/A");
-                CHUDMain.UIElements.BUpgradeCharacter.setLabelText("MAXED LV");
-              }
-              else
-              {
-                //character and upgrade costs
-                const characterUpgradeAndDeploymentCost = selectedCharacterBlobDictionary.goldCoins * selectedCharacterBlobDictionary.currentLevel;
-  
-                CHUDMain.UIElements.LCharacterUpgradeCost.setLabelText(characterUpgradeAndDeploymentCost, true);
-                CHUDMain.UIElements.LCharacterDeploymentCost.setLabelText(characterUpgradeAndDeploymentCost, true);
-              }
-            }
-          }
-        }
-
-        CHUDMain.updateCurrentGoldCoinsLabel = () => {
-          CHUDMain.UIElements.LCurrentGoldCoins.setLabelText(this.goldCoins, true);
-        }
-
-        CHUDMain.updateCurrentTotalUnitsLabel = () => {
-          CHUDMain.UIElements.LCurrentTotalUnits.setLabelText(`${this.currentTotalUnits}/${this.maxTotalUnits}`);
-        }
-
-        //upgrade character button
-        const IMCharacterUpgradeButton = await loadImage("/DefenseMarchCassette/Images/characterUpgradeButton.png");
-        const BUpgradeCharacter = new Button("BUpgradeCharacter", 229, 253, 148.33, 18.33, null, IMCharacterUpgradeButton, "Upgrade");
-        BUpgradeCharacter.updateLabelTextData(235, 255.83, 82, 13, "Upgrade", defaultTextAlignment, defaultSecondaryFontColor, 12, defaultFontFamily);
-
-        BUpgradeCharacter.onPointerEnter = () => {
-          this.contentCanvas.dataset.hoverable = "pointer";
-        }
-
-        BUpgradeCharacter.onPointerLeave = () => {
-          this.contentCanvas.dataset.hoverable = "default";
-        }
-
-        BUpgradeCharacter.onClick = () => {
-          //the upgrade should not work for the current pawns on field, it should only be affecting the new generated pawns
-          const selectedCharacter = CHUDMain.UIElements.SelectedCharacter;
-          if(selectedCharacter)
-          {
-            const actorBlobDictionary = this.pawnActorsBlobDictionary[selectedCharacter.elementName];
-            if(actorBlobDictionary)
-            {
-              if(actorBlobDictionary.currentLevel < actorBlobDictionary.maxLevel)
-              {
-                const actorCost = (actorBlobDictionary.currentLevel + 1) * actorBlobDictionary.goldCoins;
-                
-                if(this.goldCoins - actorCost >= 0)
-                {
-                  this.goldCoins -= actorCost;
-                  actorBlobDictionary.currentLevel += 1;
-
-                  CHUDMain.updateCharacterStatsAndCostsLabels();
-                  CHUDMain.updateCurrentGoldCoinsLabel();
-                }
-                else
-                {
-                  console.log("insufficient gold to upgrade the character.");
-                }
-              }
-              else
-              {
-                console.log("unable to upgrade, character is at max level.");
-              }
-            }
-          }
-        }
-
-        CHUDMain.addUIElement(BUpgradeCharacter);
-
-        //current gold coins banner and current units banner
-        const IMGeneralBanner = await loadImage("/DefenseMarchCassette/Images/generalBanner.png");
-        const ICurrentGoldCoinsBanner = new UImage("ICurrentGoldCoinsBanner", 32.91, 10.78, 108, 40, null, 0, 0, false, IMGeneralBanner);
-        const ICurrentUnitsBanner = new UImage("ICurrentUnitsBanner", 151.54, 10.78, 108, 40, null, 0, 0, false, IMGeneralBanner);
-
-        CHUDMain.addUIElement(ICurrentGoldCoinsBanner);
-        CHUDMain.addUIElement(ICurrentUnitsBanner);
-
-        //gold coin icons and their respective value labels
-        const IMGoldCoinIcon = await loadImage("/DefenseMarchCassette/Images/goldCoinIcon.png");
-
-        const ICUCGoldCoinIcon = new UImage("ICUCGoldCoinIcon", 327.67, 255.67, 12, 12, null, 0, 0, false, IMGoldCoinIcon);
-        const LCharacterUpgradeCost = new Label("LCharacterUpgradeCost", 342, 255.67, 36.50, 12, 100, defaultTextAlignment, defaultGoldCoinValueColor, 10, defaultFontFamily, false, null);
-
-        const ICDCGoldCoinIcon = new UImage("ICDCGoldCoinIcon", 102.65, 262.25, 7, 7, null, 0, 0, false, IMGoldCoinIcon);
-        const LCharacterDeploymentCost = new Label("LCharacterDeploymentCost", 114, 260.17, 30, 12, 100, defaultTextAlignment, defaultGoldCoinValueColor, 10, defaultFontFamily, false, null);
-
-        const ICurrentGoldCoinIcon = new UImage("ICurrentGoldCoinIcon", 54.60, 25.50, 16, 16, null, 0, 0, false, IMGoldCoinIcon);
-
-        //the textAlign from context is not really the text alignment we think it is, it's more like the alignment for the textbox itself 
-        //for the text to start from right to left, we have to either:
-        //context2d.direction = "rtl";
-        //OR
-        //context2d.textAlign = "end"; <- actual right alignment if direction is ltr  (have to offset the dx as the "textbox" doesn't move)
-        const LCurrentGoldCoins = new Label("LCurrentGoldCoins", 117.5, 25.10, 44.50, 19, 0, "end", defaultMainFontColor, 17, defaultFontFamily, false, null);
-
-        //TO-DO: texts are blurry in general, find a way to fix it, or not.
-        //remaining UIs
-
-        CHUDMain.addUIElement(ICUCGoldCoinIcon);
-        CHUDMain.addUIElement(LCharacterUpgradeCost);
-        
-        CHUDMain.addUIElement(ICDCGoldCoinIcon);
-        CHUDMain.addUIElement(LCharacterDeploymentCost);
-
-        CHUDMain.addUIElement(ICurrentGoldCoinIcon);
-        CHUDMain.addUIElement(LCurrentGoldCoins);
-
-        //current units icon and label
-        const IMHelmetIcon = await loadImage("/DefenseMarchCassette/Images/helmetIcon.png");
-        const IUnitIcon = new UImage("IUnitIcon", 172.50, 27, 16, 16, null, 0, 0, false, IMHelmetIcon);
-        const LCurrentTotalUnits = new Label("LCurrentTotalUnit", 190, 26.33, 49.50, 19, `${this.currentTotalUnits}/${this.maxTotalUnits}`, defaultTextAlignment, defaultMainFontColor, 17, defaultFontFamily, false, null);
-
-        CHUDMain.addUIElement(IUnitIcon);
-        CHUDMain.addUIElement(LCurrentTotalUnits);
-
-        break;
-    }
 
     try {
       //load states data
@@ -784,14 +412,963 @@ export default class ClientStatesManager {
         //initialize states data
         await this.initRawStatesData(response.data);
 
-        //update display data after this.pawnActorsBlobDictionary is updated from initRawStatesData (for DefenseMarchCassette, index of 1)
-        if(this.cassetteIndex === 1)
-        {
-          this.gameRootHUD.childHUDs.CHUDMain.HUD.updateCharacterStatsAndCostsLabels();
-        }
-
         //sort all the actors by y position
         this.sortAllActorsByY();
+      }
+
+      switch (this.cassetteIndex) {
+        case 0:
+          this.cassetteName = "IntroCassette";
+          this.keysHandler = IntroCassetteKeysHandler.bind(this);
+
+          this.processTick_CassetteSpecific = () => {
+            //check for mapJumpTriggers with playerActor
+            if (this.playerActor.actorState != CharacterStateTypes.jumping) {
+              this.mapJumpTriggers.some((trigger) => {
+                if (PawnActorIsOnTrigger(this.playerActor, trigger)) {
+                  if (
+                    this.playerActor.facingDirection ===
+                      trigger.jumpDirection &&
+                    this.playerActor.actorState ===
+                      trigger.actionToTrigger + "ing"
+                  ) {
+                    //console.log("is within jump trigger...");
+                    this.playerActor.toJumpState(trigger.jumpMagnitude);
+
+                    const audios =
+                      this.actorSoundsBlobDictionary[this.playerActor.actorName]
+                        ?.jump;
+                    if (audios) {
+                      this.playAudioRandomWithRandomVolume(audios);
+                    }
+                  }
+                  return true;
+                }
+              });
+            }
+
+            this.moveCameraToActor(this.playerActor);
+            this.sanitizeCameraPosition();
+          };
+          break;
+
+        case 1:
+          //default settings for ease of change
+          const defaultTextAlignment = "start";
+          const defaultFontFamily = "Darinia";
+          const defaultMainFontColor = "rgba(73, 51, 51, 1)";
+          const defaultSecondaryFontColor = "rgba(170, 74, 29, 1)";
+          const defaultGoldCoinValueColor = "rgba(255, 255, 255, 1)";
+          const defaultBlockPathColor = "rgba(103, 255, 136, 0.5)";
+
+          this.cassetteName = "DefenseMarchCassette";
+          this.keysHandler = DefenseMarchKeysHandler.bind(this);
+
+          //creating HUDs for DefenseMarch
+          this.gameRootHUD = new rootHUD(
+            "Root",
+            0,
+            0,
+            this.contentCanvas.width,
+            this.contentCanvas.height,
+          );
+
+          //StartGame child hud
+          const CHUDStartGame = new childHUD(
+            "CHUDStartGame",
+            0,
+            0,
+            this.contentCanvas.width,
+            this.contentCanvas.height,
+          );
+
+          const LTitleDefense = new Label(
+            "LTitleDefense",
+            136,
+            51,
+            258,
+            68,
+            "DEFENSE",
+            defaultTextAlignment,
+            "rgba(83, 206, 231, 1)",
+            60,
+            defaultFontFamily,
+          );
+          const LTitleMarch = new Label(
+            "LTitleMarch",
+            165,
+            98.5,
+            191,
+            58.5,
+            "MARCH",
+            defaultTextAlignment,
+            "rgba(75, 80, 18, 1)",
+            48,
+            defaultFontFamily,
+          );
+
+          const BTNStart = new Button(
+            "BTNStart",
+            209.17,
+            212.83,
+            107,
+            39.67,
+            null,
+            null,
+            "START",
+          );
+          BTNStart.updateLabelTextData(
+            null,
+            null,
+            null,
+            null,
+            "START",
+            defaultTextAlignment,
+            "rgba(170, 74, 29, 0.5)",
+            33,
+            null,
+          );
+          BTNStart.onPointerEnter = () => {
+            BTNStart.setLabelColor(defaultSecondaryFontColor);
+            this.contentCanvas.dataset.hoverable = "pointer";
+          };
+          BTNStart.onPointerLeave = () => {
+            BTNStart.setLabelColor("rgba(170, 74, 29, 0.5)");
+            this.contentCanvas.dataset.hoverable = "default";
+          };
+
+          BTNStart.onClick = () => {
+            this.gameRootHUD.setHUDActive("CHUDStartGame", false);
+            this.gameRootHUD.setHUDActive("CHUDMain", true);
+            this.contentCanvas.dataset.hoverable = "default";
+          };
+
+          CHUDStartGame.addUIElement(LTitleDefense);
+          CHUDStartGame.addUIElement(LTitleMarch);
+          CHUDStartGame.addUIElement(BTNStart);
+
+          this.gameRootHUD.addChildHUD(CHUDStartGame);
+          this.gameRootHUD.setHUDActive("CHUDStartGame", true);
+
+          //Main child hud
+          const CHUDMain = new childHUD(
+            "CHUDMain",
+            0,
+            0,
+            this.contentCanvas.width,
+            this.contentCanvas.height,
+          );
+          this.gameRootHUD.addChildHUD(CHUDMain);
+
+          //Properties specifics for CHUDMain
+          CHUDMain.currentActiveCharacterButtonIndex = 0;
+          CHUDMain.CharacterButtonArray = [];
+
+          //UIElement for CharacterButton contain only the active one
+          CHUDMain.UIElements.SelectedCharacter = null;
+
+          //IM -> non HUD image, I -> HUD image
+          const IMCharacterPortraitContainer = await loadImage(
+            "/DefenseMarchCassette/Images/characterPortraitContainer.png",
+          );
+
+          const ICharacterPortraitContainer = new UImage(
+            "ICharacterPortraitContainer",
+            84.33,
+            194.33,
+            IMCharacterPortraitContainer.width,
+            IMCharacterPortraitContainer.height,
+            IMCharacterPortraitContainer,
+            0,
+            0,
+            false,
+            null,
+          );
+          ICharacterPortraitContainer.setImageDimensions(0, 0, 74.67, 84.67);
+          CHUDMain.addUIElement(ICharacterPortraitContainer);
+
+          const IMArrowButton = await loadImage(
+            "/DefenseMarchCassette/Images/arrowButton.png",
+          );
+
+          const BTNArrowButtonPrev = new Button(
+            "BTNArrowButtonPrev",
+            61,
+            230,
+            IMArrowButton.width + 5.5,
+            IMArrowButton.height + 5.5,
+            null,
+            IMArrowButton,
+            null,
+          );
+          BTNArrowButtonPrev.flipHorizontal = true;
+          BTNArrowButtonPrev.opacity = 0.5;
+
+          BTNArrowButtonPrev.onPointerEnter = () => {
+            this.contentCanvas.dataset.hoverable = "pointer";
+            BTNArrowButtonPrev.opacity = 1.0;
+          };
+
+          BTNArrowButtonPrev.onPointerLeave = () => {
+            this.contentCanvas.dataset.hoverable = "default";
+            BTNArrowButtonPrev.opacity = 0.5;
+          };
+
+          BTNArrowButtonPrev.onClick = () => {
+            CHUDMain.currentActiveCharacterButtonIndex =
+              CHUDMain.currentActiveCharacterButtonIndex - 1;
+
+            if (CHUDMain.currentActiveCharacterButtonIndex < 0) {
+              CHUDMain.currentActiveCharacterButtonIndex =
+                CHUDMain.CharacterButtonArray.length - 1;
+            }
+
+            CHUDMain.UIElements.SelectedCharacter =
+              CHUDMain.CharacterButtonArray[
+                CHUDMain.currentActiveCharacterButtonIndex
+              ];
+            CHUDMain.updateCharacterStatsAndCostsLabels();
+
+            //force reset the cursor style to pointer because sometimes clicking on it will cause shifting of the layers which made the pointer temporarily leaving the canvas
+            // requestAnimationFrame(() => {
+            //   this.contentCanvas.style.cursor = "pointer";
+            // });
+            //^ don't need this anymore since we are using custom cursor
+          };
+          CHUDMain.addUIElement(BTNArrowButtonPrev);
+
+          const BTNArrowButtonNext = new Button(
+            "BTNArrowButtonNext",
+            161.33,
+            230,
+            IMArrowButton.width + 5.5,
+            IMArrowButton.height + 5.5,
+            null,
+            IMArrowButton,
+            null,
+          );
+          BTNArrowButtonNext.opacity = 0.5;
+
+          BTNArrowButtonNext.onPointerEnter = () => {
+            this.contentCanvas.dataset.hoverable = "pointer";
+            BTNArrowButtonNext.opacity = 1.0;
+          };
+
+          BTNArrowButtonNext.onPointerLeave = () => {
+            this.contentCanvas.dataset.hoverable = "default";
+            BTNArrowButtonNext.opacity = 0.5;
+          };
+
+          BTNArrowButtonNext.onClick = () => {
+            CHUDMain.currentActiveCharacterButtonIndex =
+              CHUDMain.currentActiveCharacterButtonIndex + 1;
+
+            if (
+              CHUDMain.currentActiveCharacterButtonIndex >=
+              CHUDMain.CharacterButtonArray.length
+            ) {
+              CHUDMain.currentActiveCharacterButtonIndex = 0;
+            }
+
+            CHUDMain.UIElements.SelectedCharacter =
+              CHUDMain.CharacterButtonArray[
+                CHUDMain.currentActiveCharacterButtonIndex
+              ];
+            CHUDMain.updateCharacterStatsAndCostsLabels();
+          };
+          CHUDMain.addUIElement(BTNArrowButtonNext);
+
+          //character icons as buttons for summoning
+          //no prefixes and use camelCase for character button names for ease of accessing the actual character names from blobs dictionary
+          const IMCleric = await loadImage(
+            "/DefenseMarchCassette/CharacterPortraits/cleric/portrait.png",
+          );
+          const BTNCleric = new Button(
+            "cleric",
+            106.67,
+            222,
+            IMCleric.width,
+            IMCleric.height,
+            null,
+            IMCleric,
+          );
+          CHUDMain.CharacterButtonArray.push(BTNCleric);
+
+          const IMElfRangerRookie = await loadImage(
+            "/DefenseMarchCassette/CharacterPortraits/elfRangerRookie/portrait.png",
+          );
+          const BTNElfRangerRookie = new Button(
+            "elfRangerRookie",
+            112.67,
+            223.33,
+            IMElfRangerRookie.width,
+            IMElfRangerRookie.height,
+            null,
+            IMElfRangerRookie,
+          );
+          CHUDMain.CharacterButtonArray.push(BTNElfRangerRookie);
+
+          const IMFowlGladiator = await loadImage(
+            "/DefenseMarchCassette/CharacterPortraits/fowlGladiator/portrait.png",
+          );
+          const BTNFowlGladiator = new Button(
+            "fowlGladiator",
+            100,
+            227.33,
+            IMFowlGladiator.width,
+            IMFowlGladiator.height,
+            null,
+            IMFowlGladiator,
+          );
+          CHUDMain.CharacterButtonArray.push(BTNFowlGladiator);
+
+          const IMGolemSentinel = await loadImage(
+            "/DefenseMarchCassette/CharacterPortraits/golemSentinel/portrait.png",
+          );
+          const BTNGolemSentinel = new Button(
+            "golemSentinel",
+            95,
+            203.33,
+            IMGolemSentinel.width,
+            IMGolemSentinel.height,
+            null,
+            IMGolemSentinel,
+          );
+          CHUDMain.CharacterButtonArray.push(BTNGolemSentinel);
+
+          const IMKnight = await loadImage(
+            "/DefenseMarchCassette/CharacterPortraits/knight/portrait.png",
+          );
+          const BTNKnight = new Button(
+            "knight",
+            110.67,
+            216.33,
+            IMKnight.width,
+            IMKnight.height,
+            null,
+            IMKnight,
+          );
+          CHUDMain.CharacterButtonArray.push(BTNKnight);
+
+          const IMElfRangerVeteran = await loadImage(
+            "/DefenseMarchCassette/CharacterPortraits/elfRangerVeteran/portrait.png",
+          );
+          const BTNElfRangerVeteran = new Button(
+            "elfRangerVeteran",
+            100.67,
+            217.67,
+            IMElfRangerVeteran.width,
+            IMElfRangerVeteran.height,
+            null,
+            IMElfRangerVeteran,
+          );
+          CHUDMain.CharacterButtonArray.push(BTNElfRangerVeteran);
+
+          const IMWizard = await loadImage(
+            "/DefenseMarchCassette/CharacterPortraits/wizard/portrait.png",
+          );
+          const BTNWizard = new Button(
+            "wizard",
+            111.33,
+            217.33,
+            IMWizard.width,
+            IMWizard.height,
+            null,
+            IMWizard,
+          );
+          CHUDMain.CharacterButtonArray.push(BTNWizard);
+
+          CHUDMain.UIElements.SelectedCharacter =
+            CHUDMain.CharacterButtonArray[0];
+
+          //character stats banner and detail texts
+          const IMCharacterStatsBanner = await loadImage(
+            "/DefenseMarchCassette/Images/characterStatsBanner.png",
+          );
+          //the width and height of the element itself only affects background image, use setImageDimensions to modify the image itself
+          const ICharacterStatsBanner = new UImage(
+            "ICharacterStatsBanner",
+            206.5,
+            193.33,
+            211.5,
+            85,
+            IMCharacterStatsBanner,
+            0,
+            0,
+            false,
+            null,
+          );
+          ICharacterStatsBanner.setImageDimensions(0, 0, 211.5, 85);
+          CHUDMain.addUIElement(ICharacterStatsBanner);
+
+          const LCharacterName = new Label(
+            "LCharacterName",
+            229,
+            197.33,
+            160,
+            13,
+            "Lorem Ipsum",
+            defaultTextAlignment,
+            defaultSecondaryFontColor,
+            12,
+            defaultFontFamily,
+            false,
+          );
+          CHUDMain.addUIElement(LCharacterName);
+
+          const LLevelTag = new Label(
+            "LLevelTag",
+            229,
+            211.17,
+            19.67,
+            13,
+            "LV:",
+            defaultTextAlignment,
+            defaultMainFontColor,
+            10,
+            defaultFontFamily,
+            false,
+          );
+          const LCharacterLevel = new Label(
+            "LCharacterLevel",
+            245,
+            211.17,
+            19.67,
+            13,
+            1,
+            defaultTextAlignment,
+            defaultSecondaryFontColor,
+            10,
+            defaultFontFamily,
+            false,
+          );
+          CHUDMain.addUIElement(LLevelTag);
+          CHUDMain.addUIElement(LCharacterLevel);
+
+          const LHPTag = new Label(
+            "LHPTag",
+            229.16,
+            225.67,
+            18.45,
+            13,
+            "HP:",
+            defaultTextAlignment,
+            defaultMainFontColor,
+            10,
+            defaultFontFamily,
+            false,
+          );
+          const LCharacterHP = new Label(
+            "LCharacterHP",
+            248.49,
+            225.67,
+            31,
+            13,
+            100,
+            defaultTextAlignment,
+            defaultSecondaryFontColor,
+            10,
+            defaultFontFamily,
+            false,
+          );
+          CHUDMain.addUIElement(LHPTag);
+          CHUDMain.addUIElement(LCharacterHP);
+
+          const LDefTag = new Label(
+            "LDefTag",
+            229.33,
+            236.67,
+            22.21,
+            13,
+            "DEF:",
+            defaultTextAlignment,
+            defaultMainFontColor,
+            10,
+            defaultFontFamily,
+            false,
+          );
+          const LCharacterDef = new Label(
+            "LCharacterDef",
+            253,
+            236.67,
+            29,
+            13,
+            10,
+            defaultTextAlignment,
+            defaultSecondaryFontColor,
+            10,
+            defaultFontFamily,
+            false,
+          );
+          CHUDMain.addUIElement(LDefTag);
+          CHUDMain.addUIElement(LCharacterDef);
+
+          const LAtkTag = new Label(
+            "LAtkTag",
+            314.58,
+            225.67,
+            25,
+            13,
+            "ATK:",
+            defaultTextAlignment,
+            defaultMainFontColor,
+            10,
+            defaultFontFamily,
+            false,
+          );
+          const LCharacterAtk = new Label(
+            "LCharacterAtk",
+            341.33,
+            225.67,
+            31,
+            13,
+            1,
+            defaultTextAlignment,
+            defaultSecondaryFontColor,
+            10,
+            defaultFontFamily,
+            false,
+          );
+          CHUDMain.addUIElement(LAtkTag);
+          CHUDMain.addUIElement(LCharacterAtk);
+
+          const LHealTag = new Label(
+            "LHealTag",
+            314.58,
+            236.67,
+            33,
+            13,
+            "HEAL:",
+            defaultTextAlignment,
+            defaultMainFontColor,
+            10,
+            defaultFontFamily,
+            false,
+          );
+          const LCharacterHeal = new Label(
+            "LCharacterHeal",
+            347.66,
+            236.67,
+            31,
+            13,
+            "N/A",
+            defaultTextAlignment,
+            defaultSecondaryFontColor,
+            10,
+            defaultFontFamily,
+            false,
+          );
+          CHUDMain.addUIElement(LHealTag);
+          CHUDMain.addUIElement(LCharacterHeal);
+
+          //create an array of characters name with space to show in the banner
+          CHUDMain.charactersDisplayName = [
+            "Cleric",
+            "Elf Ranger Rookie",
+            "Fowl Gladiator",
+            "Golem Sentinel",
+            "Knight",
+            "Elf Ranger Veteran",
+            "Wizard",
+          ];
+
+          //create functions for CHUDMain to update the labels
+          CHUDMain.updateCharacterStatsAndCostsLabels = () => {
+            let selectedCharacter = CHUDMain.UIElements.SelectedCharacter;
+
+            if (selectedCharacter) {
+              let selectedCharacterBlobDictionary =
+                this.pawnActorsBlobDictionary[selectedCharacter.elementName];
+
+              if (selectedCharacterBlobDictionary) {
+                //character stats
+                let selectedCharacterCurrentLevel =
+                  selectedCharacterBlobDictionary.currentLevel;
+                CHUDMain.UIElements.LCharacterName.setLabelText(
+                  CHUDMain.charactersDisplayName[
+                    CHUDMain.currentActiveCharacterButtonIndex
+                  ],
+                );
+                CHUDMain.UIElements.LCharacterLevel.setLabelText(
+                  selectedCharacterBlobDictionary.currentLevel,
+                );
+
+                let selectedCharacterCurrentStats =
+                  selectedCharacterBlobDictionary.defaultStats;
+
+                CHUDMain.UIElements.LCharacterHP.setLabelText(
+                  selectedCharacterCurrentStats.health +
+                    selectedCharacterCurrentLevel *
+                      selectedCharacterBlobDictionary.motionValues[0],
+                );
+                CHUDMain.UIElements.LCharacterDef.setLabelText(
+                  selectedCharacterCurrentStats.defense +
+                    selectedCharacterCurrentLevel *
+                      selectedCharacterBlobDictionary.motionValues[1],
+                );
+                CHUDMain.UIElements.LCharacterAtk.setLabelText(
+                  selectedCharacterCurrentStats.attack +
+                    selectedCharacterCurrentLevel *
+                      selectedCharacterBlobDictionary.motionValues[2],
+                );
+
+                let healing =
+                  selectedCharacterCurrentStats.healing +
+                  selectedCharacterCurrentLevel *
+                    selectedCharacterBlobDictionary.motionValues[5];
+                CHUDMain.UIElements.LCharacterHeal.setLabelText(
+                  healing === 0 ? "N/A" : healing,
+                );
+
+                //if character level is maxed
+                if (
+                  selectedCharacterCurrentLevel >=
+                  selectedCharacterBlobDictionary.maxLevel
+                ) {
+                  CHUDMain.UIElements.LCharacterUpgradeCost.setLabelText("N/A");
+                  CHUDMain.UIElements.BUpgradeCharacter.setLabelText(
+                    "MAXED LV",
+                  );
+                } else {
+                  //character and upgrade costs
+                  const characterUpgradeAndDeploymentCost =
+                    selectedCharacterBlobDictionary.goldCoins *
+                    selectedCharacterBlobDictionary.currentLevel;
+
+                  CHUDMain.UIElements.LCharacterUpgradeCost.setLabelText(
+                    characterUpgradeAndDeploymentCost,
+                    true,
+                  );
+                  CHUDMain.UIElements.LCharacterDeploymentCost.setLabelText(
+                    characterUpgradeAndDeploymentCost,
+                    true,
+                  );
+                }
+              }
+            }
+          };
+
+          CHUDMain.updateCurrentGoldCoinsLabel = () => {
+            CHUDMain.UIElements.LCurrentGoldCoins.setLabelText(
+              this.goldCoins,
+              true,
+            );
+          };
+
+          CHUDMain.updateCurrentTotalUnitsLabel = () => {
+            CHUDMain.UIElements.LCurrentTotalUnits.setLabelText(
+              `${this.currentTotalUnits}/${this.maxTotalUnits}`,
+            );
+          };
+
+          //upgrade character button
+          const IMCharacterUpgradeButton = await loadImage(
+            "/DefenseMarchCassette/Images/characterUpgradeButton.png",
+          );
+          const BTNUpgradeCharacter = new Button(
+            "BTNUpgradeCharacter",
+            229,
+            253,
+            148.33,
+            18.33,
+            null,
+            IMCharacterUpgradeButton,
+            "Upgrade",
+          );
+          BTNUpgradeCharacter.updateLabelTextData(
+            235,
+            255.83,
+            82,
+            13,
+            "Upgrade",
+            defaultTextAlignment,
+            defaultSecondaryFontColor,
+            12,
+            defaultFontFamily,
+          );
+
+          BTNUpgradeCharacter.onPointerEnter = () => {
+            this.contentCanvas.dataset.hoverable = "pointer";
+          };
+
+          BTNUpgradeCharacter.onPointerLeave = () => {
+            this.contentCanvas.dataset.hoverable = "default";
+          };
+
+          BTNUpgradeCharacter.onClick = () => {
+            //the upgrade should not work for the current pawns on field, it should only be affecting the new generated pawns
+            const selectedCharacter = CHUDMain.UIElements.SelectedCharacter;
+            if (selectedCharacter) {
+              const actorBlobDictionary =
+                this.pawnActorsBlobDictionary[selectedCharacter.elementName];
+              if (actorBlobDictionary) {
+                if (
+                  actorBlobDictionary.currentLevel <
+                  actorBlobDictionary.maxLevel
+                ) {
+                  const actorCost =
+                    (actorBlobDictionary.currentLevel + 1) *
+                    actorBlobDictionary.goldCoins;
+
+                  if (this.goldCoins - actorCost >= 0) {
+                    this.goldCoins -= actorCost;
+                    actorBlobDictionary.currentLevel += 1;
+
+                    CHUDMain.updateCharacterStatsAndCostsLabels();
+                    CHUDMain.updateCurrentGoldCoinsLabel();
+                  } else {
+                    console.log("insufficient gold to upgrade the character.");
+                  }
+                } else {
+                  console.log("unable to upgrade, character is at max level.");
+                }
+              }
+            }
+          };
+
+          CHUDMain.addUIElement(BTNUpgradeCharacter);
+
+          //current gold coins banner and current units banner
+          const IMGeneralBanner = await loadImage(
+            "/DefenseMarchCassette/Images/generalBanner.png",
+          );
+          const ICurrentGoldCoinsBanner = new UImage(
+            "ICurrentGoldCoinsBanner",
+            32.91,
+            10.78,
+            108,
+            40,
+            null,
+            0,
+            0,
+            false,
+            IMGeneralBanner,
+          );
+          const ICurrentUnitsBanner = new UImage(
+            "ICurrentUnitsBanner",
+            151.54,
+            10.78,
+            108,
+            40,
+            null,
+            0,
+            0,
+            false,
+            IMGeneralBanner,
+          );
+
+          CHUDMain.addUIElement(ICurrentGoldCoinsBanner);
+          CHUDMain.addUIElement(ICurrentUnitsBanner);
+
+          //gold coin icons and their respective value labels
+          const IMGoldCoinIcon = await loadImage(
+            "/DefenseMarchCassette/Images/goldCoinIcon.png",
+          );
+
+          const ICUCGoldCoinIcon = new UImage(
+            "ICUCGoldCoinIcon",
+            327.67,
+            255.67,
+            12,
+            12,
+            null,
+            0,
+            0,
+            false,
+            IMGoldCoinIcon,
+          );
+          const LCharacterUpgradeCost = new Label(
+            "LCharacterUpgradeCost",
+            342,
+            255.67,
+            36.5,
+            12,
+            100,
+            defaultTextAlignment,
+            defaultGoldCoinValueColor,
+            10,
+            defaultFontFamily,
+            false,
+            null,
+          );
+
+          const ICDCGoldCoinIcon = new UImage(
+            "ICDCGoldCoinIcon",
+            102.65,
+            262.25,
+            7,
+            7,
+            null,
+            0,
+            0,
+            false,
+            IMGoldCoinIcon,
+          );
+          const LCharacterDeploymentCost = new Label(
+            "LCharacterDeploymentCost",
+            114,
+            260.17,
+            30,
+            12,
+            100,
+            defaultTextAlignment,
+            defaultGoldCoinValueColor,
+            10,
+            defaultFontFamily,
+            false,
+            null,
+          );
+
+          const ICurrentGoldCoinIcon = new UImage(
+            "ICurrentGoldCoinIcon",
+            54.6,
+            25.5,
+            16,
+            16,
+            null,
+            0,
+            0,
+            false,
+            IMGoldCoinIcon,
+          );
+
+          //the textAlign from context is not really the text alignment we think it is, it's more like the alignment for the textbox itself
+          //for the text to start from right to left, we have to either:
+          //context2d.direction = "rtl";
+          //OR
+          //context2d.textAlign = "end"; <- actual right alignment if direction is ltr  (have to offset the dx as the "textbox" doesn't move)
+          const LCurrentGoldCoins = new Label(
+            "LCurrentGoldCoins",
+            117.5,
+            25.1,
+            44.5,
+            19,
+            0,
+            "end",
+            defaultMainFontColor,
+            17,
+            defaultFontFamily,
+            false,
+            null,
+          );
+
+          CHUDMain.addUIElement(ICUCGoldCoinIcon);
+          CHUDMain.addUIElement(LCharacterUpgradeCost);
+
+          CHUDMain.addUIElement(ICDCGoldCoinIcon);
+          CHUDMain.addUIElement(LCharacterDeploymentCost);
+
+          CHUDMain.addUIElement(ICurrentGoldCoinIcon);
+          CHUDMain.addUIElement(LCurrentGoldCoins);
+
+          //current units icon and label
+          const IMHelmetIcon = await loadImage(
+            "/DefenseMarchCassette/Images/helmetIcon.png",
+          );
+          const IUnitIcon = new UImage(
+            "IUnitIcon",
+            172.5,
+            27,
+            16,
+            16,
+            null,
+            0,
+            0,
+            false,
+            IMHelmetIcon,
+          );
+          const LCurrentTotalUnits = new Label(
+            "LCurrentTotalUnit",
+            190,
+            26.33,
+            49.5,
+            19,
+            `${this.currentTotalUnits}/${this.maxTotalUnits}`,
+            defaultTextAlignment,
+            defaultMainFontColor,
+            17,
+            defaultFontFamily,
+            false,
+            null,
+          );
+
+          CHUDMain.addUIElement(IUnitIcon);
+          CHUDMain.addUIElement(LCurrentTotalUnits);
+
+          //temporarily use a fixed width and height defined here
+          const blockWidth = 485;
+          const blockHeight = 32.5;
+          //characters walkpath blocks
+          const BLTopWalkPath = new Block(
+            "BLTopWalkPath",
+            0,
+            this.allySummonLocations[0].y - 30,
+            blockWidth,
+            blockHeight,
+            defaultBlockPathColor,
+            true,
+            null,
+          );
+          const BLMiddleWalkPath = new Block(
+            "BLMiddleWalkPath",
+            0,
+            this.allySummonLocations[1].y - 30,
+            blockWidth,
+            blockHeight,
+            defaultBlockPathColor,
+            true,
+            null,
+          );
+          const BLBottomWalkPath = new Block(
+            "BLBottomWalkPath",
+            0,
+            this.allySummonLocations[2].y - 27,
+            blockWidth,
+            blockHeight,
+            defaultBlockPathColor,
+            true,
+            null,
+          );
+
+          BLTopWalkPath.setOpacity(0);
+          BLMiddleWalkPath.setOpacity(0);
+          BLBottomWalkPath.setOpacity(0);
+
+          BLTopWalkPath.onPointerEnter = () => {
+            this.contentCanvas.dataset.hoverable = "pointer";
+            BLTopWalkPath.setOpacity(1);
+          };
+          BLTopWalkPath.onPointerLeave = () => {
+            this.contentCanvas.dataset.hoverable = "default";
+            BLTopWalkPath.setOpacity(0);
+          };
+
+          BLMiddleWalkPath.onPointerEnter = () => {
+            this.contentCanvas.dataset.hoverable = "pointer";
+            BLMiddleWalkPath.setOpacity(1);
+          };
+          BLMiddleWalkPath.onPointerLeave = () => {
+            this.contentCanvas.dataset.hoverable = "default";
+            BLMiddleWalkPath.setOpacity(0);
+          };
+
+          BLBottomWalkPath.onPointerEnter = () => {
+            this.contentCanvas.dataset.hoverable = "pointer";
+            BLBottomWalkPath.setOpacity(1);
+          };
+          BLBottomWalkPath.onPointerLeave = () => {
+            this.contentCanvas.dataset.hoverable = "default";
+            BLBottomWalkPath.setOpacity(0);
+          };
+
+          CHUDMain.addUIElement(BLTopWalkPath);
+          CHUDMain.addUIElement(BLMiddleWalkPath);
+          CHUDMain.addUIElement(BLBottomWalkPath);
+
+          //run updateCharacterStatsAndCostsLabels once to rewrite the default values
+          CHUDMain.updateCharacterStatsAndCostsLabels();
+
+          break;
       }
 
       //Initial draw
@@ -901,7 +1478,7 @@ export default class ClientStatesManager {
         0,
         0,
         this.contentCanvas.width,
-        this.contentCanvas.height
+        this.contentCanvas.height,
       );
     }
   }
@@ -923,7 +1500,7 @@ export default class ClientStatesManager {
             0,
             0,
             this.contentCanvas.width,
-            this.contentCanvas.height
+            this.contentCanvas.height,
           );
         }
 
@@ -944,7 +1521,7 @@ export default class ClientStatesManager {
               context2d.drawImage(
                 tileBitmap,
                 actor.position.dx - this.cameraPosition.x,
-                actor.position.dy - this.cameraPosition.y
+                actor.position.dy - this.cameraPosition.y,
               );
             }
           }
@@ -981,11 +1558,15 @@ export default class ClientStatesManager {
                 actor.position.dx - this.cameraPosition.x,
                 actor.position.dy - this.cameraPosition.y,
                 currentFrameData.width,
-                currentFrameData.height
+                currentFrameData.height,
               );
             }
           }
         });
+
+        if (this.gameRootHUD) {
+          this.gameRootHUD.drawHUDs(context2d);
+        }
 
         renderLastTileActors.forEach((actor) => {
           /** @type {ImageBitmap} */
@@ -996,14 +1577,9 @@ export default class ClientStatesManager {
           context2d.drawImage(
             tileBitmap,
             actor.position.dx - this.cameraPosition.x,
-            actor.position.dy - this.cameraPosition.y
+            actor.position.dy - this.cameraPosition.y,
           );
         });
-
-        if(this.gameRootHUD)
-        {
-          this.gameRootHUD.drawHUDs(context2d);
-        }
       }
     } catch (err) {
       console.log("drawContentCanvas failed: ", err);
@@ -1025,14 +1601,12 @@ export default class ClientStatesManager {
     });
   }
 
-  async convertBlobToBitmap(base64BlobString)
-  {
-    const binaryString = atob(base64BlobString); 
+  async convertBlobToBitmap(base64BlobString) {
+    const binaryString = atob(base64BlobString);
     const len = binaryString.length;
     const bytes = new Uint8Array(len);
 
-    for(let i = 0; i < len; i++)
-    {
+    for (let i = 0; i < len; i++) {
       bytes[i] = binaryString.charCodeAt(i);
     }
 
@@ -1055,11 +1629,12 @@ export default class ClientStatesManager {
         rawActorStates.actorDefaultStats,
         rawActorStates.actorCurrentStats,
         rawActorStates.actorState,
-        rawStatesData.pawnActorsBlobDictionary[rawActorStates.actorName].animations,
+        rawStatesData.pawnActorsBlobDictionary[rawActorStates.actorName]
+          .animations,
         rawActorStates.currentLevel,
         rawActorStates.maxLevel,
         rawActorStates.collision,
-        rawActorStates.selectable
+        rawActorStates.selectable,
       );
 
       pawnActor.facingDirection = rawActorStates.facingDirection;
@@ -1069,7 +1644,7 @@ export default class ClientStatesManager {
 
     if (rawStatesData.playerActor) {
       this.playerActor = createPawnActorFromRawStates(
-        rawStatesData.playerActor
+        rawStatesData.playerActor,
       );
     }
 
@@ -1092,8 +1667,9 @@ export default class ClientStatesManager {
             rawActorStates.tempId,
             rawActorStates.position,
             rawActorStates.tiles,
-            rawActorStates.selectable
-          )
+            rawActorStates.renderLast,
+            rawActorStates.selectable,
+          ),
         );
       });
     }
@@ -1104,7 +1680,7 @@ export default class ClientStatesManager {
     this.cursorPosition = rawStatesData.cursorPosition;
 
     this.gameMapBackground = await this.convertBlobToBitmap(
-      rawStatesData.gameMapBackgroundBlob
+      rawStatesData.gameMapBackgroundBlob,
     ).catch((err) => null);
 
     if (this.gameMapBackground) {
@@ -1138,7 +1714,7 @@ export default class ClientStatesManager {
           const audios = [];
           for (let i = 0; i < trigger.totalVariations; i++) {
             const audio = new Audio(
-              `/${this.cassetteName}/TilesSFX/${trigger.actionToTrigger}/${trigger.filename}/${i}.wav`
+              `/${this.cassetteName}/TilesSFX/${trigger.actionToTrigger}/${trigger.filename}/${i}.wav`,
             );
             audios.push(audio);
           }
@@ -1172,7 +1748,9 @@ export default class ClientStatesManager {
           // maxLevel: 99
           // currentLevel: 1
 
-          const blobStruct = {...rawStatesData.pawnActorsBlobDictionary[actorName]};
+          const blobStruct = {
+            ...rawStatesData.pawnActorsBlobDictionary[actorName],
+          };
 
           await this.initActorAudios(actorName, "jump");
           await this.initActorAudios(actorName, "receiveDamage");
@@ -1183,7 +1761,7 @@ export default class ClientStatesManager {
 
           if (blobStruct.defaultActorImage) {
             blobStruct.defaultActorImage = await this.convertBlobToBitmap(
-              actorBlobDictionary.defaultActorImage
+              actorBlobDictionary.defaultActorImage,
             );
           }
 
@@ -1192,18 +1770,20 @@ export default class ClientStatesManager {
 
             const entries = await Promise.all(
               animationNames.map(async (animationName) => {
-                const animationBitmap = await this.convertBlobToBitmap(blobStruct.animationBlobs[animationName]);
+                const animationBitmap = await this.convertBlobToBitmap(
+                  blobStruct.animationBlobs[animationName],
+                );
                 return [animationName, animationBitmap];
-              })
+              }),
             );
 
             entries.forEach(([animationName, animationBitmap]) => {
               blobStruct.animationBlobs[animationName] = animationBitmap;
             });
           }
-          
+
           return [actorName, blobStruct];
-        })
+        }),
       );
 
       entries.forEach(([actorName, blobStruct]) => {
@@ -1219,11 +1799,11 @@ export default class ClientStatesManager {
       const entries = await Promise.all(
         tileGids.map(async (tileGid) => {
           const tileCanvas = await this.convertBlobToBitmap(
-            rawStatesData.tileActorsBlobDictionary[tileGid]
+            rawStatesData.tileActorsBlobDictionary[tileGid],
           );
 
           return [tileGid, tileCanvas];
-        })
+        }),
       );
 
       entries.forEach(([tileGid, tileCanvas]) => {
@@ -1234,6 +1814,9 @@ export default class ClientStatesManager {
     //for DefenseMarch
     this.allySummonLocations = rawStatesData.allySummonLocations;
     this.enemySummonLocations = rawStatesData.enemySummonLocations;
+
+    console.log("ally summon locations: ", this.allySummonLocations);
+    console.log("enemy summon locations: ", this.enemySummonLocations);
   }
 
   initWebSocket() {
@@ -1242,7 +1825,7 @@ export default class ClientStatesManager {
       `${import.meta.env.VITE_WS_CONNECTION}//${
         import.meta.env.VITE_ORIGIN_WITHOUT_HTTP
       }/cassetteSocket?userId=${this.userId}`,
-      `cassette-${this.cassetteIndex}`
+      `cassette-${this.cassetteIndex}`,
     );
 
     if (this.webSocket) {
@@ -1291,7 +1874,7 @@ export default class ClientStatesManager {
     this.keyEvents.forEach((eventName) => {
       this.consoleSvgRef.current.addEventListener(
         eventName,
-        this.setKeyActiveBound
+        this.setKeyActiveBound,
       );
     });
   }
@@ -1324,7 +1907,7 @@ export default class ClientStatesManager {
     this.keyEvents.forEach((eventName) => {
       this.consoleSvgRef.current.removeEventListener(
         eventName,
-        this.setKeyActiveBound
+        this.setKeyActiveBound,
       );
     });
   }
@@ -1435,7 +2018,7 @@ export default class ClientStatesManager {
       this.getDistanceSqBetween(
         this.cameraPosition,
         this.latestDataFromServer.value.cameraPosition,
-        "camera"
+        "camera",
       ) > acceptedSquaredDiscrepancy
     ) {
       this.cameraPosition = this.latestDataFromServer.value.cameraPosition;
@@ -1448,13 +2031,13 @@ export default class ClientStatesManager {
     if (
       this.getDistanceSqBetween(
         this.playerActor.position,
-        this.latestDataFromServer.value.playerActor.position
+        this.latestDataFromServer.value.playerActor.position,
       ) > acceptedSquaredDiscrepancy
     ) {
       this.playerActor.position = this.lerpPosition(
         this.playerActor.position,
         this.latestDataFromServer.value.playerActor.position,
-        0.1
+        0.1,
       );
     } else {
       this.playerActor.position =
@@ -1478,20 +2061,20 @@ export default class ClientStatesManager {
       const currentAllyPawnActor = this.allyPawnActors[index];
       const serializedActorDataFromServer =
         this.latestDataFromServer.value.allyPawnActors.find(
-          (serializedActorData) => serializedActorData.tempId === actor.tempId
+          (serializedActorData) => serializedActorData.tempId === actor.tempId,
         );
       if (serializedActorDataFromServer) {
         if (
           this.getDistanceSqBetween(
             this.allyPawnActors[index].position,
-            serializedActorDataFromServer.position
+            serializedActorDataFromServer.position,
           ) > acceptedSquaredDiscrepancy
         ) {
           console.log("reconciling allyPawnActor position...");
           currentAllyPawnActor.position = this.lerpPosition(
             currentAllyPawnActor.position,
             serializedActorDataFromServer.position,
-            0.1
+            0.1,
           );
         } else {
           currentAllyPawnActor.position =
@@ -1510,20 +2093,20 @@ export default class ClientStatesManager {
       const currentEnemyPawnActor = this.enemyPawnActors[index];
       const serializedActorDataFromServer =
         this.latestDataFromServer.value.enemyPawnActors.find(
-          (serializedActorData) => serializedActorData.tempId === actor.tempId
+          (serializedActorData) => serializedActorData.tempId === actor.tempId,
         );
       if (serializedActorDataFromServer) {
         if (
           this.getDistanceSqBetween(
             this.enemyPawnActors[index].position,
-            serializedActorDataFromServer.position
+            serializedActorDataFromServer.position,
           ) > acceptedSquaredDiscrepancy
         ) {
           console.log("reconciling enemyPawnActor position...");
           currentEnemyPawnActor.position = this.lerpPosition(
             currentEnemyPawnActor.position,
             serializedActorDataFromServer.position,
-            0.1
+            0.1,
           );
         } else {
           currentEnemyPawnActor.position =
@@ -1600,14 +2183,16 @@ export default class ClientStatesManager {
         userId: this.userId,
         type: messageType,
         message: message,
-      })
+      }),
     );
   }
 
   /** @param {Actor} actor */
   moveCameraToActor(actor) {
-    this.cameraPosition.x = actor.position.dx - this.contentCanvasDisplayWidth / 2;
-    this.cameraPosition.y = actor.position.dy - this.contentCanvasDisplayHeight / 2;
+    this.cameraPosition.x =
+      actor.position.dx - this.contentCanvasDisplayWidth / 2;
+    this.cameraPosition.y =
+      actor.position.dy - this.contentCanvasDisplayHeight / 2;
   }
 
   sanitizeCameraPosition = (printConsole = false) => {
@@ -1645,11 +2230,16 @@ export default class ClientStatesManager {
 
     //check how many files are in the folder
     let totalAudios = await fetch(
-      `/${this.cassetteName}/CharactersSFX/${actorName}/${stateOrAbilityName}/length.txt`
+      `/${this.cassetteName}/CharactersSFX/${actorName}/${stateOrAbilityName}/length.txt`,
     );
 
     if (!totalAudios.ok) {
-      console.log("unable to read totalAudios from ", actorName, " of state/ability named ", stateOrAbilityName);
+      console.log(
+        "unable to read totalAudios from ",
+        actorName,
+        " of state/ability named ",
+        stateOrAbilityName,
+      );
     } else {
       totalAudios = parseInt(await totalAudios.text());
 
@@ -1665,7 +2255,7 @@ export default class ClientStatesManager {
 
         for (let i = 0; i < totalAudios; i++) {
           const audio = new Audio(
-            `/${this.cassetteName}/CharactersSFX/${actorName}/${stateOrAbilityName}/${i}.wav`
+            `/${this.cassetteName}/CharactersSFX/${actorName}/${stateOrAbilityName}/${i}.wav`,
           );
           audios.push(audio);
         }

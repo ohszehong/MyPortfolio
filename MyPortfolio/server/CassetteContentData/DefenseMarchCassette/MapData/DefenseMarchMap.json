@@ -559,22 +559,11 @@
           "point": true,
           "rotation": 0,
           "type": "",
-          "visible": true,
-          "width": 0,
-          "x": 4.739229,
-          "y": 126.839
-        },
-        {
-          "height": 0,
-          "id": 2,
-          "name": "",
-          "point": true,
-          "rotation": 0,
-          "type": "",
+          "for": "ally",
           "visible": true,
           "width": 0,
           "x": 5,
-          "y": 185.887
+          "y": 127
         },
         {
           "height": 0,
@@ -583,10 +572,24 @@
           "point": true,
           "rotation": 0,
           "type": "",
+          "for": "ally",
           "visible": true,
           "width": 0,
           "x": 5,
-          "y": 158.304
+          "y": 158
+        },
+        {
+          "height": 0,
+          "id": 2,
+          "name": "",
+          "point": true,
+          "rotation": 0,
+          "type": "",
+          "for": "ally",
+          "visible": true,
+          "width": 0,
+          "x": 5,
+          "y": 186
         },
         {
           "height": 0,
@@ -595,22 +598,11 @@
           "point": true,
           "rotation": 0,
           "type": "",
+          "for": "enemy",
           "visible": true,
           "width": 0,
-          "x": 482.73923,
-          "y": 127.201666666667
-        },
-        {
-          "height": 0,
-          "id": 8,
-          "name": "",
-          "point": true,
-          "rotation": 0,
-          "type": "",
-          "visible": true,
-          "width": 0,
-          "x": 483,
-          "y": 186.249666666667
+          "x": 500,
+          "y": 127
         },
         {
           "height": 0,
@@ -619,10 +611,24 @@
           "point": true,
           "rotation": 0,
           "type": "",
+          "for": "enemy",
           "visible": true,
           "width": 0,
-          "x": 483,
-          "y": 158.666666666667
+          "x": 500,
+          "y": 159
+        },
+        {
+          "height": 0,
+          "id": 8,
+          "name": "",
+          "point": true,
+          "rotation": 0,
+          "type": "",
+          "for": "enemy",
+          "visible": true,
+          "width": 0,
+          "x": 500,
+          "y": 186
         }
       ],
       "opacity": 1,

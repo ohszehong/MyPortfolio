@@ -24,7 +24,7 @@ body {
   width: 21px;
   height: 21px;
   pointer-events: none;
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
   background-image: url("DefenseMarchCassette/Cursor/cursor.png");
   position: fixed;

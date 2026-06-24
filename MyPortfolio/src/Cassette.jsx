@@ -243,12 +243,12 @@ export default function Cassette({
         cassetteInPlay.current.getBoundingClientRect();
       const cassetteNewLeft =
         (consoleBodyBoundingRect.width - cassetteBoundingRect.width) / 2 +
-        consoleBodyBoundingRect.left;
+        consoleBodyBoundingRect.left + window.scrollX;
 
       const cassetteNewTop =
         consoleBodyBoundingRect.top +
         window.scrollY -
-        cassetteBoundingRect.height / 2; //DOMRect top is relative to the viewport, so we need to add the scrollY to get the correct position
+        cassetteBoundingRect.height / 2; //DOMRect top is relative to the viewport, so we need to add the scrollY to get the correct position, same for Left
 
       cassetteInPlay.current.style.left = `${cassetteNewLeft}px`;
       cassetteInPlay.current.style.top = `${cassetteNewTop}px`;

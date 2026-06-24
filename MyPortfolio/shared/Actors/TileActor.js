@@ -19,56 +19,47 @@ export default class TileActor extends Actor {
   currentFrameIndex = 0;
   totalDeltaTimeBeforeNextAnimationFrame = 0;
 
-  toJSON()
-  {
-     let data = super.toJSON();
+  toJSON() {
+    let data = super.toJSON();
 
-     data.tiles = [...this.tiles];
-     data.currentFrameIndex = this.currentFrameIndex;
-     data.totalDeltaTimeBeforeNextAnimationFrame = this.totalDeltaTimeBeforeNextAnimationFrame;
+    data.tiles = [...this.tiles];
+    data.renderLast = this.renderLast;
+    data.currentFrameIndex = this.currentFrameIndex;
+    data.totalDeltaTimeBeforeNextAnimationFrame =
+      this.totalDeltaTimeBeforeNextAnimationFrame;
 
-     return data;
+    return data;
   }
 
-  constructor(
-    tempId,
-    position,
-    tiles,
-    renderLast = false,
-    selectable = false
-  ) {
-    super(
-      tempId,
-      null,
-      position,
-      tiles[0].collision,
-      selectable
-    );
+  constructor(tempId, position, tiles, renderLast = false, selectable = false) {
+    super(tempId, null, position, tiles[0].collision, selectable);
     this.tiles = [...tiles];
 
     this.currentRenderData = {
-      tileGid: this.tiles[0].tileGid
-    }
+      tileGid: this.tiles[0].tileGid,
+    };
 
     this.renderLast = renderLast;
   }
 
-  playAnimation(deltaTime)
-  {
-    if(this.tiles.length <= 1) return;
-    
+  playAnimation(deltaTime) {
+    if (this.tiles.length <= 1) return;
+
     if (
       this.totalDeltaTimeBeforeNextAnimationFrame >=
       this.tiles[this.currentFrameIndex].duration
     ) {
       this.totalDeltaTimeBeforeNextAnimationFrame = 0;
       this.currentFrameIndex++;
-      
+
       //reset back to frame 0
       if (this.currentFrameIndex >= this.tiles.length) {
         this.currentFrameIndex = 0;
       }
-      this.collision = {source: this, ...this.tiles[this.currentFrameIndex].collision};
+      this.collision = {
+        source: this,
+        ...this.tiles[this.currentFrameIndex].collision,
+      };
     }
 
     this.totalDeltaTimeBeforeNextAnimationFrame += deltaTime;
