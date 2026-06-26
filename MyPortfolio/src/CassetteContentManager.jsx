@@ -18,7 +18,7 @@ const CassetteContentManager = ({
   useEffect(() => {
     ClientStatesManagerRef.current = new ClientStatesManager(
       consoleSvgRef,
-      buttonsRef
+      buttonsRef,
     );
 
     return () => {
@@ -26,11 +26,10 @@ const CassetteContentManager = ({
       //should destroy the entire ClientStatesManager as [] means entirely new reload
       //remember that any event listener that has reference to the ClientStatesManager might made it stay alive
       //which mean you need to have a destroy method to remove the event listeners so that the CSM can finally be collected by the GC
-      //ClientStatesManagerRef.current.resetStates();
       ClientStatesManagerRef.current.resetStates();
-      ClientStatesManagerRef.current.destroy(); 
+      ClientStatesManagerRef.current.destroy();
       ClientStatesManagerRef.current = null;
-      setCassetteInPlayIndex(null); 
+      setCassetteInPlayIndex(null);
     };
   }, []);
 
@@ -53,7 +52,7 @@ const CassetteContentManager = ({
       try {
         if (ClientStatesManagerRef.current) {
           await ClientStatesManagerRef.current.loadCassette(
-            cassetteInPlayIndex
+            cassetteInPlayIndex,
           );
           setIsLoadingContent(false);
 
@@ -61,7 +60,7 @@ const CassetteContentManager = ({
             contentParentDivRef.current.style.width = "100%";
             contentParentDivRef.current.style.height = "100%";
             contentParentDivRef.current.appendChild(
-              ClientStatesManagerRef.current.getContentCanvas()
+              ClientStatesManagerRef.current.getContentCanvas(),
             );
             contentParentDivRef.current.offsetHeight;
           }

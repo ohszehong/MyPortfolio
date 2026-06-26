@@ -24,6 +24,7 @@ import rootHUD from "../HUDs/rootHUD";
 import childHUD from "../HUDs/childHUD";
 
 import loadImage from "../Utilities/loadImage";
+import WalkPath from "../HUDs/WalkPath";
 
 export default class ClientStatesManager {
   userId = null;
@@ -1044,6 +1045,17 @@ export default class ClientStatesManager {
                     true,
                   );
                 }
+
+                //update tinted canvas for walkpaths
+                BLTopWalkPath.setCurrentCharacterTintedDefaultImageCanvasRef(
+                  selectedCharacterBlobDictionary.tintedDefaultImage,
+                );
+                BLMiddleWalkPath.setCurrentCharacterTintedDefaultImageCanvasRef(
+                  selectedCharacterBlobDictionary.tintedDefaultImage,
+                );
+                BLBottomWalkPath.setCurrentCharacterTintedDefaultImageCanvasRef(
+                  selectedCharacterBlobDictionary.tintedDefaultImage,
+                );
               }
             }
           };
@@ -1299,7 +1311,7 @@ export default class ClientStatesManager {
           const blockWidth = 485;
           const blockHeight = 32.5;
           //characters walkpath blocks
-          const BLTopWalkPath = new Block(
+          const BLTopWalkPath = new WalkPath(
             "BLTopWalkPath",
             0,
             this.allySummonLocations[0].y - 30,
@@ -1309,7 +1321,7 @@ export default class ClientStatesManager {
             true,
             null,
           );
-          const BLMiddleWalkPath = new Block(
+          const BLMiddleWalkPath = new WalkPath(
             "BLMiddleWalkPath",
             0,
             this.allySummonLocations[1].y - 30,
@@ -1319,10 +1331,10 @@ export default class ClientStatesManager {
             true,
             null,
           );
-          const BLBottomWalkPath = new Block(
+          const BLBottomWalkPath = new WalkPath(
             "BLBottomWalkPath",
             0,
-            this.allySummonLocations[2].y - 27,
+            this.allySummonLocations[2].y - 30,
             blockWidth,
             blockHeight,
             defaultBlockPathColor,
@@ -1364,6 +1376,45 @@ export default class ClientStatesManager {
           CHUDMain.addUIElement(BLTopWalkPath);
           CHUDMain.addUIElement(BLMiddleWalkPath);
           CHUDMain.addUIElement(BLBottomWalkPath);
+
+          //create tinted character still image (idle frame 0) on offscreen canvas for each character
+          for (const characterData of Object.values(
+            this.pawnActorsBlobDictionary,
+          )) {
+            if (characterData.targetType === "ally") {
+              const spritesheetOffset =
+                characterData.animations.idle.right.frames[0].spritesheetOffset;
+              const canvas = new OffscreenCanvas(
+                spritesheetOffset.width,
+                spritesheetOffset.height,
+              );
+              const context2d = canvas.getContext("2d");
+
+              context2d.save();
+              context2d.drawImage(
+                characterData.animationBlobs.idle,
+                spritesheetOffset.x,
+                spritesheetOffset.y,
+                spritesheetOffset.width,
+                spritesheetOffset.height,
+                0,
+                0,
+                spritesheetOffset.width,
+                spritesheetOffset.height,
+              );
+              context2d.globalCompositeOperation = "source-atop";
+              context2d.fillStyle = defaultBlockPathColor;
+              context2d.fillRect(
+                0,
+                0,
+                spritesheetOffset.width,
+                spritesheetOffset.height,
+              );
+              context2d.restore();
+
+              characterData.tintedDefaultImage = canvas;
+            }
+          }
 
           //run updateCharacterStatsAndCostsLabels once to rewrite the default values
           CHUDMain.updateCharacterStatsAndCostsLabels();
@@ -1773,6 +1824,7 @@ export default class ClientStatesManager {
                 const animationBitmap = await this.convertBlobToBitmap(
                   blobStruct.animationBlobs[animationName],
                 );
+
                 return [animationName, animationBitmap];
               }),
             );
