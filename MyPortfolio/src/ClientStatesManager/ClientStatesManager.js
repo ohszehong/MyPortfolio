@@ -186,6 +186,10 @@ export default class ClientStatesManager {
     );
 
     this.resetStates();
+
+    //reset buttons doesn't remove the reference to the buttons but only the listeners
+    //explicitly remove the references here
+    this.buttonsRef = null;
   }
 
   handlePointerMoveOnCanvas = (event) => {
@@ -264,7 +268,9 @@ export default class ClientStatesManager {
         while (this.accumulatedDeltaTime >= this.FIXED_DELTA_TIME_FROM_SERVER) {
           const shouldNotAcceptNewInput = this.reconcileDataFromServer();
           if (!shouldNotAcceptNewInput) {
-            this.keysHandler();
+            if (this.keysHandler) {
+              this.keysHandler();
+            }
 
             processTick_General(this, this.FIXED_DELTA_TIME_FROM_SERVER);
 

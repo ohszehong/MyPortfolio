@@ -22,7 +22,7 @@ const CassetteContentManager = ({
     );
 
     return () => {
-      //console.log("destroy...");
+      console.log("destroy...");
       //should destroy the entire ClientStatesManager as [] means entirely new reload
       //remember that any event listener that has reference to the ClientStatesManager might made it stay alive
       //which mean you need to have a destroy method to remove the event listeners so that the CSM can finally be collected by the GC
