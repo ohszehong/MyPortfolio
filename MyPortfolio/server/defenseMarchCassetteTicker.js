@@ -1,103 +1,115 @@
 import { parentPort } from "worker_threads";
 
-import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageTypes.json" with {type: "json"};
-import FacingDirections from "../shared/Standards/StringKeys/FacingDirections.json" with {type: "json"};
+import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
+import FacingDirections from "../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
 import GameStatesManager from "./GameStatesManager/GameStatesManager.js";
 import { PawnActorIsOnTrigger } from "../shared/CollisionsDetector/CollisionsDetector.js";
 import processTick_General from "../shared/TickProcess/processTick_General.js";
 
-/** @type {Object<string, GameStatesManager>} */
-let clients = {
-
-};
-
 let clientIds = [];
 
-const fixedDeltaTimePerTick = 1000 / 60; //60 FPS
-let prevTime = performance.now();
+/** @type {Object<string, DefenseMarchClient>} */
+let clients = {};
 
-function init()
-{
-    parentPort.on("message", (message) => {
-        switch(message.type)
-        {
-            case SocketMessageTypes.serializedClientManager:
-                console.log("adding new client to defenseMarchCassetteTicker...");
-                clients[message.value.userId] = GameStatesManager.constructFromSerializedJSON(message.value);
-                clientIds.push(message.value.userId);
-                break;
+const FIXED_DELTA_TIME_PER_TICK = 1000 / 60; //60 FPS
+class DefenseMarchClient {
+  /** @type {GameStatesManager} */
+  gameStateManager;
+  prevTime;
 
-            case SocketMessageTypes.userInput:
-                const clientManager = clients[message.value.userId];
-                if(!clientManager) return;
+  constructor(gameStateManager) {
+    this.gameStateManager = gameStateManager;
+    this.prevTime = performance.now();
+  }
 
-                if(message.value.inputName === "a")
-                {
-                    //clientManager.playerActor.toWalkState(FacingDirections.left);
-                }
-                else if(message.value.inputName === "d")
-                {
-                    //clientManager.playerActor.toWalkState(FacingDirections.right);
-                }
-                else if(message.value.inputName === "w")
-                {
-                    //clientManager.playerActor.toWalkState(FacingDirections.up);
-                }
-                else if(message.value.inputName === "s")
-                {
-                    //clientManager.playerActor.toWalkState(FacingDirections.down);
-                }
-                else if(message.value.inputName === "idle")
-                {
-                    //clientManager.playerActor.toIdleState();
-                }
-                break;
+  simulateGame() {
+    const now = performance.now();
+    const timeDiff = now - this.prevTime;
 
-            case SocketMessageTypes.removeClientManager:
-                console.log(`removing client with userId of ${message.value}`);
-                const index = clientIds.findIndex((clientId) => clientId === message.value);
-                clientIds.splice(index, 1);
-                delete clients[message.value];
-        }
-    });
+    //max-step: 5
+    const step = Math.max(Math.trunc(timeDiff / FIXED_DELTA_TIME_PER_TICK), 5);
+    const totalDelta = FIXED_DELTA_TIME_PER_TICK * step;
+    const remainder = timeDiff - totalDelta;
+    this.prevTime = now + remainder;
 
-    function tick()
-    {
-        const now = performance.now();
-        prevTime = now;
-
-        updateGame(fixedDeltaTimePerTick);
-
-        const drift = performance.now() - now;
-        setTimeout(tick, Math.max(0, fixedDeltaTimePerTick - drift));
-    }
-
-    tick();
+    //simulate ticks
+    processTick_General(this.gameStateManager, totalDelta);
+  }
 }
 
-function updateGame(deltaTime)
-{
-    let payloads = {};
+function init() {
+  parentPort.on("message", (message) => {
+    switch (message.type) {
+      case SocketMessageTypes.serializedClientManager:
+        ow = performance.now();
+        console.log("adding new client to defenseMarchCassetteTicker...");
+        const gameStateManager = GameStatesManager.constructFromSerializedJSON(
+          message.value,
+        );
+        clients[message.value.userId] = new DefenseMarchClient(
+          gameStateManager,
+        );
+        clientIds.push(message.value.userId);
+        break;
 
-    if(clientIds.length > 0)
-    {
-        clientIds.forEach((clientId) => {
-            const currentClient = clients[clientId];
+      case SocketMessageTypes.userInput:
+        const clientManager = clients[message.value.userId];
+        if (!clientManager) return;
 
-            if(currentClient)
-            {
-                //console.log("current client: ", currentClient.userId);
-                processTick_General(currentClient, deltaTime);
-                payloads[clientId] = currentClient.toJSON("client_payload");
-            }
-        });
+        if (message.value.inputName === "a") {
+          //clientManager.playerActor.toWalkState(FacingDirections.left);
+        } else if (message.value.inputName === "d") {
+          //clientManager.playerActor.toWalkState(FacingDirections.right);
+        } else if (message.value.inputName === "w") {
+          //clientManager.playerActor.toWalkState(FacingDirections.up);
+        } else if (message.value.inputName === "s") {
+          //clientManager.playerActor.toWalkState(FacingDirections.down);
+        } else if (message.value.inputName === "idle") {
+          //clientManager.playerActor.toIdleState();
+        }
+        break;
 
-        //broadcast payloads to all clients
-        parentPort.postMessage({
-            type: SocketMessageTypes.clientsPayload,
-            value: payloads
-        })
+      case SocketMessageTypes.removeClientManager:
+        console.log(`removing client with userId of ${message.value}`);
+        const index = clientIds.findIndex(
+          (clientId) => clientId === message.value,
+        );
+        clientIds.splice(index, 1);
+        delete clients[message.value];
     }
+  });
+
+  function tick() {
+    updateClients();
+    setTimeout(tick, FIXED_DELTA_TIME_PER_TICK);
+  }
+
+  tick();
+}
+
+function updateClients() {
+  let payloads = {};
+
+  if (clientIds.length > 0) {
+    clientIds.forEach((clientId) => {
+      const currentClient = clients[clientId];
+
+      if (currentClient) {
+        currentClient.simulateGame();
+        payloads[clientId] =
+          currentClient.gameStateManager.toJSON("client_payload");
+      }
+    });
+
+    //TO-DO: don't have to send payload every single frame for a single player game
+    //only send for things that actually matters, like saving the game and etc...
+    //we can temporarily use it to test the latency
+    //broadcast payloads to all clients
+    parentPort.postMessage({
+      type: SocketMessageTypes.clientsPayload,
+      value: payloads,
+    });
+  }
 }
 
 init();
