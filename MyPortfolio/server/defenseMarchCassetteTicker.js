@@ -41,7 +41,6 @@ function init() {
   parentPort.on("message", (message) => {
     switch (message.type) {
       case SocketMessageTypes.serializedClientManager:
-        ow = performance.now();
         console.log("adding new client to defenseMarchCassetteTicker...");
         const gameStateManager = GameStatesManager.constructFromSerializedJSON(
           message.value,
@@ -96,8 +95,8 @@ function updateClients() {
 
       if (currentClient) {
         currentClient.simulateGame();
-        payloads[clientId] =
-          currentClient.gameStateManager.toJSON("client_payload");
+        // payloads[clientId] =
+        //   currentClient.gameStateManager.toJSON("client_payload");
       }
     });
 
@@ -105,10 +104,10 @@ function updateClients() {
     //only send for things that actually matters, like saving the game and etc...
     //we can temporarily use it to test the latency
     //broadcast payloads to all clients
-    parentPort.postMessage({
-      type: SocketMessageTypes.clientsPayload,
-      value: payloads,
-    });
+    // parentPort.postMessage({
+    //   type: SocketMessageTypes.clientsPayload,
+    //   value: payloads,
+    // });
   }
 }
 

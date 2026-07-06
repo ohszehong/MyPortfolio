@@ -7,8 +7,8 @@ import SocketMessageTypes from "../../shared/Standards/StringKeys/SocketMessageT
 import PawnActor from "../../shared/Actors/PawnActor";
 import TileActor from "../../shared/Actors/TileActor";
 
-import IntroCassetteKeysHandler from "./InputCheckers/IntroCassetteButtonsInputChecker";
-import DefenseMarchKeysHandler from "./InputCheckers/DefenseMarchCassetteButtonsInputChecker";
+import IntroCassetteButtonsInputCheckers from "./ButtonsInputCheckers/IntroCassetteButtonsInputChecker";
+import DefenseMarchButtonsInputCheckers from "./ButtonsInputCheckers/DefenseMarchCassetteButtonsInputChecker";
 
 import {
   AIsCollidedWithB,
@@ -426,7 +426,7 @@ export default class ClientStatesManager {
       switch (this.cassetteIndex) {
         case 0:
           this.cassetteName = "IntroCassette";
-          this.keysHandler = IntroCassetteKeysHandler.bind(this);
+          this.keysHandler = IntroCassetteButtonsInputCheckers.bind(this);
 
           this.processTick_CassetteSpecific = () => {
             //check for mapJumpTriggers with playerActor
@@ -469,7 +469,7 @@ export default class ClientStatesManager {
           const defaultBlockPathColor = "rgba(103, 255, 136, 0.5)";
 
           this.cassetteName = "DefenseMarchCassette";
-          this.keysHandler = DefenseMarchKeysHandler.bind(this);
+          this.keysHandler = DefenseMarchButtonsInputCheckers.bind(this);
 
           //creating HUDs for DefenseMarch
           this.gameRootHUD = new rootHUD(
