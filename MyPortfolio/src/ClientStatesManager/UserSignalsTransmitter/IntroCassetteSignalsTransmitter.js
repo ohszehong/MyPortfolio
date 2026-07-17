@@ -1,7 +1,7 @@
-import FacingDirection from "../../../shared/Standards/StringKeys/FacingDirections.json";
-import SocketMessageTypes from "../../../shared/Standards/StringKeys/SocketMessageTypes.json";
-import PawnActor from "../../../shared/Actors/PawnActor";
-import TileActor from "../../../shared/Actors/TileActor";
+import FacingDirection from "../../../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
+import SocketMessageTypes from "../../../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
+import PawnActor from "../../../shared/Actors/PawnActor.js";
+import TileActor from "../../../shared/Actors/TileActor.js";
 
 /**
  * @typedef {Object} StatesManager
@@ -35,28 +35,24 @@ import TileActor from "../../../shared/Actors/TileActor";
  * @this {StatesManager}
  */
 
-export default function handleKeys()
-{
+export default function transmitUserSignals() {
   let lastKeys = this.lastKeys;
   const keys = this.keys;
 
-  if(!keys) return;
+  if (!keys) return;
 
   let shouldIdle = true;
 
-  for(let key in keys)
-  {
-    if(keys[key])
-    {
+  for (let key in keys) {
+    if (keys[key]) {
       shouldIdle = false;
 
-      if(key === lastKeys[key]) continue;
+      if (key === lastKeys[key]) continue;
 
       //send input to server
       this.sendMessageToServer(SocketMessageTypes.userInput, key);
 
-      switch(key)
-      {
+      switch (key) {
         case "w":
           this.playerActor.toWalkState(FacingDirection.up);
           break;
@@ -88,14 +84,13 @@ export default function handleKeys()
     }
   }
 
-  if (shouldIdle)
-  {
-     //send input to server
-      this.sendMessageToServer(SocketMessageTypes.userInput, "idle");
+  if (shouldIdle) {
+    //send input to server
+    this.sendMessageToServer(SocketMessageTypes.userInput, "idle");
 
-      //client prediction
-      this.playerActor.toIdleState();
+    //client prediction
+    this.playerActor.toIdleState();
   }
 
-  this.lastKeys = {...keys};
+  this.lastKeys = { ...keys };
 }

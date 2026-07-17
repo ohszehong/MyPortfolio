@@ -1,30 +1,33 @@
-import CharacterStateTypes from "../../shared/Standards/StringKeys/CharacterStateTypes.json";
-import FacingDirections from "../../shared/Standards/StringKeys/FacingDirections.json";
-import TargetTypes from "../../shared/Standards/StringKeys/TargetTypes.json";
-import CollisionTypes from "../../shared/Standards/StringKeys/CollisionTypes.json";
-import SocketMessageTypes from "../../shared/Standards/StringKeys/SocketMessageTypes.json";
+import CharacterStateTypes from "../../shared/Standards/StringKeys/CharacterStateTypes.json" with { type: "json" };
+import FacingDirections from "../../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
+import TargetTypes from "../../shared/Standards/StringKeys/TargetTypes.json" with { type: "json" };
+import CollisionTypes from "../../shared/Standards/StringKeys/CollisionTypes.json" with { type: "json" };
+import SocketMessageTypes from "../../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
 
-import PawnActor from "../../shared/Actors/PawnActor";
-import TileActor from "../../shared/Actors/TileActor";
+import PawnActor from "../../shared/Actors/PawnActor.js";
+import TileActor from "../../shared/Actors/TileActor.js";
 
-import IntroCassetteButtonsInputCheckers from "./ButtonsInputCheckers/IntroCassetteButtonsInputChecker";
-import DefenseMarchButtonsInputCheckers from "./ButtonsInputCheckers/DefenseMarchCassetteButtonsInputChecker";
+import IntroCassetteSignalsTransmitter from "./UserSignalsTransmitter/IntroCassetteSignalsTransmitter.js";
+import DefenseMarchCassetteSignalsTransmitter from "./UserSignalsTransmitter/DefenseMarchCassetteSignalsTransmitter.js";
 
 import {
   AIsCollidedWithB,
   PawnActorIsOnTrigger,
-} from "../../shared/CollisionsDetector/CollisionsDetector";
-import processTick_General from "../../shared/TickProcess/processTick_General";
+} from "../../shared/CollisionsDetector/CollisionsDetector.js";
+import processTick_General from "../../shared/TickProcess/processTick_General.js";
 
-import Block from "../HUDs/Block";
-import Label from "../HUDs/Label";
-import Button from "../HUDs/Button";
-import UImage from "../HUDs/Image";
-import rootHUD from "../HUDs/rootHUD";
-import childHUD from "../HUDs/childHUD";
+import Block from "../HUDs/Block.js";
+import Label from "../HUDs/Label.js";
+import Button from "../HUDs/Button.js";
+import UImage from "../HUDs/Image.js";
+import rootHUD from "../HUDs/rootHUD.js";
+import childHUD from "../HUDs/childHUD.js";
 
-import loadImage from "../Utilities/loadImage";
-import WalkPath from "../HUDs/WalkPath";
+import loadImage from "../Utilities/loadImage.js";
+import WalkPath from "../HUDs/WalkPath.js";
+
+import packageSocketMessageForSingleUser from "../../shared/SignalsManagers/packageSocketMessage.js";
+import DefenseMarchCassetteSignalsManager from "../../shared/SignalsManagers/DefenseMarchCassetteSignalsManager.js";
 
 export default class ClientStatesManager {
   userId = null;
@@ -62,7 +65,8 @@ export default class ClientStatesManager {
     l: false,
   };
 
-  keysHandler = null;
+  signalsTransmitter = null;
+  signalsManager = null;
 
   /** @type {{current: SVGElement}} */
   consoleSvgRef = null;
@@ -268,8 +272,8 @@ export default class ClientStatesManager {
         while (this.accumulatedDeltaTime >= this.FIXED_DELTA_TIME_FROM_SERVER) {
           const shouldNotAcceptNewInput = this.reconcileDataFromServer();
           if (!shouldNotAcceptNewInput) {
-            if (this.keysHandler) {
-              this.keysHandler();
+            if (this.signalsTransmitter) {
+              this.signalsTransmitter();
             }
 
             processTick_General(this, this.FIXED_DELTA_TIME_FROM_SERVER);
@@ -426,7 +430,7 @@ export default class ClientStatesManager {
       switch (this.cassetteIndex) {
         case 0:
           this.cassetteName = "IntroCassette";
-          this.keysHandler = IntroCassetteButtonsInputCheckers.bind(this);
+          this.signalsTransmitter = IntroCassetteSignalsTransmitter.bind(this);
 
           this.processTick_CassetteSpecific = () => {
             //check for mapJumpTriggers with playerActor
@@ -439,7 +443,10 @@ export default class ClientStatesManager {
                     this.playerActor.actorState ===
                       trigger.actionToTrigger + "ing"
                   ) {
-                    //console.log("is within jump trigger...");
+                    console.log(
+                      "is within jump trigger...",
+                      trigger.jumpMagnitude,
+                    );
                     this.playerActor.toJumpState(trigger.jumpMagnitude);
 
                     const audios =
@@ -469,7 +476,9 @@ export default class ClientStatesManager {
           const defaultBlockPathColor = "rgba(103, 255, 136, 0.5)";
 
           this.cassetteName = "DefenseMarchCassette";
-          this.keysHandler = DefenseMarchButtonsInputCheckers.bind(this);
+          this.signalsTransmitter =
+            DefenseMarchCassetteSignalsTransmitter.bind(this);
+          this.signalsManager = new DefenseMarchCassetteSignalsManager(this);
 
           //creating HUDs for DefenseMarch
           this.gameRootHUD = new rootHUD(
@@ -1053,13 +1062,13 @@ export default class ClientStatesManager {
                 }
 
                 //update tinted canvas for walkpaths
-                BLTopWalkPath.setCurrentCharacterTintedDefaultImageCanvasRef(
+                WPTop.setCurrentCharacterTintedDefaultImageCanvasRef(
                   selectedCharacterBlobDictionary.tintedDefaultImage,
                 );
-                BLMiddleWalkPath.setCurrentCharacterTintedDefaultImageCanvasRef(
+                WPMiddle.setCurrentCharacterTintedDefaultImageCanvasRef(
                   selectedCharacterBlobDictionary.tintedDefaultImage,
                 );
-                BLBottomWalkPath.setCurrentCharacterTintedDefaultImageCanvasRef(
+                WPBottom.setCurrentCharacterTintedDefaultImageCanvasRef(
                   selectedCharacterBlobDictionary.tintedDefaultImage,
                 );
               }
@@ -1261,7 +1270,7 @@ export default class ClientStatesManager {
             25.1,
             44.5,
             19,
-            0,
+            this.goldCoins,
             "end",
             defaultMainFontColor,
             17,
@@ -1317,8 +1326,8 @@ export default class ClientStatesManager {
           const blockWidth = 485;
           const blockHeight = 32.5;
           //characters walkpath blocks
-          const BLTopWalkPath = new WalkPath(
-            "BLTopWalkPath",
+          const WPTop = new WalkPath(
+            "WPTop",
             0,
             this.allySummonLocations[0].y - 30,
             blockWidth,
@@ -1327,8 +1336,8 @@ export default class ClientStatesManager {
             true,
             null,
           );
-          const BLMiddleWalkPath = new WalkPath(
-            "BLMiddleWalkPath",
+          const WPMiddle = new WalkPath(
+            "WPMiddle",
             0,
             this.allySummonLocations[1].y - 30,
             blockWidth,
@@ -1337,8 +1346,8 @@ export default class ClientStatesManager {
             true,
             null,
           );
-          const BLBottomWalkPath = new WalkPath(
-            "BLBottomWalkPath",
+          const WPBottom = new WalkPath(
+            "WPBottom",
             0,
             this.allySummonLocations[2].y - 30,
             blockWidth,
@@ -1348,40 +1357,46 @@ export default class ClientStatesManager {
             null,
           );
 
-          BLTopWalkPath.setOpacity(0);
-          BLMiddleWalkPath.setOpacity(0);
-          BLBottomWalkPath.setOpacity(0);
+          WPTop.setOpacity(0);
+          WPMiddle.setOpacity(0);
+          WPBottom.setOpacity(0);
 
-          BLTopWalkPath.onPointerEnter = () => {
+          WPTop.onPointerEnter = () => {
             this.contentCanvas.dataset.hoverable = "pointer";
-            BLTopWalkPath.setOpacity(1);
+            WPTop.setOpacity(1);
+            WPTop.isFocused = true;
           };
-          BLTopWalkPath.onPointerLeave = () => {
+          WPTop.onPointerLeave = () => {
             this.contentCanvas.dataset.hoverable = "default";
-            BLTopWalkPath.setOpacity(0);
+            WPTop.setOpacity(0);
+            WPTop.isFocused = false;
+          };
+          WPTop.onClick = () => {
+            this._setKeyValue("p", true);
+            console.log("this.keys: ", this.keys);
           };
 
-          BLMiddleWalkPath.onPointerEnter = () => {
+          WPMiddle.onPointerEnter = () => {
             this.contentCanvas.dataset.hoverable = "pointer";
-            BLMiddleWalkPath.setOpacity(1);
+            WPMiddle.setOpacity(1);
           };
-          BLMiddleWalkPath.onPointerLeave = () => {
+          WPMiddle.onPointerLeave = () => {
             this.contentCanvas.dataset.hoverable = "default";
-            BLMiddleWalkPath.setOpacity(0);
+            WPMiddle.setOpacity(0);
           };
 
-          BLBottomWalkPath.onPointerEnter = () => {
+          WPBottom.onPointerEnter = () => {
             this.contentCanvas.dataset.hoverable = "pointer";
-            BLBottomWalkPath.setOpacity(1);
+            WPBottom.setOpacity(1);
           };
-          BLBottomWalkPath.onPointerLeave = () => {
+          WPBottom.onPointerLeave = () => {
             this.contentCanvas.dataset.hoverable = "default";
-            BLBottomWalkPath.setOpacity(0);
+            WPBottom.setOpacity(0);
           };
 
-          CHUDMain.addUIElement(BLTopWalkPath);
-          CHUDMain.addUIElement(BLMiddleWalkPath);
-          CHUDMain.addUIElement(BLBottomWalkPath);
+          CHUDMain.addUIElement(WPTop);
+          CHUDMain.addUIElement(WPMiddle);
+          CHUDMain.addUIElement(WPBottom);
 
           //create tinted character still image (idle frame 0) on offscreen canvas for each character
           for (const characterData of Object.values(
@@ -1457,7 +1472,8 @@ export default class ClientStatesManager {
       l: false,
     };
 
-    this.keysHandler = null;
+    this.signalsTransmitter = null;
+    this.signalsManager = null;
 
     this.resetButtons();
 
@@ -1573,7 +1589,6 @@ export default class ClientStatesManager {
               /** @type {ImageBitmap} */
               const tileBitmap =
                 this.tileActorsBlobDictionary[actor.currentRenderData.tileGid];
-
               //offset camera position as the actor.position is world space position
               context2d.drawImage(
                 tileBitmap,
@@ -1605,6 +1620,9 @@ export default class ClientStatesManager {
             //   "collisions": []
             // }
 
+            //TO-DO: the drawImage method from context draw from top to bottom
+            //move the summon location up
+            //now only the top path has the summon feature done, do it for the rest walk path too...
             if (actorBitmap) {
               context2d.drawImage(
                 actorBitmap,
@@ -1678,16 +1696,16 @@ export default class ClientStatesManager {
       this.userId = rawStatesData.userId;
     }
 
+    this.goldCoins = rawStatesData.goldCoins;
+
     const createPawnActorFromRawStates = (rawActorStates) => {
-      const pawnActor = new PawnActor(
+      const pawnActor = PawnActor.constructExistingActor(
         rawActorStates.tempId,
         rawActorStates.actorName,
         rawActorStates.position,
-        rawActorStates.actorDefaultStats,
-        rawActorStates.actorCurrentStats,
         rawActorStates.actorState,
-        rawStatesData.pawnActorsBlobDictionary[rawActorStates.actorName]
-          .animations,
+        rawActorStates.actorCurrentStats,
+        rawStatesData.pawnActorsBlobDictionary[rawActorStates.actorName],
         rawActorStates.currentLevel,
         rawActorStates.maxLevel,
         rawActorStates.collision,
@@ -1902,6 +1920,10 @@ export default class ClientStatesManager {
           //store the result instead of reconcile immediately
           this.latestDataFromServer = data;
         }
+
+        if (data.type === SocketMessageTypes.userSignalResponse) {
+          console.log(data.value);
+        }
       };
     }
   }
@@ -2075,11 +2097,12 @@ export default class ClientStatesManager {
     if (
       this.getDistanceSqBetween(
         this.cameraPosition,
-        this.latestDataFromServer.value.cameraPosition,
+        this.latestDataFromServer.value.message.cameraPosition,
         "camera",
       ) > acceptedSquaredDiscrepancy
     ) {
-      this.cameraPosition = this.latestDataFromServer.value.cameraPosition;
+      this.cameraPosition =
+        this.latestDataFromServer.value.message.cameraPosition;
     }
 
     //do cursor position later...
@@ -2089,17 +2112,17 @@ export default class ClientStatesManager {
     if (
       this.getDistanceSqBetween(
         this.playerActor.position,
-        this.latestDataFromServer.value.playerActor.position,
+        this.latestDataFromServer.value.message.playerActor.position,
       ) > acceptedSquaredDiscrepancy
     ) {
       this.playerActor.position = this.lerpPosition(
         this.playerActor.position,
-        this.latestDataFromServer.value.playerActor.position,
+        this.latestDataFromServer.value.message.playerActor.position,
         0.1,
       );
     } else {
       this.playerActor.position =
-        this.latestDataFromServer.value.playerActor.position;
+        this.latestDataFromServer.value.message.playerActor.position;
       shouldNotAcceptNewInput = false;
     }
 
@@ -2111,14 +2134,14 @@ export default class ClientStatesManager {
 
     //for data like health and etc, replace without checking
     this.playerActor.actorCurrentStats =
-      this.latestDataFromServer.value.playerActor.actorCurrentStats;
+      this.latestDataFromServer.value.message.playerActor.actorCurrentStats;
     this.playerActor.currentLevel =
-      this.latestDataFromServer.value.playerActor.currentLevel;
+      this.latestDataFromServer.value.message.playerActor.currentLevel;
 
     this.allyPawnActors.forEach((actor, index) => {
       const currentAllyPawnActor = this.allyPawnActors[index];
       const serializedActorDataFromServer =
-        this.latestDataFromServer.value.allyPawnActors.find(
+        this.latestDataFromServer.value.message.allyPawnActors.find(
           (serializedActorData) => serializedActorData.tempId === actor.tempId,
         );
       if (serializedActorDataFromServer) {
@@ -2150,7 +2173,7 @@ export default class ClientStatesManager {
     this.enemyPawnActors.forEach((actor, index) => {
       const currentEnemyPawnActor = this.enemyPawnActors[index];
       const serializedActorDataFromServer =
-        this.latestDataFromServer.value.enemyPawnActors.find(
+        this.latestDataFromServer.value.message.enemyPawnActors.find(
           (serializedActorData) => serializedActorData.tempId === actor.tempId,
         );
       if (serializedActorDataFromServer) {
@@ -2236,13 +2259,15 @@ export default class ClientStatesManager {
   sendMessageToServer(messageType, message = "") {
     if (this.webSocket?.readyState != WebSocket.OPEN) return;
 
-    this.webSocket.send(
-      JSON.stringify({
-        userId: this.userId,
-        type: messageType,
-        message: message,
-      }),
+    const packagedSocketMessage = JSON.stringify(
+      packageSocketMessageForSingleUser(
+        this.cassetteIndex,
+        messageType,
+        this.userId,
+        message,
+      ),
     );
+    this.webSocket.send(packagedSocketMessage);
   }
 
   /** @param {Actor} actor */

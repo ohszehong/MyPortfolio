@@ -1,4 +1,4 @@
-import UIElement from "./UIElement";
+import UIElement from "./UIElement.js";
 
 export default class Block extends UIElement {
   rgba = null;

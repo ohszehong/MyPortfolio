@@ -4,5 +4,6 @@
   "removeClientManager": "removeClientManager",
   "clientsPayload": "clientsPayload",
   "clientPayload": "clientPayload",
-  "userInput": "userInput"
+  "userInput": "userInput",
+  "userSignalResponse": "userSignalResponse"
 }

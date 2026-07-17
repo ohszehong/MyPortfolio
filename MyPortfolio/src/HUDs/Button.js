@@ -1,5 +1,5 @@
-import UIElement from "./UIElement";
-import Label from "./Label";
+import UIElement from "./UIElement.js";
+import Label from "./Label.js";
 
 export default class Button extends UIElement {
   /** @type {Label} */

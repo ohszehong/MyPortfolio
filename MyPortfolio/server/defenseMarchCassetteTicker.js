@@ -6,19 +6,22 @@ import GameStatesManager from "./GameStatesManager/GameStatesManager.js";
 import { PawnActorIsOnTrigger } from "../shared/CollisionsDetector/CollisionsDetector.js";
 import processTick_General from "../shared/TickProcess/processTick_General.js";
 
+import packageSocketMessageForSingleUser from "../shared/SignalsManagers/packageSocketMessage.js";
+import DefenseMarchCassetteSignalsManager from "../shared/SignalsManagers/DefenseMarchCassetteSignalsManager.js";
+
 let clientIds = [];
 
-/** @type {Object<string, DefenseMarchClient>} */
+/** @type {Object<string, DefenseMarchClientSimulator>} */
 let clients = {};
 
 const FIXED_DELTA_TIME_PER_TICK = 1000 / 60; //60 FPS
-class DefenseMarchClient {
+class DefenseMarchClientSimulator {
   /** @type {GameStatesManager} */
-  gameStateManager;
+  gameStatesManager;
   prevTime;
 
-  constructor(gameStateManager) {
-    this.gameStateManager = gameStateManager;
+  constructor(gameStatesManager) {
+    this.gameStatesManager = gameStatesManager;
     this.prevTime = performance.now();
   }
 
@@ -33,7 +36,7 @@ class DefenseMarchClient {
     this.prevTime = now + remainder;
 
     //simulate ticks
-    processTick_General(this.gameStateManager, totalDelta);
+    processTick_General(this.gameStatesManager, totalDelta);
   }
 }
 
@@ -41,35 +44,79 @@ function init() {
   parentPort.on("message", (message) => {
     switch (message.type) {
       case SocketMessageTypes.serializedClientManager:
+        if (!message.value) return;
         console.log("adding new client to defenseMarchCassetteTicker...");
-        const gameStateManager = GameStatesManager.constructFromSerializedJSON(
+
+        const gameStatesManager = GameStatesManager.constructFromSerializedJSON(
           message.value,
         );
-        clients[message.value.userId] = new DefenseMarchClient(
-          gameStateManager,
+        clients[message.value.userId] = new DefenseMarchClientSimulator(
+          gameStatesManager,
         );
         clientIds.push(message.value.userId);
         break;
 
+      //userInput format {type: xxx, value: {userId: xxx, input: xxx}}
       case SocketMessageTypes.userInput:
-        const clientManager = clients[message.value.userId];
-        if (!clientManager) return;
+        if (!message.value?.userId || !message.value?.message) return;
 
-        if (message.value.inputName === "a") {
+        const clientSimulator = clients[message.value.userId];
+        if (!clientSimulator) return;
+
+        const [signal, actorName, tempId] = message.value.message.split("+");
+        if (signal === "a") {
           //clientManager.playerActor.toWalkState(FacingDirections.left);
-        } else if (message.value.inputName === "d") {
+        } else if (signal === "d") {
           //clientManager.playerActor.toWalkState(FacingDirections.right);
-        } else if (message.value.inputName === "w") {
+        } else if (signal === "w") {
           //clientManager.playerActor.toWalkState(FacingDirections.up);
-        } else if (message.value.inputName === "s") {
+        } else if (signal === "s") {
           //clientManager.playerActor.toWalkState(FacingDirections.down);
-        } else if (message.value.inputName === "idle") {
+        } else if (signal === "idle") {
           //clientManager.playerActor.toIdleState();
+        } else if (signal === "spawnTop") {
+          /** @type {GameStatesManager} */
+          const gameStatesManager = clientSimulator.gameStatesManager;
+
+          if (!gameStatesManager) {
+            console.log("client simulator does not contains statesManager.");
+            return;
+          }
+
+          /** @type {DefenseMarchCassetteSignalsManager} */
+          const signalsManager = gameStatesManager.signalsManager;
+
+          if (signalsManager) {
+            //pawnActor position format: {dx: xxx, dy: xxx}
+            const pawnActor = signalsManager.spawnPawnActorAtLocation(
+              actorName,
+              {
+                dx: gameStatesManager.allySummonLocations[0].x,
+                dy: gameStatesManager.allySummonLocations[0].y,
+              },
+              tempId,
+            );
+
+            let message;
+            if (pawnActor) {
+              message = `server: successfully spawn ${actorName} at location ${clientSimulator.gameStatesManager.allySummonLocations[0]}`;
+            } else {
+              message = `server: failed to spawn ${actorName} at location ${clientSimulator.gameStatesManager.allySummonLocations[0]}`;
+            }
+
+            const packagedSocketMessage = packageSocketMessageForSingleUser(
+              clientSimulator.gameStatesManager.cassetteIndex,
+              SocketMessageTypes.userSignalResponse,
+              clientSimulator.gameStatesManager.userId,
+              message,
+            );
+            parentPort.postMessage(packagedSocketMessage);
+          }
         }
         break;
 
       case SocketMessageTypes.removeClientManager:
-        console.log(`removing client with userId of ${message.value}`);
+        console.log(`removing client with userId of ${message.value.userId}`);
         const index = clientIds.findIndex(
           (clientId) => clientId === message.value,
         );
@@ -96,7 +143,7 @@ function updateClients() {
       if (currentClient) {
         currentClient.simulateGame();
         // payloads[clientId] =
-        //   currentClient.gameStateManager.toJSON("client_payload");
+        //   currentClient.gameStatesManager.toJSON("client_payload");
       }
     });
 

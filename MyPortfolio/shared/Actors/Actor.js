@@ -1,5 +1,3 @@
-import crypto from "node:crypto";
-
 export default class Actor {
   tempId;
 
@@ -30,39 +28,30 @@ export default class Actor {
     actorName,
     position = { dx: 0, dy: 0 },
     collision = null,
-    selectable = false
+    selectable = false,
   ) {
-    if(tempId) {
+    if (tempId) {
       this.tempId = tempId;
-    }
-    else {
+    } else {
       this.tempId = crypto.randomUUID();
     }
-    
+
     this.actorName = actorName;
     this.position = { ...position };
 
-    if(collision && Object.keys(collision).length > 0)
-    {
+    if (collision && Object.keys(collision).length > 0) {
       this.collision = { source: this, ...collision };
     }
 
     this.selectable = selectable;
   }
 
-  applyMovement(mapMaxWidth, mapMaxHeight, deltaTime)
-  {
+  applyMovement(mapMaxWidth, mapMaxHeight, deltaTime) {}
 
-  }
+  playAnimation(deltaTime) {}
 
-  playAnimation(deltaTime)
-  {
-
-  }
-
-  toJSON()
-  {
-    let copy = {...this.collision};
+  toJSON() {
+    let copy = { ...this.collision };
     delete copy.source;
 
     const data = {
@@ -70,8 +59,8 @@ export default class Actor {
       actorName: this.actorName,
       position: this.position,
       collision: copy,
-      selectable: this.selectable
-    }
+      selectable: this.selectable,
+    };
 
     return data;
   }

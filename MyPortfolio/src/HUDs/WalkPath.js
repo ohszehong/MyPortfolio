@@ -1,4 +1,4 @@
-import Block from "./Block";
+import Block from "./Block.js";
 
 export default class WalkPath extends Block {
   currentCharacterTintedDefaultImageCanvasRef = null;
@@ -46,7 +46,4 @@ export default class WalkPath extends Block {
 
     context2d.restore();
   }
-
-  //TO-DO: onClick on WalkPath to summon character
-  //The "AI" for characters (both ally and enemy)
 }
