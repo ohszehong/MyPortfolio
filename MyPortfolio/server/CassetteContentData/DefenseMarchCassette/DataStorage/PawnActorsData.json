@@ -270,6 +270,8 @@
         }
       },
       "heal": {
+        "scalingValue": 1.0,
+        "scalingType": "healing",
         "spritesheetFile": "healSheet.png",
         "right": {
           "frames": [
@@ -555,6 +557,8 @@
     "goldCoins": 120,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "right": {
           "frames": [
@@ -956,6 +960,8 @@
     "goldCoins": 800,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "right": {
           "frames": [
@@ -1071,6 +1077,8 @@
         }
       },
       "attack2": {
+        "scalingValue": 1.2,
+        "scalingType": "attack",
         "spritesheetFile": "attack2Sheet.png",
         "right": {
           "frames": [
@@ -1180,6 +1188,8 @@
         }
       },
       "attack3": {
+        "scalingValue": 1.5,
+        "scalingType": "attack",
         "spritesheetFile": "attack3Sheet.png",
         "right": {
           "frames": [
@@ -1671,6 +1681,8 @@
     "goldCoins": 160,
     "animations": {
       "attack1": {
+        "scalingValue": 1.3,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "right": {
           "frames": [
@@ -2249,6 +2261,8 @@
     "goldCoins": 300,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "right": {
           "frames": [
@@ -2632,6 +2646,8 @@
     "goldCoins": 900,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "right": {
           "frames": [
@@ -2696,6 +2712,8 @@
         }
       },
       "attack2": {
+        "scalingValue": 1.2,
+        "scalingType": "attack",
         "spritesheetFile": "attack2Sheet.png",
         "right": {
           "frames": [
@@ -3190,6 +3208,8 @@
     "goldCoins": 850,
     "animations": {
       "attack1": {
+        "scalingValue": 1.2,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "right": {
           "frames": [
@@ -3299,6 +3319,8 @@
         }
       },
       "attack2": {
+        "scalingValue": 1.5,
+        "scalingType": "attack",
         "spritesheetFile": "attack2Sheet.png",
         "right": {
           "frames": [
@@ -3712,6 +3734,8 @@
     "goldCoins": 80,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -4101,6 +4125,8 @@
     "goldCoins": 50,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -4598,6 +4624,8 @@
     "goldCoins": 120,
     "animations": {
       "attack1": {
+        "scalingValue": 1.2,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -5251,6 +5279,8 @@
     "goldCoins": 200,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -5817,6 +5847,8 @@
     "goldCoins": 220,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -6335,6 +6367,8 @@
     "goldCoins": 75,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -6649,6 +6683,8 @@
     "goldCoins": 650,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -6761,6 +6797,8 @@
         }
       },
       "attack2": {
+        "scalingValue": 1.2,
+        "scalingType": "attack",
         "spritesheetFile": "attack2Sheet.png",
         "left": {
           "frames": [
@@ -7195,6 +7233,8 @@
     "goldCoins": 800,
     "animations": {
       "attack1": {
+        "scalingValue": 1.5,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -7917,6 +7957,8 @@
     "goldCoins": 1150,
     "animations": {
       "attack1": {
+        "scalingValue": 1.2,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -8486,6 +8528,8 @@
     "goldCoins": 1300,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -8562,6 +8606,8 @@
         }
       },
       "attack2": {
+        "scalingValue": 1.2,
+        "scalingType": "attack",
         "spritesheetFile": "attack2Sheet.png",
         "left": {
           "frames": [
@@ -8638,6 +8684,8 @@
         }
       },
       "attack3": {
+        "scalingValue": 1.5,
+        "scalingType": "attack",
         "spritesheetFile": "attack3Sheet.png",
         "left": {
           "frames": [
@@ -9075,6 +9123,8 @@
     "goldCoins": 1600,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -9175,6 +9225,8 @@
         }
       },
       "attack2": {
+        "scalingValue": 1.1,
+        "scalingType": "attack",
         "spritesheetFile": "attack2Sheet.png",
         "left": {
           "frames": [
@@ -9275,6 +9327,8 @@
         }
       },
       "attack3": {
+        "scalingValue": 1.3,
+        "scalingType": "attack",
         "spritesheetFile": "attack3Sheet.png",
         "left": {
           "frames": [
@@ -9805,6 +9859,8 @@
     "goldCoins": 2000,
     "animations": {
       "attack1": {
+        "scalingValue": 1.0,
+        "scalingType": "attack",
         "spritesheetFile": "attack1Sheet.png",
         "left": {
           "frames": [
@@ -9893,6 +9949,8 @@
         }
       },
       "attack2": {
+        "scalingValue": 1.1,
+        "scalingType": "attack",
         "spritesheetFile": "attack2Sheet.png",
         "left": {
           "frames": [

@@ -69,6 +69,12 @@ export default class PawnActor extends Actor {
 
   activeAbilityName;
 
+  //this is the delta time use for keep track with the attack speed before the character is able to use ability again
+  //_notUsingAbilityFor has to initialized equal to the actor current attack speed so that they can immediately use ability upon summoned
+  _notUsingAbilityFor;
+  _totalAttackAvailable = 0;
+  _currentAttackNumber = 0;
+
   constructor(tempId, actorName, position, collision, selectable) {
     super(tempId, actorName, position, collision, selectable);
   }
@@ -130,6 +136,9 @@ export default class PawnActor extends Actor {
       frameData: null,
     };
 
+    pawnActor._notUsingAbilityFor =
+      pawnActor.actorCurrentStats.attackspeed * 1000;
+
     return pawnActor;
   }
 
@@ -171,6 +180,9 @@ export default class PawnActor extends Actor {
       frameData: null,
     };
 
+    pawnActor._notUsingAbilityFor =
+      pawnActor.actorCurrentStats.attackspeed * 1000;
+
     return pawnActor;
   }
 
@@ -209,6 +221,8 @@ export default class PawnActor extends Actor {
           characterAnimationsData[animationName]?.scalingValue,
           characterAnimationsData[animationName]?.scalingType,
         );
+
+        this._totalAttackAvailable += 1;
       }
     });
 
@@ -238,6 +252,13 @@ export default class PawnActor extends Actor {
       this.actorState === CharacterStateTypes.walking
     )
       return true;
+    return false;
+  }
+
+  canUseAbility() {
+    if (this._notUsingAbilityFor >= this.actorCurrentStats.attackspeed * 1000) {
+      return true;
+    }
     return false;
   }
 
@@ -277,16 +298,27 @@ export default class PawnActor extends Actor {
     }
   }
 
-  toAttackState(attackNumber = 1) {
-    if (this.canChangeState()) {
+  toAttackState(auto = false, attackNumber = 1) {
+    let _attackNumber = attackNumber;
+
+    if (this.canChangeState() && this.canUseAbility()) {
+      if (auto) {
+        if (this._currentAttackNumber < this._totalAttackAvailable) {
+          this._currentAttackNumber += 1;
+        } else {
+          this._currentAttackNumber = 1;
+        }
+        _attackNumber = this._currentAttackNumber;
+      }
+
       this.actorState = CharacterStateTypes.usingAbility;
-      this.activeAbilityName = "attack" + attackNumber.toString();
+      this.activeAbilityName = "attack" + _attackNumber.toString();
       this.activeStateAnimationName = null;
     }
   }
 
   toHealingState() {
-    if (this.canChangeState()) {
+    if (this.canChangeState() && this.canUseAbility()) {
       this.actorState = CharacterStateTypes.usingAbility;
       this.activeAbilityName = "heal";
       this.activeStateAnimationName = null;
@@ -344,6 +376,11 @@ export default class PawnActor extends Actor {
 
   playAnimation(deltaTime) {
     if (this.activeStateAnimationName) {
+      this._notUsingAbilityFor = Math.min(
+        this._notUsingAbilityFor + deltaTime,
+        this.actorCurrentStats.attackspeed * 1000,
+      );
+
       const currentActiveFrameData =
         this.stateAnimations[
           this.activeStateAnimationName
@@ -386,6 +423,7 @@ export default class PawnActor extends Actor {
       //stop playing this animation in the next frame by changing state
       if (currentActiveFrameData.lastFrameIsCompleted) {
         this.toIdleState(true); //here it sets this.activeAbilityName to null
+        this._notUsingAbilityFor = 0;
       }
 
       return {

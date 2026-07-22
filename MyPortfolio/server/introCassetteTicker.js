@@ -4,7 +4,7 @@ import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageType
 import FacingDirections from "../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
 import GameStatesManager from "./GameStatesManager/GameStatesManager.js";
 import { PawnActorIsOnTrigger } from "../shared/CollisionsDetector/CollisionsDetector.js";
-import processTick_General from "../shared/TickProcess/processTick_General.js";
+import processTick_General from "../shared/TickProcesses/processTick_General.js";
 import { packageSocketMessageForAllUsers } from "../shared/SignalsManagers/packageSocketMessage.js";
 
 /** @type {Object<string, GameStatesManager>} */

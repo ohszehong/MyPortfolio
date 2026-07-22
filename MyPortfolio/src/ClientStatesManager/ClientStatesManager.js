@@ -14,7 +14,7 @@ import {
   AIsCollidedWithB,
   PawnActorIsOnTrigger,
 } from "../../shared/CollisionsDetector/CollisionsDetector.js";
-import processTick_General from "../../shared/TickProcess/processTick_General.js";
+import processTick_General from "../../shared/TickProcesses/processTick_General.js";
 
 import Block from "../HUDs/Block.js";
 import Label from "../HUDs/Label.js";
@@ -1373,7 +1373,7 @@ export default class ClientStatesManager {
           };
           WPTop.onClick = () => {
             this._setKeyValue("p", true);
-            console.log("this.keys: ", this.keys);
+            console.log("this.keys: ", { ...this.keys });
           };
 
           WPMiddle.onPointerEnter = () => {
@@ -1631,7 +1631,9 @@ export default class ClientStatesManager {
                 currentFrameData.width,
                 currentFrameData.height,
                 actor.position.dx - this.cameraPosition.x,
-                actor.position.dy - this.cameraPosition.y,
+                actor.position.dy -
+                  this.cameraPosition.y -
+                  currentFrameData.height,
                 currentFrameData.width,
                 currentFrameData.height,
               );
