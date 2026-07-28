@@ -5,7 +5,7 @@ import fs from "fs";
 
 import GameStatesManager from "./GameStatesManager/GameStatesManager.js";
 import AddCharacterData from "./Utilities/addCharacterData.js";
-import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageTypes.json" with {type: "json"};
+import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
 
 export default function httpsInit(__serverDirPath, gameStatesTickers) {
   const app = express();
@@ -15,69 +15,88 @@ export default function httpsInit(__serverDirPath, gameStatesTickers) {
   app.use(
     cors({
       origin: defaultAllowedOrigin,
-    })
+    }),
   );
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookiesParser);
 
   app.post("/api/load-cassette", async (req, res) => {
-    if(!req.body?.clientContentCanvasWidth || !req.body?.clientContentCanvasHeight)
-    {
-      sendResponse(res, statusCode.invalidRequest, "missing clientContentCanvasWidth/clientContentCanvasHeight.");
+    if (
+      !req.body?.clientContentCanvasWidth ||
+      !req.body?.clientContentCanvasHeight
+    ) {
+      sendResponse(
+        res,
+        statusCode.invalidRequest,
+        "missing clientContentCanvasWidth/clientContentCanvasHeight.",
+      );
       return;
     }
-   
+
     if (req.body?.cassetteIndex != null && req.body?.cassetteIndex >= 0) {
-        try {
-          let uuidCookieHeaderName;
-          let cassetteTicker;
+      try {
+        let uuidCookieHeaderName;
+        let cassetteTicker;
 
-          switch(req.body.cassetteIndex)
-          {
-            case 0:
-              uuidCookieHeaderName = "introcassette-uuid";
-              cassetteTicker = gameStatesTickers.introCassetteTicker;
-              break;
+        switch (req.body.cassetteIndex) {
+          case 0:
+            uuidCookieHeaderName = "introcassette-uuid";
+            cassetteTicker = gameStatesTickers.introCassetteTicker;
+            break;
 
-            case 1:
-              uuidCookieHeaderName = "defensemarchcassette-uuid";
-              cassetteTicker = gameStatesTickers.defenseMarchCassetteTicker;
-              break;
-          }
-
-          if(!uuidCookieHeaderName || !cassetteTicker)
-          {
-            throw new Error("{statusCode: 400, message: 'invalid cassette index.'}");
-          }
-
-          let clientGameStates = new GameStatesManager(req.body.cassetteIndex, req.headers.cookie[uuidCookieHeaderName], req.body.clientContentCanvasWidth, req.body.clientContentCanvasHeight);
-          await clientGameStates.init();
-
-          //post message to the ticker to insert the client manager to the thread
-          cassetteTicker.postMessage({
-            type: SocketMessageTypes.serializedClientManager,
-            value: clientGameStates.toJSON()
-          });
-
-          sendHttpOnlyCookie(res, uuidCookieHeaderName, clientGameStates.userId, (365 * 24 * 60 * 60 * 1000)); //1 year
-          sendResponse(res, statusCode.success, "successfully loaded cassette.", clientGameStates.toJSON());
-          return;
+          case 1:
+            uuidCookieHeaderName = "defensemarchcassette-uuid";
+            cassetteTicker = gameStatesTickers.defenseMarchCassetteTicker;
+            break;
         }
-        catch (err) {
-          console.log("stack trace: ", err.stack);
-          console.log("error occured when loading cassette: ", err);
-          const parsedError = JSON.parse(err.message);
 
-          sendResponse(res, parsedError.statusCode, parsedError.message);
-          return;
+        if (!uuidCookieHeaderName || !cassetteTicker) {
+          throw new Error(
+            "{statusCode: 400, message: 'invalid cassette index.'}",
+          );
         }
-      }
-    else {
-        sendResponse(res, statusCode.invalidRequest, "missing cassetteIndex.");
+
+        let clientGameStates = new GameStatesManager(
+          req.body.cassetteIndex,
+          req.headers.cookie[uuidCookieHeaderName],
+          req.body.clientContentCanvasWidth,
+          req.body.clientContentCanvasHeight,
+        );
+        await clientGameStates.init();
+
+        //post message to the ticker to insert the client manager to the thread
+        cassetteTicker.postMessage({
+          type: SocketMessageTypes.serializedClientManager,
+          value: clientGameStates.toJSON(),
+        });
+
+        sendHttpOnlyCookie(
+          res,
+          uuidCookieHeaderName,
+          clientGameStates.userId,
+          365 * 24 * 60 * 60 * 1000,
+        ); //1 year
+        sendResponse(
+          res,
+          statusCode.success,
+          "successfully loaded cassette.",
+          clientGameStates.toJSON(),
+        );
         return;
+      } catch (err) {
+        console.log("stack trace: ", err.stack);
+        console.log("error occured when loading cassette: ", err);
+        const parsedError = JSON.parse(err.message);
+
+        sendResponse(res, parsedError.statusCode, parsedError.message);
+        return;
+      }
+    } else {
+      sendResponse(res, statusCode.invalidRequest, "missing cassetteIndex.");
+      return;
     }
-});
+  });
 
   app.get("/images/*imagepath", (req, res) => {
     const pathParam = req.params?.imagepath;
@@ -85,7 +104,7 @@ export default function httpsInit(__serverDirPath, gameStatesTickers) {
       sendFile(
         res,
         path.join(__serverDirPath, ...pathParam),
-        "Image not found."
+        "Image not found.",
       );
     }
   });
@@ -93,18 +112,15 @@ export default function httpsInit(__serverDirPath, gameStatesTickers) {
   app.get("/sfx/*sfxpath", (req, res) => {
     const pathParam = req.params?.sfxpath;
     const totalVariations = req.query?.totalVariations;
-    if(pathParam && totalVariations)
-    {
-      try
-      {
+    if (pathParam && totalVariations) {
+      try {
         const SFXFolderPath = path.join(__serverDirPath, ...pathParam);
-      
+
         const data = {
-          sfxBase64s: []
-        }
-      
-        for(let i = 0; i < totalVariations; i++)
-        {
+          sfxBase64s: [],
+        };
+
+        for (let i = 0; i < totalVariations; i++) {
           const filename = i.toString() + ".wav";
           const SFXFilePath = path.join(SFXFolderPath, filename);
           const sfxBase64 = fs.readFileSync(SFXFilePath).toString("base64");
@@ -112,23 +128,29 @@ export default function httpsInit(__serverDirPath, gameStatesTickers) {
           data.sfxBase64s.push(sfxBase64);
         }
 
-        sendResponse(res, statusCode.success, "successfully retrieved audio contents.", data);
-      }
-      catch (err)
-      {
+        sendResponse(
+          res,
+          statusCode.success,
+          "successfully retrieved audio contents.",
+          data,
+        );
+      } catch (err) {
         sendResponse(res, statusCode.invalidRequest, "invalid path.");
       }
+    } else {
+      sendResponse(
+        res,
+        statusCode.invalidRequest,
+        "missing totalVariations param.",
+      );
     }
-    else {
-      sendResponse(res, statusCode.invalidRequest, "missing totalVariations param.");
-    }
-  })
+  });
 
   app.get("/inject-api-key", (req, res) => {
     const apiKey = process.env.SERVER_API_KEY;
 
     if (apiKey) {
-      sendHttpOnlyCookie(res, "api-key", apiKey, (7 * 24 * 60 * 60 * 1000)); //1 week
+      sendHttpOnlyCookie(res, "api-key", apiKey, 7 * 24 * 60 * 60 * 1000); //1 week
       sendResponse(res, statusCode.success, "Success.");
       return;
     }
@@ -146,7 +168,7 @@ export default function httpsInit(__serverDirPath, gameStatesTickers) {
         sendFile(
           res,
           path.join(__serverDirPath, "Utilities", "AddCharacter.html"),
-          "File not found."
+          "File not found.",
         );
         return;
       }
@@ -163,11 +185,10 @@ export default function httpsInit(__serverDirPath, gameStatesTickers) {
       health: parseFloat(req.body?.health),
       defense: parseFloat(req.body?.defense),
       attack: parseFloat(req.body?.attack),
-      attackrange: parseFloat(req.body?.attackrange),
       movespeed: parseFloat(req.body?.movespeed),
       attackspeed: parseFloat(req.body?.attackspeed),
       healing: parseFloat(req.body?.healing),
-    }
+    };
 
     if (
       AddCharacterData(
@@ -178,7 +199,7 @@ export default function httpsInit(__serverDirPath, gameStatesTickers) {
         req.body?.destinationDataPath,
         selectable,
         characterStats,
-        parseInt(req.body?.maxLevel)
+        parseInt(req.body?.maxLevel),
       )
     ) {
       sendResponse(res, statusCode.success, "Added successfully.");
@@ -222,14 +243,13 @@ function cookiesParser(req, res, next) {
   next();
 }
 
-function sendHttpOnlyCookie(res, cookieName, cookieData, cookieMaxAge)
-{
+function sendHttpOnlyCookie(res, cookieName, cookieData, cookieMaxAge) {
   res.cookie(cookieName, cookieData, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "strict",
-                maxAge: cookieMaxAge,
-              });
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: cookieMaxAge,
+  });
 }
 
 const statusCode = {

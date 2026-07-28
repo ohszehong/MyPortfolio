@@ -16,7 +16,6 @@ export default function processTick_DefenseMarchSpecific() {
   });
 }
 
-//TO-DO: huntress can be range can be melee, have to think about that
-//right now we have done checking for block collisions and we also make sure that every collisions from animation are inserted into this.spawnCollisions
+//TO-DO: right now we have done checking for block collisions and we also make sure that every collisions from animation are inserted into this.spawnCollisions
 //however, we haven't include spawnActors that spawn from animation...
-//Also check into Animation.js class for the summon property...
+//might need to think something for the tempId syncing...

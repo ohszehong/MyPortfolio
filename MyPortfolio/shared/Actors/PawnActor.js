@@ -30,7 +30,6 @@ export default class PawnActor extends Actor {
     health: 0,
     defense: 0,
     attack: 0,
-    attackRange: 0,
     movespeed: 0,
     attackspeed: 0,
     healing: 0,
@@ -40,7 +39,6 @@ export default class PawnActor extends Actor {
     health: 0,
     defense: 0,
     attack: 0,
-    attackRange: 0,
     movespeed: 0,
     attackspeed: 0,
     healing: 0,
@@ -83,7 +81,7 @@ export default class PawnActor extends Actor {
   static constructNewActor(tempId, actorName, position, actorBlobDictionary) {
     const collision = {
       ...actorBlobDictionary.collision,
-      target: actorBlobDictionary.targetType,
+      targetType: actorBlobDictionary.targetType,
     };
     const selectable = actorBlobDictionary.selectable;
 
@@ -110,9 +108,6 @@ export default class PawnActor extends Actor {
     pawnActor.actorCurrentStats.attack =
       pawnActor.actorDefaultStats.attack +
       (pawnActor.currentLevel - 1) * motionValues[2];
-    pawnActor.actorCurrentStats.attackRange =
-      pawnActor.actorDefaultStats.attackRange +
-      (pawnActor.currentLevel - 1) * motionValues[3];
     pawnActor.actorCurrentStats.movespeed =
       pawnActor.actorDefaultStats.movespeed +
       (pawnActor.currentLevel - 1) * motionValues[4];
@@ -211,15 +206,20 @@ export default class PawnActor extends Actor {
           characterAnimationsData[animationName],
         );
       } else if (Object.keys(abilitySets).includes(animationName)) {
-        //console.log("adding abilitySets of animation name: ", animationName);
+        const animationData = characterAnimationsData[animationName];
+
         abilitySets[animationName] = new Ability(
           new DirectionDependentAnimation(
             this,
             animationName,
             characterAnimationsData[animationName],
           ),
-          characterAnimationsData[animationName]?.scalingValue,
-          characterAnimationsData[animationName]?.scalingType,
+          animationData.range,
+          animationData.target,
+          animationData.targetDistancePriority,
+          animationData.scalingValue,
+          animationData.scalingType,
+          animationData.singleTarget,
         );
 
         this._totalAttackAvailable += 1;

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,7 +7,7 @@
   </head>
   <body style="min-width: 320px; min-height: 100vh; text-align: center">
     <br />
-    <pre style="font-size: large;">
+    <pre style="font-size: large">
     1) slice name convention: collisionType + number e.g. blockCollision1,
     blockCollision2... 
     
@@ -60,92 +60,31 @@
       <label for="animation-name"
         >Animation Name (idle, walk, run, jump, attack):
       </label>
-      <input
-        type="text"
-        id="animation-name"
-        name="animationName"
-      />
+      <input type="text" id="animation-name" name="animationName" />
       <br /><br /><br />
-      <label for="selectable">
-        selectable
-      </label>
-      <input
-        type="checkbox"
-        id="selectable"
-        name="selectable"
-      />
+      <label for="selectable"> selectable </label>
+      <input type="checkbox" id="selectable" name="selectable" />
       <br /><br /><br />
-      <label for="health">
-        health
-      </label>
-      <input
-        type="text"
-        id="health"
-        name="health"
-      />
+      <label for="health"> health </label>
+      <input type="text" id="health" name="health" />
       <br /><br /><br />
-      <label for="defense">
-        defense
-      </label>
-      <input
-        type="text"
-        id="defense"
-        name="defense"
-      />
+      <label for="defense"> defense </label>
+      <input type="text" id="defense" name="defense" />
       <br /><br /><br />
-      <label for="attack">
-        attack
-      </label>
-      <input
-        type="text"
-        id="attack"
-        name="attack"
-      />
-       <br /><br /><br />
-      <label for="attackrange">
-        attackrange
-      </label>
-      <input
-        type="text"
-        id="attackrange"
-        name="attackrange"
-      />
+      <label for="attack"> attack </label>
+      <input type="text" id="attack" name="attack" />
       <br /><br /><br />
-      <label for="movespeed">
-        movespeed
-      </label>
-      <input
-        type="text"
-        id="movespeed"
-        name="movespeed"
-      />
+      <label for="movespeed"> movespeed </label>
+      <input type="text" id="movespeed" name="movespeed" />
       <br /><br /><br />
-      <label for="attackspeed">
-        attackspeed
-      </label>
-      <input
-        type="text"
-        id="attackspeed"
-        name="attackspeed"
-      />
+      <label for="attackspeed"> attackspeed </label>
+      <input type="text" id="attackspeed" name="attackspeed" />
       <br /><br /><br />
-      <label for="healing">
-        healing
-      </label>
-      <input
-        type="text"
-        id="healing"
-        name="healing"
-      />
+      <label for="healing"> healing </label>
+      <input type="text" id="healing" name="healing" />
       <br /><br /><br />
-      <label for="max-level">
-        max level
-      </label>
-      <input
-        type="text"
-        id="max-level"
-        name="maxLevel"
-      />
+      <label for="max-level"> max level </label>
+      <input type="text" id="max-level" name="maxLevel" />
       <br /><br /><br />
       <label for="source-animation-path"
         >Source Animation JSON Absolute Filepath:
@@ -179,7 +118,7 @@
           event.preventDefault();
           console.log("event current target: ", event.currentTarget);
           const formData = new URLSearchParams(
-            new FormData(event.currentTarget)
+            new FormData(event.currentTarget),
           );
           console.log("formData: ", [...formData.entries()]);
           const responseJSON = await fetch("/add-character-data", {
