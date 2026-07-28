@@ -1,7 +1,10 @@
 import { parentPort } from "worker_threads";
+import crypto from "node:crypto";
 
 import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
 import FacingDirections from "../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
+import DefenseMarchSignalTypes from "../shared/Standards/StringKeys/DefenseMarchSignalTypes.json" with { type: "json" };
+
 import GameStatesManager from "./GameStatesManager/GameStatesManager.js";
 import { PawnActorIsOnTrigger } from "../shared/CollisionsDetector/CollisionsDetector.js";
 import processTick_General from "../shared/TickProcesses/processTick_General.js";
@@ -63,7 +66,7 @@ function init() {
         const clientSimulator = clients[message.value.userId];
         if (!clientSimulator) return;
 
-        const [signal, actorName, tempId] = message.value.message.split("+");
+        const signal = message.value.message.signal;
         if (signal === "a") {
           //clientManager.playerActor.toWalkState(FacingDirections.left);
         } else if (signal === "d") {
@@ -74,12 +77,60 @@ function init() {
           //clientManager.playerActor.toWalkState(FacingDirections.down);
         } else if (signal === "idle") {
           //clientManager.playerActor.toIdleState();
-        } else if (signal === "spawnTop") {
+        } else if (signal === DefenseMarchSignalTypes.summonOnWP) {
+          const requestId = message.value.message.requestId;
+          const actorName = message.value.message.actorName;
+          const walkPathIndex = message.value.message.walkPathIndex;
+
+          let responseMessage;
+
           /** @type {GameStatesManager} */
           const gameStatesManager = clientSimulator.gameStatesManager;
 
           if (!gameStatesManager) {
-            console.log("client simulator does not contains statesManager.");
+            responseMessage = {
+              response:
+                "Something is wrong with the server, client does not have a states manager.",
+              signal: signal,
+              requestId: requestId,
+              success: false,
+            };
+            console.log(responseMessage);
+
+            const packagedSocketMessage = packageSocketMessageForSingleUser(
+              message.cassetteIndex,
+              SocketMessageTypes.userSignalResponse,
+              message.value.userId,
+              responseMessage,
+            );
+
+            parentPort.postMessage(packagedSocketMessage);
+            return;
+          }
+
+          if (
+            !requestId ||
+            !actorName ||
+            isNaN(walkPathIndex) ||
+            walkPathIndex >
+              clientSimulator.gameStatesManager.allySummonLocations.length
+          ) {
+            responseMessage = {
+              response: "Invalid requestId or actorName or walkPathIndex",
+              requestId: requestId,
+              signal: signal,
+              success: false,
+            };
+            console.log(responseMessage);
+
+            const packagedSocketMessage = packageSocketMessageForSingleUser(
+              clientSimulator.gameStatesManager.cassetteIndex,
+              SocketMessageTypes.userSignalResponse,
+              clientSimulator.gameStatesManager.userId,
+              responseMessage,
+            );
+
+            parentPort.postMessage(packagedSocketMessage);
             return;
           }
 
@@ -88,27 +139,39 @@ function init() {
 
           if (signalsManager) {
             //pawnActor position format: {dx: xxx, dy: xxx}
+            const actorId = crypto.randomUUID();
+
             const pawnActor = signalsManager.spawnPawnActorAtLocation(
+              actorId,
               actorName,
               {
-                dx: gameStatesManager.allySummonLocations[0].x,
-                dy: gameStatesManager.allySummonLocations[0].y,
+                dx: gameStatesManager.allySummonLocations[walkPathIndex].x,
+                dy: gameStatesManager.allySummonLocations[walkPathIndex].y,
               },
-              tempId,
             );
 
-            let message;
             if (pawnActor) {
-              message = `server: successfully spawn ${actorName} at location ${clientSimulator.gameStatesManager.allySummonLocations[0]}`;
+              responseMessage = {
+                response: `server: successfully spawn ${actorName} at walk path index of ${walkPathIndex}`,
+                requestId: requestId,
+                entityId: actorId,
+                signal: signal,
+                success: true,
+              };
             } else {
-              message = `server: failed to spawn ${actorName} at location ${clientSimulator.gameStatesManager.allySummonLocations[0]}`;
+              responseMessage = {
+                response: `server: failed to spawn ${actorName} at walk path index of ${walkPathIndex}`,
+                requestId: requestId,
+                signal: signal,
+                success: false,
+              };
             }
 
             const packagedSocketMessage = packageSocketMessageForSingleUser(
               clientSimulator.gameStatesManager.cassetteIndex,
               SocketMessageTypes.userSignalResponse,
               clientSimulator.gameStatesManager.userId,
-              message,
+              responseMessage,
             );
             parentPort.postMessage(packagedSocketMessage);
           }

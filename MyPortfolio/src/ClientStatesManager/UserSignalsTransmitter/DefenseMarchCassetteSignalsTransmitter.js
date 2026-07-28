@@ -1,5 +1,7 @@
 import FacingDirection from "../../../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
 import SocketMessageTypes from "../../../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
+import DefenseMarchSignalTypes from "../../../shared/Standards/StringKeys/DefenseMarchSignalTypes.json" with { type: "json" };
+
 import PawnActor from "../../../shared/Actors/PawnActor.js";
 import TileActor from "../../../shared/Actors/TileActor.js";
 import DefenseMarchCassetteSignalsManager from "../../../shared/SignalsManagers/DefenseMarchCassetteSignalsManager.js";
@@ -46,6 +48,32 @@ export default function transmitUserSignals() {
 
   let shouldIdle = true;
 
+  //0 - Top, 1 - Middle, 2 - Bottom
+  const summonCharacterOnWP = (walkPathIndex, actorName) => {
+    const requestId = crypto.randomUUID();
+    const pawnActor = this.signalsManager.spawnPawnActorAtLocation(
+      requestId,
+      actorName,
+      {
+        dx: this.allySummonLocations[walkPathIndex].x,
+        dy: this.allySummonLocations[walkPathIndex].y,
+      },
+    );
+
+    if (pawnActor) {
+      const message = {
+        requestId: requestId,
+        actorName: actorName,
+        signal: DefenseMarchSignalTypes.summonOnWP,
+        walkPathIndex: walkPathIndex,
+      };
+
+      this.sendMessageToServer(SocketMessageTypes.userInput, message);
+    }
+
+    return pawnActor;
+  };
+
   for (let key in keys) {
     if (keys[key]) {
       //shouldIdle = false;
@@ -87,33 +115,17 @@ export default function transmitUserSignals() {
               CHUDMain.HUD?.UIElements?.SelectedCharacter?.elementName;
             if (!actorName) return;
 
+            let pawnActor = null;
             if (CHUDMain.HUD?.UIElements?.WPTop?.isFocused) {
-              const pawnActor = this.signalsManager.spawnPawnActorAtLocation(
-                actorName,
-                {
-                  dx: this.allySummonLocations[0].x,
-                  dy: this.allySummonLocations[0].y,
-                },
-              );
-
-              if (pawnActor) {
-                this.sendMessageToServer(
-                  SocketMessageTypes.userInput,
-                  `spawnTop+${actorName}+${pawnActor.tempId}`,
-                );
-
-                CHUDMain.HUD.updateCurrentGoldCoinsLabel();
-              }
+              pawnActor = summonCharacterOnWP(0, actorName);
             } else if (CHUDMain.HUD?.UIElements?.WPMiddle?.isFocused) {
-              this.sendMessageToServer(
-                SocketMessageTypes.userInput,
-                "spawnMiddle",
-              );
+              pawnActor = summonCharacterOnWP(1, actorName);
             } else if (CHUDMain.HUD?.UIElements?.WPBottom?.isFocused) {
-              this.sendMessageToServer(
-                SocketMessageTypes.userInput,
-                "spawnBottom",
-              );
+              pawnActor = summonCharacterOnWP(2, actorName);
+            }
+            if (pawnActor) {
+              CHUDMain.HUD.updateCurrentGoldCoinsLabel();
+              CHUDMain.HUD.updateCurrentTotalUnitsLabel();
             }
           }
           //reset the key no matter what as p key is action key (one time action)

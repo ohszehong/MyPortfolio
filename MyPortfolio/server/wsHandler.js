@@ -23,7 +23,10 @@ export default function wsInit(
   const handleMessageFromTicker = (message) => {
     let selectedClientWebSockets;
 
-    if (isNaN(message.cassetteIndex)) {
+    if (
+      isNaN(message.cassetteIndex) ||
+      message.cassetteIndex >= clientWebSockets.length
+    ) {
       console.log("Invalid cassette index: ", message.cassetteIndex);
       return;
     }

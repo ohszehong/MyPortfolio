@@ -110,13 +110,13 @@ export default class PawnActor extends Actor {
       (pawnActor.currentLevel - 1) * motionValues[2];
     pawnActor.actorCurrentStats.movespeed =
       pawnActor.actorDefaultStats.movespeed +
-      (pawnActor.currentLevel - 1) * motionValues[4];
+      (pawnActor.currentLevel - 1) * motionValues[3];
     pawnActor.actorCurrentStats.attackspeed =
       pawnActor.actorDefaultStats.attackspeed +
-      (pawnActor.currentLevel - 1) * motionValues[5];
+      (pawnActor.currentLevel - 1) * motionValues[4];
     pawnActor.actorCurrentStats.healing =
       pawnActor.actorDefaultStats.healing +
-      (pawnActor.currentLevel - 1) * motionValues[6];
+      (pawnActor.currentLevel - 1) * motionValues[5];
 
     pawnActor.facingDirection = "right"; //default direction
 

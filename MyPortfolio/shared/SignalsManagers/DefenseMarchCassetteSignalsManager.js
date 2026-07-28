@@ -10,11 +10,7 @@ export default class DefenseMarchCassetteSignalsManager {
     this.statesManager = statesManager;
   }
 
-  spawnPawnActorAtLocation(
-    actorName,
-    position,
-    tempId = null /* tempId param for server */,
-  ) {
+  spawnPawnActorAtLocation(tempId, actorName, position) {
     const actorBlobData =
       this.statesManager.pawnActorsBlobDictionary[actorName];
 
@@ -41,6 +37,7 @@ export default class DefenseMarchCassetteSignalsManager {
 
         this.statesManager.allyPawnActors.push(pawnActor);
         this.statesManager.goldCoins -= pawnActorCost;
+        this.statesManager.currentTotalUnits += 1;
       }
     }
     return pawnActor;

@@ -2,7 +2,7 @@
   "cleric": {
     "selectable": true,
     "targetType": "ally",
-    "motionValues": [10, 1, 0, 0, 0, 0, 20],
+    "motionValues": [10, 1, 0, 0, 0, 20],
     "defaultStats": {
       "health": 100,
       "defense": 5,
@@ -548,7 +548,7 @@
   "elfRangerRookie": {
     "selectable": true,
     "targetType": "ally",
-    "motionValues": [15, 2, 5, 0, 0, 0, 0],
+    "motionValues": [15, 2, 5, 0, 0, 0],
     "defaultStats": {
       "health": 80,
       "defense": 10,
@@ -956,7 +956,7 @@
   "elfRangerVeteran": {
     "selectable": true,
     "targetType": "ally",
-    "motionValues": [25, 5, 15, 0, 0, 0, 0],
+    "motionValues": [25, 5, 15, 0, 0, 0],
     "defaultStats": {
       "health": 200,
       "defense": 30,
@@ -1694,7 +1694,7 @@
   "fowlGladiator": {
     "selectable": true,
     "targetType": "ally",
-    "motionValues": [25, 1, 20, 0, 0, 0, 0],
+    "motionValues": [25, 1, 20, 0, 0, 0],
     "defaultStats": {
       "health": 130,
       "defense": 20,
@@ -2277,7 +2277,7 @@
   "golemSentinel": {
     "selectable": true,
     "targetType": "ally",
-    "motionValues": [50, 10, 2, 0, 0, 0, 0],
+    "motionValues": [50, 10, 2, 0, 0, 0],
     "defaultStats": {
       "health": 300,
       "defense": 50,
@@ -2665,7 +2665,7 @@
   "knight": {
     "selectable": true,
     "targetType": "ally",
-    "motionValues": [30, 10, 20, 0, 0, 0, 0],
+    "motionValues": [30, 10, 20, 0, 0, 0],
     "defaultStats": {
       "health": 270,
       "defense": 70,
@@ -3234,7 +3234,7 @@
   "wizard": {
     "selectable": true,
     "targetType": "ally",
-    "motionValues": [15, 5, 35, 0, 0, 0, 0],
+    "motionValues": [15, 5, 35, 0, 0, 0],
     "defaultStats": {
       "health": 180,
       "defense": 40,
@@ -3771,7 +3771,7 @@
   "arcaneArcher": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [5, 1, 5, 0, 0, 0, 0],
+    "motionValues": [5, 1, 5, 0, 0, 0],
     "defaultStats": {
       "health": 20,
       "defense": 10,
@@ -4167,7 +4167,7 @@
   "bat": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [10, 1, 5, 0, 0, 0, 0],
+    "motionValues": [10, 1, 5, 0, 0, 0],
     "defaultStats": {
       "health": 30,
       "defense": 5,
@@ -4669,7 +4669,7 @@
   "evilWizard": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [10, 2, 15, 0, 0, 0, 0],
+    "motionValues": [10, 2, 15, 0, 0, 0],
     "defaultStats": {
       "health": 25,
       "defense": 10,
@@ -5329,7 +5329,7 @@
   "ancientGolem": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [20, 5, 2, 0, 0, 0, 0],
+    "motionValues": [20, 5, 2, 0, 0, 0],
     "defaultStats": {
       "health": 150,
       "defense": 30,
@@ -5900,7 +5900,7 @@
   "hermitCrab": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [1, 10, 2, 0, 0, 0, 0],
+    "motionValues": [1, 10, 2, 0, 0, 0],
     "defaultStats": {
       "health": 20,
       "defense": 100,
@@ -6423,7 +6423,7 @@
   "skullWolf": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [5, 2, 15, 0, 0, 0, 0],
+    "motionValues": [5, 2, 15, 0, 0, 0],
     "defaultStats": {
       "health": 20,
       "defense": 10,
@@ -6742,7 +6742,7 @@
   "battlemage": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [20, 5, 15, 0, 0, 0, 0],
+    "motionValues": [20, 5, 15, 0, 0, 0],
     "defaultStats": {
       "health": 800,
       "defense": 20,
@@ -7299,7 +7299,7 @@
   "demonSlime": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [50, 0, 10, 0, 0, 0, 0],
+    "motionValues": [50, 0, 10, 0, 0, 0],
     "defaultStats": {
       "health": 2000,
       "defense": 0,
@@ -8026,7 +8026,7 @@
   "fireWorm": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [15, 0, 10, 0, 0, 0, 0],
+    "motionValues": [15, 0, 10, 0, 0, 0],
     "defaultStats": {
       "health": 500,
       "defense": 10,
@@ -8602,7 +8602,7 @@
   "huntress": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [15, 5, 10, 0, 0, 0, 0],
+    "motionValues": [15, 5, 10, 0, 0, 0],
     "defaultStats": {
       "health": 700,
       "defense": 30,
@@ -9210,7 +9210,7 @@
   "lostWarrior": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [10, 10, 10, 0, 0, 0, 0],
+    "motionValues": [10, 10, 10, 0, 0, 0],
     "defaultStats": {
       "health": 500,
       "defense": 50,
@@ -9957,7 +9957,7 @@
   "rogueSamurai": {
     "selectable": true,
     "targetType": "enemy",
-    "motionValues": [10, 1, 10, 0, 0, 0, 0],
+    "motionValues": [10, 1, 10, 0, 0, 0],
     "defaultStats": {
       "health": 650,
       "defense": 15,

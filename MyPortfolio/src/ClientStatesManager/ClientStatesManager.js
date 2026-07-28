@@ -3,6 +3,7 @@ import FacingDirections from "../../shared/Standards/StringKeys/FacingDirections
 import TargetTypes from "../../shared/Standards/StringKeys/TargetTypes.json" with { type: "json" };
 import CollisionTypes from "../../shared/Standards/StringKeys/CollisionTypes.json" with { type: "json" };
 import SocketMessageTypes from "../../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
+import DefenseMarchSignalTypes from "../../shared/Standards/StringKeys/DefenseMarchSignalTypes.json" with { type: "json" };
 
 import PawnActor from "../../shared/Actors/PawnActor.js";
 import TileActor from "../../shared/Actors/TileActor.js";
@@ -1014,23 +1015,23 @@ export default class ClientStatesManager {
 
                 CHUDMain.UIElements.LCharacterHP.setLabelText(
                   selectedCharacterCurrentStats.health +
-                    selectedCharacterCurrentLevel *
+                    (selectedCharacterCurrentLevel - 1) *
                       selectedCharacterBlobDictionary.motionValues[0],
                 );
                 CHUDMain.UIElements.LCharacterDef.setLabelText(
                   selectedCharacterCurrentStats.defense +
-                    selectedCharacterCurrentLevel *
+                    (selectedCharacterCurrentLevel - 1) *
                       selectedCharacterBlobDictionary.motionValues[1],
                 );
                 CHUDMain.UIElements.LCharacterAtk.setLabelText(
                   selectedCharacterCurrentStats.attack +
-                    selectedCharacterCurrentLevel *
+                    (selectedCharacterCurrentLevel - 1) *
                       selectedCharacterBlobDictionary.motionValues[2],
                 );
 
                 let healing =
                   selectedCharacterCurrentStats.healing +
-                  selectedCharacterCurrentLevel *
+                  (selectedCharacterCurrentLevel - 1) *
                     selectedCharacterBlobDictionary.motionValues[5];
                 CHUDMain.UIElements.LCharacterHeal.setLabelText(
                   healing === 0 ? "N/A" : healing,
@@ -1083,6 +1084,7 @@ export default class ClientStatesManager {
           };
 
           CHUDMain.updateCurrentTotalUnitsLabel = () => {
+            console.log("current total units: ", this.currentTotalUnits);
             CHUDMain.UIElements.LCurrentTotalUnits.setLabelText(
               `${this.currentTotalUnits}/${this.maxTotalUnits}`,
             );
@@ -1134,7 +1136,7 @@ export default class ClientStatesManager {
                   actorBlobDictionary.maxLevel
                 ) {
                   const actorCost =
-                    (actorBlobDictionary.currentLevel + 1) *
+                    actorBlobDictionary.currentLevel *
                     actorBlobDictionary.goldCoins;
 
                   if (this.goldCoins - actorCost >= 0) {
@@ -1305,7 +1307,7 @@ export default class ClientStatesManager {
             IMHelmetIcon,
           );
           const LCurrentTotalUnits = new Label(
-            "LCurrentTotalUnit",
+            "LCurrentTotalUnits",
             190,
             26.33,
             49.5,
@@ -1373,25 +1375,34 @@ export default class ClientStatesManager {
           };
           WPTop.onClick = () => {
             this._setKeyValue("p", true);
-            console.log("this.keys: ", { ...this.keys });
           };
 
           WPMiddle.onPointerEnter = () => {
             this.contentCanvas.dataset.hoverable = "pointer";
             WPMiddle.setOpacity(1);
+            WPMiddle.isFocused = true;
           };
           WPMiddle.onPointerLeave = () => {
             this.contentCanvas.dataset.hoverable = "default";
             WPMiddle.setOpacity(0);
+            WPMiddle.isFocused = false;
+          };
+          WPMiddle.onClick = () => {
+            this._setKeyValue("p", true);
           };
 
           WPBottom.onPointerEnter = () => {
             this.contentCanvas.dataset.hoverable = "pointer";
             WPBottom.setOpacity(1);
+            WPBottom.isFocused = true;
           };
           WPBottom.onPointerLeave = () => {
             this.contentCanvas.dataset.hoverable = "default";
             WPBottom.setOpacity(0);
+            WPBottom.isFocused = false;
+          };
+          WPBottom.onClick = () => {
+            this._setKeyValue("p", true);
           };
 
           CHUDMain.addUIElement(WPTop);
@@ -1924,7 +1935,49 @@ export default class ClientStatesManager {
         }
 
         if (data.type === SocketMessageTypes.userSignalResponse) {
-          console.log(data.value);
+          if (
+            data.value.message.signal === DefenseMarchSignalTypes.summonOnWP
+          ) {
+            if (!data.value.message.success) {
+              const index = this.allyPawnActors.findIndex(
+                (pawnActor) =>
+                  pawnActor.tempId === data.value.message.requestId,
+              );
+
+              if (index !== -1) {
+                //refund
+                const pawnActor = this.allyPawnActors[index];
+                this.goldCoins +=
+                  pawnActor.currentLevel *
+                  this.pawnActorsBlobDictionary[pawnActor.actorName].goldCoins;
+
+                this.allyPawnActors.splice(index, 1);
+                this.currentTotalUnits -= 1;
+              }
+
+              console.log("removing actor...");
+              console.log(data.value.message.response);
+
+              const CHUDMain = this.gameRootHUD.childHUDs.CHUDMain;
+
+              if (CHUDMain) {
+                CHUDMain.HUD?.updateCurrentGoldCoinsLabel();
+                CHUDMain.HUD?.updateCurrentTotalUnitsLabel();
+              }
+              return;
+            }
+
+            //replace pawn actor tempId with the server entityId
+            const pawnActor = this.allyPawnActors.find(
+              (pawnActor) => pawnActor.tempId === data.value.message.requestId,
+            );
+            if (pawnActor) {
+              console.log("actor old id: ", pawnActor.tempId);
+              pawnActor.tempId = data.value.message.entityId;
+              console.log("actor new id: ", pawnActor.tempId);
+              console.log(data.value.message.response);
+            }
+          }
         }
       };
     }

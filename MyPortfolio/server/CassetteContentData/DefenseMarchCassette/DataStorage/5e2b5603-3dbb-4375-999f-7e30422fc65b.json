@@ -5,20 +5,19 @@
   "enemyPawnActors": [],
   "pawnActorsBlobDictionary": {
     "cleric": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "ally",
+      "motionValues": [10, 1, 0, 0, 0, 20],
       "defaultStats": {
         "health": 100,
         "defense": 5,
         "attack": 1,
-        "attackRange": 210,
         "movespeed": 50,
         "attackspeed": 2,
         "healing": 20
       },
-      "motionValues": [10, 1, 0, 0, 0, 0, 20],
       "maxLevel": 50,
+      "goldCoins": 250,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 9,
@@ -29,20 +28,19 @@
       "currentLevel": 1
     },
     "elfRangerRookie": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "ally",
+      "motionValues": [15, 2, 5, 0, 0, 0],
       "defaultStats": {
         "health": 80,
         "defense": 10,
         "attack": 15,
-        "attackRange": 250,
         "movespeed": 60,
         "attackspeed": 1,
         "healing": 0
       },
-      "motionValues": [15, 2, 5, 0, 0, 0, 0],
       "maxLevel": 50,
+      "goldCoins": 120,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 3,
@@ -53,20 +51,19 @@
       "currentLevel": 1
     },
     "elfRangerVeteran": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "ally",
+      "motionValues": [25, 5, 15, 0, 0, 0],
       "defaultStats": {
         "health": 200,
         "defense": 30,
         "attack": 50,
-        "attackRange": 250,
         "movespeed": 100,
         "attackspeed": 0.5,
         "healing": 0
       },
-      "motionValues": [25, 5, 15, 0, 0, 0, 0],
       "maxLevel": 50,
+      "goldCoins": 800,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 15,
@@ -77,20 +74,19 @@
       "currentLevel": 1
     },
     "fowlGladiator": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "ally",
+      "motionValues": [25, 1, 20, 0, 0, 0],
       "defaultStats": {
         "health": 130,
         "defense": 20,
         "attack": 20,
-        "attackRange": 50,
         "movespeed": 50,
         "attackspeed": 1.5,
         "healing": 0
       },
-      "motionValues": [25, 1, 20, 0, 0, 0, 0],
       "maxLevel": 50,
+      "goldCoins": 160,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 28,
@@ -101,20 +97,19 @@
       "currentLevel": 1
     },
     "golemSentinel": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "ally",
+      "motionValues": [50, 10, 2, 0, 0, 0],
       "defaultStats": {
         "health": 300,
         "defense": 50,
         "attack": 10,
-        "attackRange": 25,
         "movespeed": 45,
         "attackspeed": 2,
         "healing": 0
       },
-      "motionValues": [50, 10, 2, 0, 0, 0, 0],
       "maxLevel": 50,
+      "goldCoins": 300,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 15,
@@ -125,20 +120,19 @@
       "currentLevel": 1
     },
     "knight": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "ally",
+      "motionValues": [30, 10, 20, 0, 0, 0],
       "defaultStats": {
         "health": 270,
         "defense": 70,
         "attack": 100,
-        "attackRange": 30,
         "movespeed": 120,
         "attackspeed": 0.5,
         "healing": 0
       },
-      "motionValues": [30, 10, 20, 0, 0, 0, 0],
       "maxLevel": 50,
+      "goldCoins": 900,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 49,
@@ -149,20 +143,19 @@
       "currentLevel": 1
     },
     "wizard": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "ally",
+      "motionValues": [15, 5, 35, 0, 0, 0],
       "defaultStats": {
         "health": 180,
         "defense": 40,
         "attack": 120,
-        "attackrange": 230,
         "movespeed": 65,
         "attackspeed": 2,
         "healing": 0
       },
-      "motionValues": [15, 5, 35, 0, 0, 0, 0],
       "maxLevel": 50,
+      "goldCoins": 850,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 4,
@@ -173,20 +166,19 @@
       "currentLevel": 1
     },
     "arcaneArcher": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [5, 1, 5, 0, 0, 0],
       "defaultStats": {
         "health": 20,
         "defense": 10,
         "attack": 10,
-        "attackrange": 250,
         "movespeed": 50,
         "attackspeed": 1,
         "healing": 0
       },
-      "motionValues": [5, 1, 5, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 80,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 21,
@@ -197,20 +189,19 @@
       "currentLevel": 1
     },
     "bat": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [10, 1, 5, 0, 0, 0],
       "defaultStats": {
         "health": 30,
         "defense": 5,
         "attack": 15,
-        "attackrange": 25,
         "movespeed": 100,
         "attackspeed": 0.5,
         "healing": 0
       },
-      "motionValues": [10, 1, 5, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 50,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 23,
@@ -221,20 +212,19 @@
       "currentLevel": 1
     },
     "evilWizard": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [10, 2, 15, 0, 0, 0],
       "defaultStats": {
         "health": 25,
         "defense": 10,
         "attack": 20,
-        "attackrange": 210,
         "movespeed": 45,
         "attackspeed": 2,
         "healing": 0
       },
-      "motionValues": [10, 2, 15, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 120,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 16,
@@ -245,20 +235,19 @@
       "currentLevel": 1
     },
     "ancientGolem": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [20, 5, 2, 0, 0, 0],
       "defaultStats": {
         "health": 150,
         "defense": 30,
         "attack": 10,
-        "attackrange": 20,
         "movespeed": 50,
         "attackspeed": 2,
         "healing": 0
       },
-      "motionValues": [20, 5, 2, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 200,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 9,
@@ -269,20 +258,19 @@
       "currentLevel": 1
     },
     "hermitCrab": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [1, 10, 2, 0, 0, 0],
       "defaultStats": {
         "health": 20,
         "defense": 100,
         "attack": 20,
-        "attackrange": 15,
         "movespeed": 60,
         "attackspeed": 1,
         "healing": 0
       },
-      "motionValues": [1, 10, 2, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 220,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 8,
@@ -293,20 +281,19 @@
       "currentLevel": 1
     },
     "skullWolf": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [5, 2, 15, 0, 0, 0],
       "defaultStats": {
         "health": 20,
         "defense": 10,
         "attack": 35,
-        "attackrange": 10,
         "movespeed": 120,
         "attackspeed": 0.5,
         "healing": 0
       },
-      "motionValues": [5, 2, 15, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 75,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 3,
@@ -317,20 +304,19 @@
       "currentLevel": 1
     },
     "battlemage": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [20, 5, 15, 0, 0, 0],
       "defaultStats": {
         "health": 800,
         "defense": 20,
         "attack": 60,
-        "attackrange": 30,
         "movespeed": 50,
         "attackspeed": 1.5,
         "healing": 0
       },
-      "motionValues": [20, 5, 15, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 650,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 28,
@@ -341,20 +327,19 @@
       "currentLevel": 1
     },
     "demonSlime": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [50, 0, 10, 0, 0, 0],
       "defaultStats": {
         "health": 2000,
         "defense": 0,
         "attack": 100,
-        "attackrange": 50,
         "movespeed": 60,
         "attackspeed": 2,
         "healing": 0
       },
-      "motionValues": [50, 0, 10, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 800,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 104,
@@ -365,20 +350,19 @@
       "currentLevel": 1
     },
     "fireWorm": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [15, 0, 10, 0, 0, 0],
       "defaultStats": {
         "health": 500,
         "defense": 10,
         "attack": 160,
-        "attackrange": 300,
         "movespeed": 65,
         "attackspeed": 1.5,
         "healing": 0
       },
-      "motionValues": [15, 0, 10, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 1150,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 8,
@@ -389,20 +373,19 @@
       "currentLevel": 1
     },
     "huntress": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [15, 5, 10, 0, 0, 0],
       "defaultStats": {
         "health": 700,
         "defense": 30,
         "attack": 130,
-        "attackrange": 30,
         "movespeed": 110,
         "attackspeed": 0.75,
         "healing": 0
       },
-      "motionValues": [15, 5, 10, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 1300,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 65,
@@ -413,20 +396,19 @@
       "currentLevel": 1
     },
     "lostWarrior": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [10, 10, 10, 0, 0, 0],
       "defaultStats": {
         "health": 500,
         "defense": 50,
         "attack": 200,
-        "attackrange": 30,
         "movespeed": 100,
         "attackspeed": 0.5,
         "healing": 0
       },
-      "motionValues": [10, 10, 10, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 1600,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 68,
@@ -437,20 +419,19 @@
       "currentLevel": 1
     },
     "rogueSamurai": {
-      "defaultActorImage": null,
       "selectable": true,
       "targetType": "enemy",
+      "motionValues": [10, 1, 10, 0, 0, 0],
       "defaultStats": {
         "health": 650,
         "defense": 15,
         "attack": 160,
-        "attackrange": 40,
         "movespeed": 120,
         "attackspeed": 0.25,
         "healing": 0
       },
-      "motionValues": [10, 1, 10, 0, 0, 0, 0],
       "maxLevel": 100,
+      "goldCoins": 2000,
       "collision": {
         "collisionType": "blockCollision",
         "ddx": 1,

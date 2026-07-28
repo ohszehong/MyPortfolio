@@ -727,6 +727,7 @@ export default class GameStatesManager {
     this.sanitizeCameraPosition();
 
     this.playerActor = PawnActor.constructNewActor(
+      uuid,
       "mainCharacter",
       playerStartingPosition,
       actorBlobDictionary,
