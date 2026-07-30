@@ -1125,34 +1125,7 @@ export default class ClientStatesManager {
           };
 
           BTNUpgradeCharacter.onClick = () => {
-            //the upgrade should not work for the current pawns on field, it should only be affecting the new generated pawns
-            const selectedCharacter = CHUDMain.UIElements.SelectedCharacter;
-            if (selectedCharacter) {
-              const actorBlobDictionary =
-                this.pawnActorsBlobDictionary[selectedCharacter.elementName];
-              if (actorBlobDictionary) {
-                if (
-                  actorBlobDictionary.currentLevel <
-                  actorBlobDictionary.maxLevel
-                ) {
-                  const actorCost =
-                    actorBlobDictionary.currentLevel *
-                    actorBlobDictionary.goldCoins;
-
-                  if (this.goldCoins - actorCost >= 0) {
-                    this.goldCoins -= actorCost;
-                    actorBlobDictionary.currentLevel += 1;
-
-                    CHUDMain.updateCharacterStatsAndCostsLabels();
-                    CHUDMain.updateCurrentGoldCoinsLabel();
-                  } else {
-                    console.log("insufficient gold to upgrade the character.");
-                  }
-                } else {
-                  console.log("unable to upgrade, character is at max level.");
-                }
-              }
-            }
+            this._setKeyValue("l", true);
           };
 
           CHUDMain.addUIElement(BTNUpgradeCharacter);
@@ -1922,7 +1895,7 @@ export default class ClientStatesManager {
       const ws = this.webSocket;
 
       ws.onopen = (event) => {
-        this.sendMessageToServer(SocketMessageTypes.log, "hello from client.");
+        this.sendMessageToServer(SocketMessageTypes.log, "Hello from client.");
       };
 
       ws.onmessage = (event) => {
@@ -1935,48 +1908,53 @@ export default class ClientStatesManager {
         }
 
         if (data.type === SocketMessageTypes.userSignalResponse) {
-          if (
-            data.value.message.signal === DefenseMarchSignalTypes.summonOnWP
-          ) {
-            if (!data.value.message.success) {
-              const index = this.allyPawnActors.findIndex(
-                (pawnActor) =>
-                  pawnActor.tempId === data.value.message.requestId,
-              );
+          switch (data.value.message.signal) {
+            case DefenseMarchSignalTypes.summonOnWP:
+              if (!data.value.message.success) {
+                const index = this.allyPawnActors.findIndex(
+                  (pawnActor) =>
+                    pawnActor.tempId === data.value.message.requestId,
+                );
 
-              if (index !== -1) {
-                //refund
-                const pawnActor = this.allyPawnActors[index];
-                this.goldCoins +=
-                  pawnActor.currentLevel *
-                  this.pawnActorsBlobDictionary[pawnActor.actorName].goldCoins;
+                if (index !== -1) {
+                  //refund
+                  const pawnActor = this.allyPawnActors[index];
+                  this.goldCoins +=
+                    pawnActor.currentLevel *
+                    this.pawnActorsBlobDictionary[pawnActor.actorName]
+                      .goldCoins;
 
-                this.allyPawnActors.splice(index, 1);
-                this.currentTotalUnits -= 1;
+                  this.allyPawnActors.splice(index, 1);
+                  this.currentTotalUnits -= 1;
+                }
+                console.log("removing actor...");
+                const CHUDMain = this.gameRootHUD.childHUDs.CHUDMain;
+
+                if (CHUDMain) {
+                  CHUDMain.HUD?.updateCurrentGoldCoinsLabel();
+                  CHUDMain.HUD?.updateCurrentTotalUnitsLabel();
+                }
+              } else {
+                //replace pawn actor tempId with the server entityId
+                const pawnActor = this.allyPawnActors.find(
+                  (pawnActor) =>
+                    pawnActor.tempId === data.value.message.requestId,
+                );
+                if (pawnActor) {
+                  console.log("actor old id: ", pawnActor.tempId);
+                  pawnActor.tempId = data.value.message.entityId;
+                  console.log("actor new id: ", pawnActor.tempId);
+                }
               }
 
-              console.log("removing actor...");
               console.log(data.value.message.response);
+              break;
 
-              const CHUDMain = this.gameRootHUD.childHUDs.CHUDMain;
-
-              if (CHUDMain) {
-                CHUDMain.HUD?.updateCurrentGoldCoinsLabel();
-                CHUDMain.HUD?.updateCurrentTotalUnitsLabel();
+            case DefenseMarchSignalTypes.upgradeCharacter:
+              if (data.value.message.response) {
+                console.log(data.value.message.response);
               }
-              return;
-            }
-
-            //replace pawn actor tempId with the server entityId
-            const pawnActor = this.allyPawnActors.find(
-              (pawnActor) => pawnActor.tempId === data.value.message.requestId,
-            );
-            if (pawnActor) {
-              console.log("actor old id: ", pawnActor.tempId);
-              pawnActor.tempId = data.value.message.entityId;
-              console.log("actor new id: ", pawnActor.tempId);
-              console.log(data.value.message.response);
-            }
+              break;
           }
         }
       };

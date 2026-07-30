@@ -14,32 +14,72 @@ export default class DefenseMarchCassetteSignalsManager {
     const actorBlobData =
       this.statesManager.pawnActorsBlobDictionary[actorName];
 
-    let pawnActor = null;
+    let result = {
+      pawnActor: null,
+      message: null,
+      success: false,
+    };
 
     if (actorBlobData) {
       const pawnActorCost =
         actorBlobData.currentLevel * actorBlobData.goldCoins;
 
       if (this.statesManager.goldCoins < pawnActorCost) {
-        console.log("Insufficient gold coins.");
+        result.message = `Insufficient gold coins to spawn ${actorName}.`;
       } else if (
         this.statesManager.currentTotalUnits ===
         this.statesManager.maxTotalUnits
       ) {
-        console.log("can't deploy more unit.");
+        result.message = "Can't deploy more unit.";
       } else {
-        pawnActor = PawnActor.constructNewActor(
+        result.pawnActor = PawnActor.constructNewActor(
           tempId,
           actorName,
           position,
           actorBlobData,
         );
 
-        this.statesManager.allyPawnActors.push(pawnActor);
-        this.statesManager.goldCoins -= pawnActorCost;
-        this.statesManager.currentTotalUnits += 1;
+        if (result.pawnActor) {
+          this.statesManager.allyPawnActors.push(result.pawnActor);
+          this.statesManager.goldCoins -= pawnActorCost;
+          this.statesManager.currentTotalUnits += 1;
+
+          result.success = true;
+          result.message = `Successfully spawn ${actorName} at x: ${position.dx} y: ${position.dy}`;
+        }
       }
     }
-    return pawnActor;
+    return result;
+  }
+
+  upgradePawnActor(actorName) {
+    //the upgrade should not work for the current pawns on field, it should only be affecting the new generated pawns
+    let result = {
+      message: null,
+      success: false,
+    };
+
+    const actorBlobDictionary =
+      this.statesManager.pawnActorsBlobDictionary[actorName];
+
+    if (actorBlobDictionary) {
+      if (actorBlobDictionary.currentLevel < actorBlobDictionary.maxLevel) {
+        const actorUpgradeCost =
+          actorBlobDictionary.currentLevel * actorBlobDictionary.goldCoins;
+
+        if (this.statesManager.goldCoins - actorUpgradeCost >= 0) {
+          this.statesManager.goldCoins -= actorUpgradeCost;
+          actorBlobDictionary.currentLevel += 1;
+          result.message = `Successfully upgraded ${actorName}`;
+          result.success = true;
+        } else {
+          result.message = `Insufficient gold coins to upgrade ${actorName}`;
+        }
+      } else {
+        result.message = `Unable to upgrade, ${actorName} is already at max level.`;
+      }
+    }
+
+    return result;
   }
 }

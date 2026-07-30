@@ -45,12 +45,16 @@ class DefenseMarchClientSimulator {
 
 function init() {
   parentPort.on("message", (message) => {
+    let gameStatesManager;
+    let clientSimulator;
+    let signalsManager;
+
     switch (message.type) {
       case SocketMessageTypes.serializedClientManager:
         if (!message.value) return;
         console.log("adding new client to defenseMarchCassetteTicker...");
 
-        const gameStatesManager = GameStatesManager.constructFromSerializedJSON(
+        gameStatesManager = GameStatesManager.constructFromSerializedJSON(
           message.value,
         );
         clients[message.value.userId] = new DefenseMarchClientSimulator(
@@ -63,8 +67,52 @@ function init() {
       case SocketMessageTypes.userInput:
         if (!message.value?.userId || !message.value?.message) return;
 
-        const clientSimulator = clients[message.value.userId];
-        if (!clientSimulator) return;
+        clientSimulator = clients[message.value.userId];
+
+        /** @type {GameStatesManager} */
+        gameStatesManager = clientSimulator?.gameStatesManager;
+        if (!clientSimulator || !gameStatesManager) {
+          const responseMessage = {
+            response: "Something is wrong with the server.",
+            signal: signal,
+            requestId: requestId,
+            success: false,
+          };
+          console.log(responseMessage);
+
+          const packagedSocketMessage = packageSocketMessageForSingleUser(
+            message.cassetteIndex,
+            SocketMessageTypes.userSignalResponse,
+            message.value.userId,
+            responseMessage,
+          );
+
+          parentPort.postMessage(packagedSocketMessage);
+          return;
+        }
+
+        /** @type {DefenseMarchCassetteSignalsManager} */
+        signalsManager = clientSimulator.gameStatesManager.signalsManager;
+
+        if (!signalsManager) {
+          const responseMessage = {
+            response: "Signals manager is not working.",
+            signal: signal,
+            success: false,
+          };
+
+          console.log(responseMessage);
+
+          const packagedSocketMessage = packageSocketMessageForSingleUser(
+            message.cassetteIndex,
+            SocketMessageTypes.userSignalResponse,
+            message.value.userId,
+            responseMessage,
+          );
+
+          parentPort.postMessage(packagedSocketMessage);
+          return;
+        }
 
         const signal = message.value.message.signal;
         if (signal === "a") {
@@ -75,38 +123,12 @@ function init() {
           //clientManager.playerActor.toWalkState(FacingDirections.up);
         } else if (signal === "s") {
           //clientManager.playerActor.toWalkState(FacingDirections.down);
-        } else if (signal === "idle") {
-          //clientManager.playerActor.toIdleState();
         } else if (signal === DefenseMarchSignalTypes.summonOnWP) {
           const requestId = message.value.message.requestId;
           const actorName = message.value.message.actorName;
           const walkPathIndex = message.value.message.walkPathIndex;
 
           let responseMessage;
-
-          /** @type {GameStatesManager} */
-          const gameStatesManager = clientSimulator.gameStatesManager;
-
-          if (!gameStatesManager) {
-            responseMessage = {
-              response:
-                "Something is wrong with the server, client does not have a states manager.",
-              signal: signal,
-              requestId: requestId,
-              success: false,
-            };
-            console.log(responseMessage);
-
-            const packagedSocketMessage = packageSocketMessageForSingleUser(
-              message.cassetteIndex,
-              SocketMessageTypes.userSignalResponse,
-              message.value.userId,
-              responseMessage,
-            );
-
-            parentPort.postMessage(packagedSocketMessage);
-            return;
-          }
 
           if (
             !requestId ||
@@ -116,32 +138,18 @@ function init() {
               clientSimulator.gameStatesManager.allySummonLocations.length
           ) {
             responseMessage = {
-              response: "Invalid requestId or actorName or walkPathIndex",
+              response:
+                "Server: Invalid requestId or actorName or walkPathIndex",
               requestId: requestId,
               signal: signal,
               success: false,
             };
             console.log(responseMessage);
-
-            const packagedSocketMessage = packageSocketMessageForSingleUser(
-              clientSimulator.gameStatesManager.cassetteIndex,
-              SocketMessageTypes.userSignalResponse,
-              clientSimulator.gameStatesManager.userId,
-              responseMessage,
-            );
-
-            parentPort.postMessage(packagedSocketMessage);
-            return;
-          }
-
-          /** @type {DefenseMarchCassetteSignalsManager} */
-          const signalsManager = gameStatesManager.signalsManager;
-
-          if (signalsManager) {
+          } else {
             //pawnActor position format: {dx: xxx, dy: xxx}
             const actorId = crypto.randomUUID();
 
-            const pawnActor = signalsManager.spawnPawnActorAtLocation(
+            const result = signalsManager.spawnPawnActorAtLocation(
               actorId,
               actorName,
               {
@@ -150,9 +158,9 @@ function init() {
               },
             );
 
-            if (pawnActor) {
+            if (result.success) {
               responseMessage = {
-                response: `server: successfully spawn ${actorName} at walk path index of ${walkPathIndex}`,
+                response: `Server: ${result.message}`,
                 requestId: requestId,
                 entityId: actorId,
                 signal: signal,
@@ -160,21 +168,58 @@ function init() {
               };
             } else {
               responseMessage = {
-                response: `server: failed to spawn ${actorName} at walk path index of ${walkPathIndex}`,
+                response: `Server: ${result.message}`,
                 requestId: requestId,
                 signal: signal,
                 success: false,
               };
             }
-
-            const packagedSocketMessage = packageSocketMessageForSingleUser(
-              clientSimulator.gameStatesManager.cassetteIndex,
-              SocketMessageTypes.userSignalResponse,
-              clientSimulator.gameStatesManager.userId,
-              responseMessage,
-            );
-            parentPort.postMessage(packagedSocketMessage);
           }
+
+          const packagedSocketMessage = packageSocketMessageForSingleUser(
+            clientSimulator.gameStatesManager.cassetteIndex,
+            SocketMessageTypes.userSignalResponse,
+            clientSimulator.gameStatesManager.userId,
+            responseMessage,
+          );
+          parentPort.postMessage(packagedSocketMessage);
+        } else if (signal === DefenseMarchSignalTypes.upgradeCharacter) {
+          const actorName = message.value.message.actorName;
+          let responseMessage;
+
+          if (!actorName) {
+            responseMessage = {
+              response:
+                "Server: Invalid actor name. Unable to upgrade character.",
+              signal: signal,
+              success: false,
+            };
+          } else {
+            const result = signalsManager.upgradePawnActor(actorName);
+
+            if (!result.success) {
+              responseMessage = {
+                response: `Server: ${result.message}`,
+                signal: signal,
+                success: false,
+              };
+            } else {
+              responseMessage = {
+                response: `Server: ${result.message}`,
+                signal: signal,
+                success: true,
+              };
+            }
+          }
+
+          const packagedSocketMessage = packageSocketMessageForSingleUser(
+            clientSimulator.gameStatesManager.cassetteIndex,
+            SocketMessageTypes.userSignalResponse,
+            clientSimulator.gameStatesManager.userId,
+            responseMessage,
+          );
+
+          parentPort.postMessage(packagedSocketMessage);
         }
         break;
 

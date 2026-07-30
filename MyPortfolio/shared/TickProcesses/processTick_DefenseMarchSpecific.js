@@ -16,7 +16,5 @@ export default function processTick_DefenseMarchSpecific() {
   });
 }
 
-//TO-DO: right now we have done checking for block collisions and we also make sure that every collisions from animation are inserted into this.spawnCollisions
-//already done the tempId syncing issue...
-//right next move upgrade character logic to signal manager as the server need to handle the upgrade too
-//and then settle the projectile actor and vfx hitbox actor...
+//future TO-DO: right now we have done checking for block collisions and we also make sure that every collisions from animation are inserted into this.spawnCollisions
+//next TO-DO: settle the projectile actor and vfx hitbox actor...

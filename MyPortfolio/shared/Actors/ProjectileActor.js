@@ -1,21 +1,26 @@
-import Actor from "./Actor.js";
+import PawnActor from "./PawnActor.js";
 import Animation from "../Animation/Animation.js";
 
 export default class ProjectileActor extends Actor {
-  /** @type {Actor} */
+  //  "scalingValue": 1.1,
+  //       "scalingType": "attack",
+  //       "range": 40,
+  //       "targetDistancePriority": 0,
+  //       "target": "ally",
+  //       "singleTarget": false,
+
+  /** @type {PawnActor} */
   from;
+  projectileName;
 
-  /** @type {Actor} */
+  //either one of this is filled, if targetActor it means it will followed the targetActor position (homing) else it will move to the initial target position.
+  /** @type {PawnActor} */
   targetActor;
+  targetPosition;
 
-  scalingType;
-  scalingValue;
+  scalarValue;
 
-  //whether follow targetActor till the end or just the initial position
-  homing;
   singleTarget;
-
-  hasReachedTarget;
 
   travellingSpeed;
 
@@ -25,38 +30,55 @@ export default class ProjectileActor extends Actor {
   /** @type {Animation} */
   hitAnimation;
 
+  //TO-DO: add summons (projectiles or vfxhitbox data such as animation data into pawnActorsBlobDictionary)
+
   constructor(
     tempId,
-    actorName,
-    startPosition,
+    from,
+    projectileName,
+    startingPosition,
     collision,
     travellingSpeed,
-    from,
     scalingType,
     scalingValue,
     targetActor,
+    targetPosition,
     travellingAnimationSpritesheetName = null,
     travellingAnimationFrames = [],
     hitAnimationSpritesheetName = null,
     hitAnimationFrames = [],
     singleTarget = false,
-    homing = false
   ) {
-    super(tempId, actorName, startPosition, collision, false);
+    super(tempId, projectileName, startingPosition, collision, false);
 
     this.travellingSpeed = travellingSpeed;
 
-    this.scalingType = scalingType;
-    this.scalingValue = scalingValue;
-
     this.from = from;
-    this.targetActor = targetActor;
 
-    this.travellingAnimation = new Animation(this, travellingAnimationSpritesheetName, travellingAnimationFrames);
-    this.hitAnimation = new Animation(this, hitAnimationSpritesheetName, hitAnimationFrames);
+    if (this.from) {
+      const baseScalarValue = this.from.actorCurrentStats[scalingType];
+
+      if (baseScalarValue) {
+        this.scalarValue = baseScalarValue * scalingValue;
+      }
+    }
+
+    this.projectileName = projectileName;
+
+    this.targetActor = targetActor;
+    this.targetPosition = targetPosition;
+
+    this.travellingAnimation = new Animation(
+      this,
+      travellingAnimationSpritesheetName,
+      travellingAnimationFrames,
+    );
+    this.hitAnimation = new Animation(
+      this,
+      hitAnimationSpritesheetName,
+      hitAnimationFrames,
+    );
     this.singleTarget = singleTarget;
-    this.homing = homing;
-    this.hasReachedTarget = false;
   }
 
   getCurrentActorData(deltaTime) {
@@ -66,9 +88,12 @@ export default class ProjectileActor extends Actor {
     if (!this.hasReachedTarget) {
       //travel here...
       if (this.travellingAnimation) {
-        data = {...this.travellingAnimation.getCurrentActiveFrameData(deltaTime), ...data.position};
+        data = {
+          ...this.travellingAnimation.getCurrentActiveFrameData(deltaTime),
+          ...data.position,
+        };
         data.collisions = [...this.collision, ...data.collisions];
-      } 
+      }
     } else {
       if (this.hitAnimation) {
         data = this.hitAnimation.getCurrentActiveFrameData(deltaTime);

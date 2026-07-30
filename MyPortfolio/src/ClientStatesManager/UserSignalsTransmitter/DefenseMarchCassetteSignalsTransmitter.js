@@ -43,15 +43,14 @@ import DefenseMarchCassetteSignalsManager from "../../../shared/SignalsManagers/
 export default function transmitUserSignals() {
   let lastKeys = this.lastKeys;
   const keys = this.keys;
+  const CHUDMain = this.gameRootHUD?.childHUDs?.CHUDMain;
 
   if (!keys) return;
-
-  let shouldIdle = true;
 
   //0 - Top, 1 - Middle, 2 - Bottom
   const summonCharacterOnWP = (walkPathIndex, actorName) => {
     const requestId = crypto.randomUUID();
-    const pawnActor = this.signalsManager.spawnPawnActorAtLocation(
+    const result = this.signalsManager.spawnPawnActorAtLocation(
       requestId,
       actorName,
       {
@@ -60,7 +59,7 @@ export default function transmitUserSignals() {
       },
     );
 
-    if (pawnActor) {
+    if (result.success) {
       const message = {
         requestId: requestId,
         actorName: actorName,
@@ -71,19 +70,16 @@ export default function transmitUserSignals() {
       this.sendMessageToServer(SocketMessageTypes.userInput, message);
     }
 
-    return pawnActor;
+    console.log(`Client: ${result.message}`);
+    return result;
   };
 
   for (let key in keys) {
     if (keys[key]) {
-      //shouldIdle = false;
-
-      if (key === lastKeys[key]) continue;
-
+      //if (key === lastKeys[key]) continue; <- only needed if the key is some kind of trigger (meaning one click then the input is continuous until it is clicked again)
       switch (key) {
         case "w":
           //clientManager.playerActor.toWalkState(FacingDirection.up);
-          console.log("pressed w on defensemarch...");
           break;
 
         case "a":
@@ -105,47 +101,63 @@ export default function transmitUserSignals() {
           break;
 
         case "p":
-          console.log("p press...");
           /**
            * childHUDs = {HUD: xxx, active: true}
            */
-          const CHUDMain = this.gameRootHUD?.childHUDs?.CHUDMain;
-          if (CHUDMain?.active) {
-            const actorName =
-              CHUDMain.HUD?.UIElements?.SelectedCharacter?.elementName;
-            if (!actorName) return;
+          if (!CHUDMain?.active) continue;
 
-            let pawnActor = null;
-            if (CHUDMain.HUD?.UIElements?.WPTop?.isFocused) {
-              pawnActor = summonCharacterOnWP(0, actorName);
-            } else if (CHUDMain.HUD?.UIElements?.WPMiddle?.isFocused) {
-              pawnActor = summonCharacterOnWP(1, actorName);
-            } else if (CHUDMain.HUD?.UIElements?.WPBottom?.isFocused) {
-              pawnActor = summonCharacterOnWP(2, actorName);
-            }
-            if (pawnActor) {
-              CHUDMain.HUD.updateCurrentGoldCoinsLabel();
-              CHUDMain.HUD.updateCurrentTotalUnitsLabel();
-            }
+          const actorName =
+            CHUDMain.HUD?.UIElements?.SelectedCharacter?.elementName;
+          if (!actorName) return;
+
+          let result = null;
+          if (CHUDMain.HUD?.UIElements?.WPTop?.isFocused) {
+            result = summonCharacterOnWP(0, actorName);
+          } else if (CHUDMain.HUD?.UIElements?.WPMiddle?.isFocused) {
+            result = summonCharacterOnWP(1, actorName);
+          } else if (CHUDMain.HUD?.UIElements?.WPBottom?.isFocused) {
+            result = summonCharacterOnWP(2, actorName);
           }
+          if (result.success) {
+            CHUDMain.HUD.updateCurrentGoldCoinsLabel();
+            CHUDMain.HUD.updateCurrentTotalUnitsLabel();
+          }
+
           //reset the key no matter what as p key is action key (one time action)
           keys.p = false;
           break;
 
         case "l":
+          if (!CHUDMain?.active) continue;
+
+          //the upgrade should not work for the current pawns on field, it should only be affecting the new generated pawns
+          const selectedCharacter = CHUDMain.HUD?.UIElements?.SelectedCharacter;
+
+          if (selectedCharacter) {
+            const result = this.signalsManager.upgradePawnActor(
+              selectedCharacter.elementName,
+            );
+
+            if (result.success) {
+              const message = {
+                actorName: selectedCharacter.elementName,
+                signal: DefenseMarchSignalTypes.upgradeCharacter,
+              };
+
+              this.sendMessageToServer(SocketMessageTypes.userInput, message);
+
+              CHUDMain.HUD.updateCharacterStatsAndCostsLabels();
+              CHUDMain.HUD.updateCurrentGoldCoinsLabel();
+            }
+
+            console.log(`Client: ${result.message}`);
+          }
+
+          keys.l = false;
           break;
       }
     }
   }
-
-  //   if (shouldIdle)
-  //   {
-  //      //send input to server
-  //       clientManager.sendMessageToServer(SocketMessageTypes.userInput, "idle");
-
-  //       //client prediction
-  //       clientManager.playerActor.toIdleState();
-  //   }
 
   this.lastKeys = { ...keys };
 }
