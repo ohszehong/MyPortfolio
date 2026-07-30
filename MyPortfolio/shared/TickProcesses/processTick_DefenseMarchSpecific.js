@@ -17,4 +17,5 @@ export default function processTick_DefenseMarchSpecific() {
 }
 
 //future TO-DO: right now we have done checking for block collisions and we also make sure that every collisions from animation are inserted into this.spawnCollisions
-//next TO-DO: settle the projectile actor and vfx hitbox actor...
+//next TO-DO: finish the SummonActorsData.json (move all the summons assets to SummonAssets folder)
+//next-next TO-DO: settle the projectile actor and vfx hitbox actor...

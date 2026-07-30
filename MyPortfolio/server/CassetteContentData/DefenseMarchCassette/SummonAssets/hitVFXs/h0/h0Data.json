@@ -1,7 +1,7 @@
 {
   "frames": [
     {
-      "filename": "h0.png",
+      "filename": "h0Sheet.png",
       "frame": { "x": 0, "y": 0, "w": 89, "h": 60 },
       "rotated": false,
       "trimmed": false,
@@ -10,7 +10,7 @@
       "duration": 100
     },
     {
-      "filename": "h0.png",
+      "filename": "h0Sheet.png",
       "frame": { "x": 89, "y": 0, "w": 89, "h": 60 },
       "rotated": false,
       "trimmed": false,
@@ -19,7 +19,7 @@
       "duration": 100
     },
     {
-      "filename": "h0.png",
+      "filename": "h0Sheet.png",
       "frame": { "x": 178, "y": 0, "w": 89, "h": 60 },
       "rotated": false,
       "trimmed": false,
@@ -28,7 +28,7 @@
       "duration": 100
     },
     {
-      "filename": "h0.png",
+      "filename": "h0Sheet.png",
       "frame": { "x": 267, "y": 0, "w": 89, "h": 60 },
       "rotated": false,
       "trimmed": false,
@@ -37,7 +37,7 @@
       "duration": 100
     },
     {
-      "filename": "h0.png",
+      "filename": "h0Sheet.png",
       "frame": { "x": 356, "y": 0, "w": 89, "h": 60 },
       "rotated": false,
       "trimmed": false,
@@ -46,7 +46,7 @@
       "duration": 100
     },
     {
-      "filename": "h0.png",
+      "filename": "h0Sheet.png",
       "frame": { "x": 445, "y": 0, "w": 89, "h": 60 },
       "rotated": false,
       "trimmed": false,
@@ -55,7 +55,7 @@
       "duration": 100
     },
     {
-      "filename": "h0.png",
+      "filename": "h0Sheet.png",
       "frame": { "x": 534, "y": 0, "w": 89, "h": 60 },
       "rotated": false,
       "trimmed": false,
@@ -64,7 +64,7 @@
       "duration": 100
     },
     {
-      "filename": "h0.png",
+      "filename": "h0Sheet.png",
       "frame": { "x": 623, "y": 0, "w": 89, "h": 60 },
       "rotated": false,
       "trimmed": false,
@@ -76,7 +76,7 @@
   "meta": {
     "app": "https://www.aseprite.org/",
     "version": "1.3.13-dev",
-    "image": "h0.png",
+    "image": "h0Sheet.png",
     "format": "I8",
     "size": { "w": 712, "h": 60 },
     "scale": "1",

@@ -94,7 +94,7 @@
         "to": 7,
         "direction": "forward",
         "color": "#000000ff",
-        "data": "{\"projectile\":false,\"vfx\":\"v0\",\"hitVFX\":false}"
+        "data": "{\"projectile\":false,\"vfx\":\"v1\",\"hitVFX\":false}"
       }
     ],
     "layers": [

@@ -1,7 +1,7 @@
 {
   "frames": [
     {
-      "filename": "p0.png",
+      "filename": "p1Sheet.png",
       "frame": { "x": 0, "y": 0, "w": 32, "h": 7 },
       "rotated": false,
       "trimmed": false,
@@ -13,7 +13,7 @@
   "meta": {
     "app": "https://www.aseprite.org/",
     "version": "1.3.13-dev",
-    "image": "p0.png",
+    "image": "p1Sheet.png",
     "format": "RGBA8888",
     "size": { "w": 32, "h": 7 },
     "scale": "1",

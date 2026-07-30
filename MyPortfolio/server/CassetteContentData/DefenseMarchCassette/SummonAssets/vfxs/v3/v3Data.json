@@ -1,7 +1,7 @@
 {
   "frames": [
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 0, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -10,7 +10,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 49, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -19,7 +19,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 98, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -28,7 +28,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 147, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -37,7 +37,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 196, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -46,7 +46,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 245, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -55,7 +55,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 294, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -64,7 +64,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 343, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -73,7 +73,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 392, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -82,7 +82,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 441, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -91,7 +91,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 490, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -100,7 +100,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 539, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -109,7 +109,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 588, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -118,7 +118,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 637, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -127,7 +127,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 686, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -136,7 +136,7 @@
       "duration": 80
     },
     {
-      "filename": "v0.png",
+      "filename": "v3Sheet.png",
       "frame": { "x": 735, "y": 0, "w": 49, "h": 67 },
       "rotated": false,
       "trimmed": false,
@@ -148,7 +148,7 @@
   "meta": {
     "app": "https://www.aseprite.org/",
     "version": "1.3.13-dev",
-    "image": "v0.png",
+    "image": "v3Sheet.png",
     "format": "RGBA8888",
     "size": { "w": 784, "h": 67 },
     "scale": "1",

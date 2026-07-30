@@ -1080,7 +1080,7 @@
                 {
                   "atFrame": 7,
                   "projectile": {
-                    "projectileName": "p0",
+                    "projectileName": "p1",
                     "x": 51,
                     "y": 23,
                     "width": 3,
@@ -1205,7 +1205,7 @@
                 {
                   "atFrame": 7,
                   "projectile": false,
-                  "vfx": "v0",
+                  "vfx": "v1",
                   "hitVFX": false,
                   "homing": false
                 }
@@ -1323,7 +1323,7 @@
                 {
                   "atFrame": 7,
                   "projectile": false,
-                  "vfx": "v1",
+                  "vfx": "v2",
                   "hitVFX": false,
                   "homing": false
                 }
@@ -1796,9 +1796,8 @@
                   "collisionType": "attackCollision",
                   "ddx": 38,
                   "ddy": 3,
-                  "active": true,
-                  "target": "enemy",
-                  "single": false
+                  "width": 45,
+                  "height": 52
                 }
               ],
               "spritesheetTrimmedX": 16,
@@ -2331,9 +2330,8 @@
                   "collisionType": "attackCollision",
                   "ddx": 24,
                   "ddy": 13,
-                  "active": true,
-                  "target": "enemy",
-                  "single": false
+                  "width": 67,
+                  "height": 59
                 }
               ],
               "spritesheetTrimmedX": 8,
@@ -2376,9 +2374,8 @@
                   "collisionType": "attackCollision",
                   "ddx": 24,
                   "ddy": 2,
-                  "active": true,
-                  "target": "enemy",
-                  "single": false
+                  "width": 67,
+                  "height": 70
                 }
               ],
               "spritesheetTrimmedX": 25,
@@ -2719,9 +2716,8 @@
                   "collisionType": "attackCollision",
                   "ddx": 19,
                   "ddy": 1,
-                  "active": true,
-                  "target": "enemy",
-                  "single": false
+                  "width": 47,
+                  "height": 49
                 }
               ],
               "spritesheetTrimmedX": 0,
@@ -2801,9 +2797,8 @@
                   "collisionType": "attackCollision",
                   "ddx": 50,
                   "ddy": 35,
-                  "active": true,
-                  "target": "enemy",
-                  "single": false
+                  "width": 61,
+                  "height": 45
                 }
               ],
               "spritesheetTrimmedX": 34,
@@ -4269,7 +4264,17 @@
                 "height": 24
               },
               "duration": 120,
-              "collisions": [],
+              "collisions": [
+                {
+                  "collisionType": "attackCollision",
+                  "ddx": 4,
+                  "ddy": 20,
+                  "width": 31,
+                  "height": 35,
+                  "active": true,
+                  "target": "ally"
+                }
+              ],
               "spritesheetTrimmedX": 8,
               "spritesheetTrimmedY": 30
             },
@@ -5450,9 +5455,10 @@
                   "collisionType": "attackCollision",
                   "ddx": -3,
                   "ddy": -2,
+                  "width": 69,
+                  "height": 65,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 1,
@@ -6009,9 +6015,10 @@
                   "collisionType": "attackCollision",
                   "ddx": 10,
                   "ddy": 6,
+                  "width": 31,
+                  "height": 36,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 13,
@@ -6508,9 +6515,10 @@
                   "collisionType": "attackCollision",
                   "ddx": -2,
                   "ddy": -1,
+                  "width": 28,
+                  "height": 28,
                   "active": true,
-                  "target": "ally",
-                  "single": true
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 2,
@@ -6827,9 +6835,10 @@
                   "collisionType": "attackCollision",
                   "ddx": -3,
                   "ddy": 21,
+                  "width": 96,
+                  "height": 109,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 6,
@@ -6957,9 +6966,10 @@
                   "collisionType": "attackCollision",
                   "ddx": 0,
                   "ddy": 8,
+                  "width": 96,
+                  "height": 113,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 0,
@@ -7456,9 +7466,10 @@
                   "collisionType": "attackCollision",
                   "ddx": 13,
                   "ddy": 8,
+                  "width": 102,
+                  "height": 110,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 25,
@@ -8689,9 +8700,10 @@
                   "collisionType": "attackCollision",
                   "ddx": 19,
                   "ddy": 27,
+                  "width": 95,
+                  "height": 68,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 24,
@@ -8771,9 +8783,10 @@
                   "collisionType": "attackCollision",
                   "ddx": 21,
                   "ddy": 28,
+                  "width": 91,
+                  "height": 67,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 24,
@@ -9309,9 +9322,10 @@
                   "collisionType": "attackCollision",
                   "ddx": 28,
                   "ddy": 46,
+                  "width": 69,
+                  "height": 55,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 29,
@@ -9391,9 +9405,10 @@
                   "collisionType": "attackCollision",
                   "ddx": 31,
                   "ddy": 37,
+                  "width": 109,
+                  "height": 66,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 26,
@@ -9593,9 +9608,10 @@
                   "collisionType": "attackCollision",
                   "ddx": 7,
                   "ddy": 8,
+                  "width": 64,
+                  "height": 95,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 11,
@@ -10056,9 +10072,10 @@
                   "collisionType": "attackCollision",
                   "ddx": 0,
                   "ddy": 0,
+                  "width": 74,
+                  "height": 53,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 0,
@@ -10150,9 +10167,10 @@
                   "collisionType": "attackCollision",
                   "ddx": 1,
                   "ddy": 11,
+                  "width": 83,
+                  "height": 35,
                   "active": true,
-                  "target": "ally",
-                  "single": false
+                  "target": "ally"
                 }
               ],
               "spritesheetTrimmedX": 0,
