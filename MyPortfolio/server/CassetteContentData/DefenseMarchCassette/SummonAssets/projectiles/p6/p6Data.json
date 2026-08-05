@@ -1,7 +1,7 @@
 {
   "frames": [
     {
-      "filename": "p0.png",
+      "filename": "p6Sheet.png",
       "frame": { "x": 0, "y": 0, "w": 42, "h": 3 },
       "rotated": false,
       "trimmed": true,
@@ -10,7 +10,7 @@
       "duration": 100
     },
     {
-      "filename": "p0.png",
+      "filename": "p6Sheet.png",
       "frame": { "x": 42, "y": 0, "w": 42, "h": 1 },
       "rotated": false,
       "trimmed": true,
@@ -19,7 +19,7 @@
       "duration": 100
     },
     {
-      "filename": "p0.png",
+      "filename": "p6Sheet.png",
       "frame": { "x": 84, "y": 0, "w": 42, "h": 3 },
       "rotated": false,
       "trimmed": true,
@@ -28,7 +28,7 @@
       "duration": 100
     },
     {
-      "filename": "p0.png",
+      "filename": "p6Sheet.png",
       "frame": { "x": 126, "y": 0, "w": 42, "h": 5 },
       "rotated": false,
       "trimmed": true,
@@ -40,7 +40,7 @@
   "meta": {
     "app": "https://www.aseprite.org/",
     "version": "1.3.13-dev",
-    "image": "p0Sheet.png",
+    "image": "p6Sheet.png",
     "format": "I8",
     "size": { "w": 168, "h": 5 },
     "scale": "1",

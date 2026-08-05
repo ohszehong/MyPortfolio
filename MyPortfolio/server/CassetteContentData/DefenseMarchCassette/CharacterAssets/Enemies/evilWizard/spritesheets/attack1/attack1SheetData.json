@@ -139,7 +139,7 @@
         "to": 9,
         "direction": "forward",
         "color": "#000000ff",
-        "data": "{\"projectile\":\"p0\",\"vfx\":false,\"hitVFX\":\"h0\"}"
+        "data": "{\"projectile\":\"p4\",\"vfx\":false,\"hitVFX\":\"h2\"}"
       }
     ],
     "layers": [

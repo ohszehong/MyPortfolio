@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs, { readFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { randomUUID } from "crypto";
@@ -24,6 +24,7 @@ export default class GameStatesManager {
 
   dirToCassetteContentData;
   dirToPawnActorsDataJSONFile;
+  dirToSummonActorsDataJSONFile;
   dirToDataStorageFolder;
 
   clientContentCanvasBaseWidth;
@@ -47,6 +48,7 @@ export default class GameStatesManager {
   selectedObject = null;
 
   pawnActorsBlobDictionary = {};
+  summonActorsBlobDictionary = {};
   tileActorsBlobDictionary = {};
 
   /** @type {PawnActor} */
@@ -164,6 +166,7 @@ export default class GameStatesManager {
         this.gameMapBackgroundCanvas.height;
       data.dirToCassetteContentData = this.dirToCassetteContentData;
       data.dirToPawnActorsDataJSONFile = this.dirToPawnActorsDataJSONFile;
+      data.dirToSummonActorsDataJSONFile = this.dirToSummonActorsDataJSONFile;
       data.dirToDataStorageFolder = this.dirToDataStorageFolder;
     }
 
@@ -194,6 +197,8 @@ export default class GameStatesManager {
         "CassetteContentData",
       );
 
+      this.dirToSummonActorsDataJSONFile = null;
+
       switch (cassetteIndex) {
         case 0:
           this.cassetteName = "IntroCassette";
@@ -202,6 +207,12 @@ export default class GameStatesManager {
         case 1:
           this.cassetteName = "DefenseMarchCassette";
           this.signalsManager = new DefenseMarchCassetteSignalsManager(this);
+          this.dirToSummonActorsDataJSONFile = path.join(
+            this.dirToCassetteContentData,
+            this.cassetteName,
+            "DataStorage",
+            "SummonActorsData.json",
+          );
           break;
       }
 
@@ -269,6 +280,8 @@ export default class GameStatesManager {
       serializedJSON.dirToCassetteContentData;
     clientManager.dirToPawnActorsDataJSONFile =
       serializedJSON.dirToPawnActorsDataJSONFile;
+    clientManager.dirToSummonActorsDataJSONFile =
+      serializedJSON.dirToSummonActorsDataJSONFile;
     clientManager.dirToDataStorageFolder =
       serializedJSON.dirToDataStorageFolder;
 
@@ -546,7 +559,7 @@ export default class GameStatesManager {
 
   //actorName is the unique key of the actors collection object
   //there's Allies or Enemies folder before the actorName in DefenseMarchCassette, use extraDirectoryBeforeActorName for that
-  async addDefaultActorImageAndAnimationBlobsToActorBlobDictionary(
+  async addDefaultActorImageAndAnimationBlobsToPawnActorBlobDictionary(
     actorName,
     actorBlobDictionary,
     extraDirectoryBeforeActorName,
@@ -597,44 +610,75 @@ export default class GameStatesManager {
   }
 
   async loadAllActorsBlob() {
-    const allActorsDefaultData = JSON.parse(
+    /* pawn actors */
+    const allPawnActorsDefaultData = JSON.parse(
       fs.readFileSync(this.dirToPawnActorsDataJSONFile, "utf-8"),
     );
 
-    if (Object.keys(allActorsDefaultData).length <= 0) return;
+    const allPawnActorsName = Object.keys(allPawnActorsDefaultData);
+    if (allPawnActorsName.length > 0) {
+      const entries = await Promise.all(
+        allPawnActorsName.map(async (actorName) => {
+          //There's Allies or Enemies folder before the actorName in DefenseMarchCassette (cassetteIndex of 1)
+          //Use extraDirectoryBeforeActorName param from getActorBlobDictionary method
 
-    const entries = await Promise.all(
-      Object.keys(allActorsDefaultData).map(async (actorName) => {
-        //There's Allies or Enemies folder before the actorName in DefenseMarchCassette (cassetteIndex of 1)
-        //Use extraDirectoryBeforeActorName param from getActorBlobDictionary method
+          let extraDirectoryBeforeActorName = null;
 
-        let extraDirectoryBeforeActorName = null;
-
-        if (this.cassetteIndex === 1) {
-          const targetType = allActorsDefaultData[actorName].targetType;
-          if (targetType === "ally") {
-            extraDirectoryBeforeActorName = "Allies";
-          } else if (targetType === "enemy") {
-            extraDirectoryBeforeActorName = "Enemies";
+          if (this.cassetteIndex === 1) {
+            const targetType = allPawnActorsDefaultData[actorName].targetType;
+            if (targetType === "ally") {
+              extraDirectoryBeforeActorName = "Allies";
+            } else if (targetType === "enemy") {
+              extraDirectoryBeforeActorName = "Enemies";
+            }
           }
-        }
 
-        const blobDictionary =
-          await this.addDefaultActorImageAndAnimationBlobsToActorBlobDictionary(
-            actorName,
-            allActorsDefaultData[actorName],
-            extraDirectoryBeforeActorName,
-          )
-            .then((blobDictionary) => blobDictionary)
-            .catch((err) => null);
+          const blobDictionary =
+            await this.addDefaultActorImageAndAnimationBlobsToPawnActorBlobDictionary(
+              actorName,
+              allPawnActorsDefaultData[actorName],
+              extraDirectoryBeforeActorName,
+            )
+              .then((blobDictionary) => blobDictionary)
+              .catch((err) => null);
 
-        return [actorName, blobDictionary];
-      }),
+          return [actorName, blobDictionary];
+        }),
+      );
+
+      entries.forEach(([actorName, blobDictionary]) => {
+        this.pawnActorsBlobDictionary[actorName] = blobDictionary;
+      });
+    }
+
+    /* summon actors (e.g. projectiles/VFX) */
+    if (!this.dirToSummonActorsDataJSONFile) return;
+
+    const allSummonActorsDefaultData = JSON.parse(
+      fs.readFileSync(this.dirToSummonActorsDataJSONFile, "utf-8"),
     );
 
-    entries.forEach(([actorName, blobDictionary]) => {
-      this.pawnActorsBlobDictionary[actorName] = blobDictionary;
-    });
+    const allProjectilesName = Object.keys(allSummonActorsDefaultData.projectiles);
+    const allHitVFXSName = Object.keys(allSummonActorsDefaultData.hitVFXs);
+    const allVFXSName = Object.keys(allSummonActorsDefaultData.vfxs);
+
+    if(allProjectilesName.length > 0)
+    {
+      allProjectilesName.map((projectileName) => {
+        allSummonActorsDefaultData.projectiles.projectileName.animationBlobs = //cont...
+      })
+    }
+
+      const defaultActorImage = await loadImage(
+      `${serverFolderToCharacterAssets}${actorName}/defaultImage/defaultImage.png`,
+    )
+      .then((img) => img)
+      .catch((err) => null);
+
+    if (defaultActorImage) {
+      let blob = this.convertImgToBlob(defaultActorImage);
+      if (blob) actorBlobDictionary.defaultActorImage = blob;
+    }
   }
 
   initExistingGameStates(loadedGameStates) {

@@ -85,7 +85,7 @@
         "to": 6,
         "direction": "forward",
         "color": "#000000ff",
-        "data": "{\"projectile\":\"p0\",\"vfx\":false,\"hitVFX\":false}"
+        "data": "{\"projectile\":\"p3\",\"vfx\":false,\"hitVFX\":false}"
       }
     ],
     "layers": [

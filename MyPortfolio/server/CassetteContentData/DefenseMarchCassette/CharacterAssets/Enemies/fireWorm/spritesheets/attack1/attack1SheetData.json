@@ -166,7 +166,7 @@
         "to": 11,
         "direction": "forward",
         "color": "#000000ff",
-        "data": "{\"projectile\":\"p0\",\"vfx\":false,\"hitVFX\":\"h0\"}"
+        "data": "{\"projectile\":\"p5\",\"vfx\":false,\"hitVFX\":\"h3\"}"
       }
     ],
     "layers": [

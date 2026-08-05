@@ -3321,7 +3321,7 @@
                 {
                   "atFrame": 4,
                   "projectile": false,
-                  "vfx": "v0",
+                  "vfx": "v3",
                   "hitVFX": false,
                   "homing": false
                 }
@@ -3439,7 +3439,7 @@
                 {
                   "atFrame": 4,
                   "projectile": {
-                    "projectileName": "p0",
+                    "projectileName": "p2",
                     "x": 39,
                     "y": 16,
                     "width": 8,
@@ -3447,7 +3447,7 @@
                     "travellingSpeed": 100
                   },
                   "vfx": false,
-                  "hitVFX": "h0",
+                  "hitVFX": "h1",
                   "homing": true
                 }
               ]
@@ -3885,7 +3885,7 @@
                 {
                   "atFrame": 6,
                   "projectile": {
-                    "projectileName": "p0",
+                    "projectileName": "p3",
                     "x": 5,
                     "y": 23,
                     "width": 7,
@@ -4831,7 +4831,7 @@
                 {
                   "atFrame": 9,
                   "projectile": {
-                    "projectileName": "p0",
+                    "projectileName": "p4",
                     "x": 15,
                     "y": 17,
                     "width": 7,
@@ -4839,7 +4839,7 @@
                     "travellingSpeed": 100
                   },
                   "vfx": false,
-                  "hitVFX": "h0",
+                  "hitVFX": "h2",
                   "homing": true
                 }
               ]
@@ -8220,7 +8220,7 @@
                 {
                   "atFrame": 11,
                   "projectile": {
-                    "projectileName": "p0",
+                    "projectileName": "p5",
                     "x": 3,
                     "y": 49,
                     "width": 18,
@@ -8228,7 +8228,7 @@
                     "travellingSpeed": 160
                   },
                   "vfx": false,
-                  "hitVFX": "h0",
+                  "hitVFX": "h3",
                   "homing": true
                 }
               ]
@@ -8904,7 +8904,7 @@
                 {
                   "atFrame": 6,
                   "projectile": {
-                    "projectileName": "p0",
+                    "projectileName": "p6",
                     "x": 32,
                     "y": 52,
                     "width": 11,
