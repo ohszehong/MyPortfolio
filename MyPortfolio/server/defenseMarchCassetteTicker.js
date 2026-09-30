@@ -1,16 +1,18 @@
 import { parentPort } from "worker_threads";
 import crypto from "node:crypto";
 
-import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
-import FacingDirections from "../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
-import DefenseMarchSignalTypes from "../shared/Standards/StringKeys/DefenseMarchSignalTypes.json" with { type: "json" };
+import SocketMessageTypes from "../shared/Standards/SocketMessageTypes.json" with { type: "json" };
+import FacingDirections from "../shared/Standards/FacingDirections.json" with { type: "json" };
+import DefenseMarchSignalTypes from "../shared/Standards/DefenseMarchSignalTypes.json" with { type: "json" };
 
 import GameStatesManager from "./GameStatesManager/GameStatesManager.js";
-import { PawnActorIsOnTrigger } from "../shared/CollisionsDetector/CollisionsDetector.js";
-import processTick_General from "../shared/TickProcesses/processTick_General.js";
+import { PawnActorIsOnTrigger } from "../shared/TickProcesses/Utilities/CollisionsDetector/CollisionsDetector.js";
+import processTick_General from "../shared/TickProcesses/Utilities/Generals/processTick_General.js";
 
 import packageSocketMessageForSingleUser from "../shared/SignalsManagers/packageSocketMessage.js";
 import DefenseMarchCassetteSignalsManager from "../shared/SignalsManagers/DefenseMarchCassetteSignalsManager.js";
+import ProjectileActor from "../shared/Actors/ProjectileActor.js";
+import VFXHitBoxActor from "../shared/Actors/VFXHitBoxActor.js";
 
 let clientIds = [];
 
@@ -39,8 +41,27 @@ class DefenseMarchClientSimulator {
     this.prevTime = now + remainder;
 
     //simulate ticks
-    processTick_General(this.gameStatesManager, totalDelta);
+    processTick_General(
+      this.gameStatesManager,
+      totalDelta,
+      false,
+      false,
+      false,
+      false,
+    );
   }
+}
+
+function constructBasicResponseMessage(
+  responseMessage,
+  fromUserSignal,
+  success,
+) {
+  return {
+    response: responseMessage,
+    signal: fromUserSignal,
+    success: success,
+  };
 }
 
 function init() {
@@ -69,38 +90,32 @@ function init() {
 
         clientSimulator = clients[message.value.userId];
 
+        const signal = message.value.message.signal;
+        let responseMessage;
+
         /** @type {GameStatesManager} */
         gameStatesManager = clientSimulator?.gameStatesManager;
         if (!clientSimulator || !gameStatesManager) {
-          const responseMessage = {
-            response: "Something is wrong with the server.",
-            signal: signal,
-            requestId: requestId,
-            success: false,
-          };
-          console.log(responseMessage);
-
-          const packagedSocketMessage = packageSocketMessageForSingleUser(
-            message.cassetteIndex,
-            SocketMessageTypes.userSignalResponse,
-            message.value.userId,
-            responseMessage,
+          responseMessage = constructBasicResponseMessage(
+            "Something is wrong with the server.",
+            signal,
+            false,
           );
-
-          parentPort.postMessage(packagedSocketMessage);
-          return;
         }
 
         /** @type {DefenseMarchCassetteSignalsManager} */
         signalsManager = clientSimulator.gameStatesManager.signalsManager;
 
-        if (!signalsManager) {
-          const responseMessage = {
-            response: "Signals manager is not working.",
-            signal: signal,
-            success: false,
-          };
+        if (!signalsManager && !responseMessage) {
+          responseMessage = constructBasicResponseMessage(
+            "Signals manager is not working",
+            signal,
+            false,
+          );
+        }
 
+        //if there's response at this point meaning error occured
+        if (responseMessage) {
           console.log(responseMessage);
 
           const packagedSocketMessage = packageSocketMessageForSingleUser(
@@ -114,7 +129,6 @@ function init() {
           return;
         }
 
-        const signal = message.value.message.signal;
         if (signal === "a") {
           //clientManager.playerActor.toWalkState(FacingDirections.left);
         } else if (signal === "d") {
@@ -123,12 +137,10 @@ function init() {
           //clientManager.playerActor.toWalkState(FacingDirections.up);
         } else if (signal === "s") {
           //clientManager.playerActor.toWalkState(FacingDirections.down);
-        } else if (signal === DefenseMarchSignalTypes.summonOnWP) {
+        } else if (signal === DefenseMarchSignalTypes.spawnNewPawnOnWP) {
           const requestId = message.value.message.requestId;
           const actorName = message.value.message.actorName;
           const walkPathIndex = message.value.message.walkPathIndex;
-
-          let responseMessage;
 
           if (
             !requestId ||
@@ -137,13 +149,13 @@ function init() {
             walkPathIndex >
               clientSimulator.gameStatesManager.allySummonLocations.length
           ) {
-            responseMessage = {
-              response:
-                "Server: Invalid requestId or actorName or walkPathIndex",
-              requestId: requestId,
-              signal: signal,
-              success: false,
-            };
+            responseMessage = constructBasicResponseMessage(
+              "Server: Invalid requestId or actorName or walkPathIndex",
+              signal,
+              false,
+            );
+
+            responseMessage.requestId = requestId;
             console.log(responseMessage);
           } else {
             //pawnActor position format: {dx: xxx, dy: xxx}
@@ -158,69 +170,45 @@ function init() {
               },
             );
 
-            if (result.success) {
-              responseMessage = {
-                response: `Server: ${result.message}`,
-                requestId: requestId,
-                entityId: actorId,
-                signal: signal,
-                success: true,
-              };
-            } else {
-              responseMessage = {
-                response: `Server: ${result.message}`,
-                requestId: requestId,
-                signal: signal,
-                success: false,
-              };
+            responseMessage = constructBasicResponseMessage(
+              `Server: ${result.message}`,
+              signal,
+              result.success,
+            );
+            responseMessage.requestId = requestId;
+
+            if (responseMessage.success) {
+              responseMessage.entityId = actorId;
             }
           }
-
-          const packagedSocketMessage = packageSocketMessageForSingleUser(
-            clientSimulator.gameStatesManager.cassetteIndex,
-            SocketMessageTypes.userSignalResponse,
-            clientSimulator.gameStatesManager.userId,
-            responseMessage,
-          );
-          parentPort.postMessage(packagedSocketMessage);
-        } else if (signal === DefenseMarchSignalTypes.upgradeCharacter) {
+        } else if (signal === DefenseMarchSignalTypes.upgradePawn) {
           const actorName = message.value.message.actorName;
-          let responseMessage;
 
           if (!actorName) {
-            responseMessage = {
-              response:
-                "Server: Invalid actor name. Unable to upgrade character.",
-              signal: signal,
-              success: false,
-            };
+            responseMessage = constructBasicResponseMessage(
+              "Server: Invalid actor name. Unable to upgrade character.",
+              signal,
+              false,
+            );
           } else {
             const result = signalsManager.upgradePawnActor(actorName);
 
-            if (!result.success) {
-              responseMessage = {
-                response: `Server: ${result.message}`,
-                signal: signal,
-                success: false,
-              };
-            } else {
-              responseMessage = {
-                response: `Server: ${result.message}`,
-                signal: signal,
-                success: true,
-              };
-            }
+            responseMessage = constructBasicResponseMessage(
+              `Server: ${result.message}`,
+              signal,
+              result.success,
+            );
           }
-
-          const packagedSocketMessage = packageSocketMessageForSingleUser(
-            clientSimulator.gameStatesManager.cassetteIndex,
-            SocketMessageTypes.userSignalResponse,
-            clientSimulator.gameStatesManager.userId,
-            responseMessage,
-          );
-
-          parentPort.postMessage(packagedSocketMessage);
         }
+
+        const packagedSocketMessage = packageSocketMessageForSingleUser(
+          clientSimulator.gameStatesManager.cassetteIndex,
+          SocketMessageTypes.userSignalResponse,
+          clientSimulator.gameStatesManager.userId,
+          responseMessage,
+        );
+
+        parentPort.postMessage(packagedSocketMessage);
         break;
 
       case SocketMessageTypes.removeClientManager:

@@ -1,15 +1,15 @@
-import Actor from "../Actors/Actor.js";
-import PawnActor from "../Actors/PawnActor.js";
-import TargetTypes from "../Standards/StringKeys/TargetTypes.json" with { type: "json" };
+import Actor from "../../../Actors/Actor.js";
+import PawnActor from "../../../Actors/PawnActor.js";
+import TargetTypes from "../../../Standards/TargetTypes.json" with { type: "json" };
 
 /**
  * @typedef {Object} Collision
  * @property {Actor} source
- * @property {string} collisionType
+ * @property {number} collisionType
  * @property {number} ddx
  * @property {number} ddy
  * @property {boolean} active
- * @property {string} target
+ * @property {number} target
  * @property {number} width
  * @property {number} height
  */
@@ -18,9 +18,9 @@ import TargetTypes from "../Standards/StringKeys/TargetTypes.json" with { type: 
 export function AIsCollidedWithB(
   collisionA,
   collisionB,
-  collisionType = "AABB",
+  collisionDectectionAlgorithm = "AABB",
 ) {
-  if (collisionType === "AABB") {
+  if (collisionDectectionAlgorithm === "AABB") {
     if (!isEligible(collisionA, collisionB)) return;
 
     //mapCollisions uses dx instead of ddx, same goes for dy
@@ -107,12 +107,16 @@ export function PawnActorIsOnTrigger(actor, trigger) {
 
 function isEligible(A, B) {
   //first check if they are eligible for collision detection
-  if (!A.active || !B.active) return false;
+  if (!A?.active || !B?.active) return false;
   else if (A.dx && B.dx) return false; //both are from mapCollisions
 
   let eligible = false;
 
-  switch (A.targetType) {
+  //target -> target against, targetType -> its own target type
+  switch (A.target) {
+    case TargetTypes.none:
+      break;
+
     case TargetTypes.all:
       if (B.targetType != TargetTypes.none) eligible = true;
       break;

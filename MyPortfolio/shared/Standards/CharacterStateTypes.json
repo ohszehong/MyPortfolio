@@ -1,0 +1,9 @@
+{
+  "idling": 0,
+  "walking": 1,
+  "running": 2,
+  "receivingDamage": 3,
+  "jumping": 4,
+  "dying": 5,
+  "usingAbility": 6
+}

@@ -3,18 +3,18 @@ import Animation from "./Animation.js";
 export default class DirectionDependentAnimation extends Animation {
   currentDirection;
 
-  directionGroupedFrames = {
-    up: [],
-    down: [],
-    left: [],
-    right: [],
-  };
+  //up - 0
+  //down - 1
+  //left - 2
+  //right - 3
+
+  directionGroupedFrames = new Map();
 
   constructor(
     actor,
     animationSpritesheetName,
     animationFrames,
-    activeDirection = "right",
+    activeDirection = 3,
   ) {
     super(
       actor,
@@ -22,7 +22,7 @@ export default class DirectionDependentAnimation extends Animation {
       animationFrames[activeDirection].frames,
     );
 
-    const remainingDirections = Object.keys(this.directionGroupedFrames).filter(
+    const remainingDirections = [...this.directionGroupedFrames.keys()].filter(
       (key) => key != activeDirection,
     );
 
@@ -30,10 +30,10 @@ export default class DirectionDependentAnimation extends Animation {
       super.initFrames(animationFrames[direction]?.frames);
     });
 
-    this.directionGroupedFrames.up = animationFrames.up?.frames;
-    this.directionGroupedFrames.down = animationFrames.down?.frames;
-    this.directionGroupedFrames.left = animationFrames.left?.frames;
-    this.directionGroupedFrames.right = animationFrames.right?.frames;
+    this.directionGroupedFrames.set(0, animationFrames[0]?.frames);
+    this.directionGroupedFrames.set(1, animationFrames[1]?.frames);
+    this.directionGroupedFrames.set(2, animationFrames[2]?.frames);
+    this.directionGroupedFrames.set(3, animationFrames[3]?.frames);
 
     this.currentDirection = activeDirection;
   }
@@ -44,7 +44,9 @@ export default class DirectionDependentAnimation extends Animation {
       this.currentDirection = this.source.facingDirection;
       this.resetAnim();
 
-      this.activeFrames = this.directionGroupedFrames[this.currentDirection];
+      this.activeFrames = this.directionGroupedFrames.get(
+        this.currentDirection,
+      );
     }
 
     return {

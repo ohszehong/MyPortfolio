@@ -5,7 +5,7 @@ import fs from "fs";
 
 import GameStatesManager from "./GameStatesManager/GameStatesManager.js";
 import AddCharacterData from "./Utilities/addCharacterData.js";
-import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
+import SocketMessageTypes from "../shared/Standards/SocketMessageTypes.json" with { type: "json" };
 
 export default function httpsInit(__serverDirPath, gameStatesTickers) {
   const app = express();

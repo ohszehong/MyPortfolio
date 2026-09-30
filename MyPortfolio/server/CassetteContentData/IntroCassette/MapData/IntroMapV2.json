@@ -1175,9 +1175,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1186,13 +1186,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "38"
+              "type": "int",
+              "value": 38
             }
           ],
           "rotation": 0,
@@ -1208,9 +1208,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1219,13 +1219,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "38"
+              "type": "int",
+              "value": 38
             }
           ],
           "rotation": 0,
@@ -1241,9 +1241,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1252,13 +1252,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "up"
+              "type": "int",
+              "value": 0
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "32"
+              "type": "int",
+              "value": 32
             }
           ],
           "rotation": 90,
@@ -1274,9 +1274,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1285,13 +1285,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "42"
+              "type": "int",
+              "value": 42
             }
           ],
           "rotation": 0,
@@ -1307,9 +1307,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1318,13 +1318,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "42"
+              "type": "int",
+              "value": 42
             }
           ],
           "rotation": 0,
@@ -1340,9 +1340,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1351,13 +1351,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "down"
+              "type": "int",
+              "value": 1
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "25"
+              "type": "int",
+              "value": 25
             }
           ],
           "rotation": 90,
@@ -1373,9 +1373,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1384,13 +1384,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "38"
+              "type": "int",
+              "value": 38
             }
           ],
           "rotation": 0,
@@ -1406,9 +1406,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1417,13 +1417,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "up"
+              "type": "int",
+              "value": 0
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "36"
+              "type": "int",
+              "value": 36
             }
           ],
           "rotation": -90,
@@ -1439,9 +1439,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1450,13 +1450,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "up"
+              "type": "int",
+              "value": 0
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "40"
+              "type": "int",
+              "value": 40
             }
           ],
           "rotation": -90,
@@ -1472,9 +1472,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1483,13 +1483,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "36"
+              "type": "int",
+              "value": 36
             }
           ],
           "rotation": 0,
@@ -1505,9 +1505,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1516,13 +1516,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "down"
+              "type": "int",
+              "value": 1
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "28"
+              "type": "int",
+              "value": 28
             }
           ],
           "rotation": -90,
@@ -1538,9 +1538,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1549,13 +1549,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "down"
+              "type": "int",
+              "value": 1
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "35"
+              "type": "int",
+              "value": 35
             }
           ],
           "rotation": -90,
@@ -1571,9 +1571,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1582,13 +1582,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "28"
+              "type": "int",
+              "value": 28
             }
           ],
           "rotation": 0,
@@ -1604,9 +1604,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1615,13 +1615,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "28"
+              "type": "int",
+              "value": 28
             }
           ],
           "rotation": 0,
@@ -1637,9 +1637,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1648,13 +1648,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "down"
+              "type": "int",
+              "value": 1
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "16"
+              "type": "int",
+              "value": 16
             }
           ],
           "rotation": -90,
@@ -1670,9 +1670,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1681,13 +1681,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "down"
+              "type": "int",
+              "value": 1
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "16"
+              "type": "int",
+              "value": 16
             }
           ],
           "rotation": -90,
@@ -1703,9 +1703,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1714,13 +1714,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "up"
+              "type": "int",
+              "value": 0
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "36"
+              "type": "int",
+              "value": 36
             }
           ],
           "rotation": -90,
@@ -1736,9 +1736,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1747,13 +1747,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "up"
+              "type": "int",
+              "value": 0
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "36"
+              "type": "int",
+              "value": 36
             }
           ],
           "rotation": -90,
@@ -1769,9 +1769,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1780,13 +1780,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "30"
+              "type": "int",
+              "value": 30
             }
           ],
           "rotation": 0,
@@ -1802,9 +1802,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1813,13 +1813,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "30"
+              "type": "int",
+              "value": 30
             }
           ],
           "rotation": 0,
@@ -1835,9 +1835,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1846,13 +1846,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "30"
+              "type": "int",
+              "value": 30
             }
           ],
           "rotation": 0,
@@ -1868,9 +1868,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1879,13 +1879,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "30"
+              "type": "int",
+              "value": 30
             }
           ],
           "rotation": 0,
@@ -1901,9 +1901,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1912,13 +1912,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "up"
+              "type": "int",
+              "value": 0
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "16"
+              "type": "int",
+              "value": 16
             }
           ],
           "rotation": -90,
@@ -1934,9 +1934,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1945,13 +1945,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "up"
+              "type": "int",
+              "value": 0
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "16"
+              "type": "int",
+              "value": 16
             }
           ],
           "rotation": -90,
@@ -1967,9 +1967,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -1978,13 +1978,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "26"
+              "type": "int",
+              "value": 26
             }
           ],
           "rotation": 0,
@@ -2000,9 +2000,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2011,13 +2011,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "26"
+              "type": "int",
+              "value": 26
             }
           ],
           "rotation": 0,
@@ -2033,9 +2033,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2044,13 +2044,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "26"
+              "type": "int",
+              "value": 26
             }
           ],
           "rotation": 0,
@@ -2066,9 +2066,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2077,13 +2077,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "26"
+              "type": "int",
+              "value": 26
             }
           ],
           "rotation": 0,
@@ -2099,9 +2099,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2110,13 +2110,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "32"
+              "type": "int",
+              "value": 32
             }
           ],
           "rotation": 0,
@@ -2132,9 +2132,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2143,13 +2143,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "32"
+              "type": "int",
+              "value": 32
             }
           ],
           "rotation": 0,
@@ -2165,9 +2165,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2176,13 +2176,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "32"
+              "type": "int",
+              "value": 32
             }
           ],
           "rotation": 0,
@@ -2198,9 +2198,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2209,13 +2209,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "down"
+              "type": "int",
+              "value": 1
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "25"
+              "type": "int",
+              "value": 25
             }
           ],
           "rotation": -90,
@@ -2231,9 +2231,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2242,13 +2242,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "up"
+              "type": "int",
+              "value": 0
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "16"
+              "type": "int",
+              "value": 16
             }
           ],
           "rotation": -90,
@@ -2264,9 +2264,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2275,13 +2275,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "down"
+              "type": "int",
+              "value": 1
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "36"
+              "type": "int",
+              "value": 36
             }
           ],
           "rotation": -90,
@@ -2297,9 +2297,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2308,13 +2308,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "down"
+              "type": "int",
+              "value": 1
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "36"
+              "type": "int",
+              "value": 36
             }
           ],
           "rotation": -90,
@@ -2330,9 +2330,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2341,13 +2341,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "down"
+              "type": "int",
+              "value": 1
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "50"
+              "type": "int",
+              "value": 50
             }
           ],
           "rotation": -90,
@@ -2363,9 +2363,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2374,13 +2374,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "down"
+              "type": "int",
+              "value": 1
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "25"
+              "type": "int",
+              "value": 25
             }
           ],
           "rotation": -90,
@@ -2396,9 +2396,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2407,13 +2407,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "28"
+              "type": "int",
+              "value": 28
             }
           ],
           "rotation": 0,
@@ -2429,9 +2429,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2440,13 +2440,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "28"
+              "type": "int",
+              "value": 28
             }
           ],
           "rotation": 0,
@@ -2462,9 +2462,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2473,13 +2473,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "right"
+              "type": "int",
+              "value": 3
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "32"
+              "type": "int",
+              "value": 32
             }
           ],
           "rotation": 0,
@@ -2495,9 +2495,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2506,13 +2506,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "up"
+              "type": "int",
+              "value": 0
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "16"
+              "type": "int",
+              "value": 16
             }
           ],
           "rotation": -90,
@@ -2528,9 +2528,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2539,13 +2539,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "36"
+              "type": "int",
+              "value": 36
             }
           ],
           "rotation": 0,
@@ -2561,9 +2561,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2572,13 +2572,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "36"
+              "type": "int",
+              "value": 36
             }
           ],
           "rotation": 0,
@@ -2594,9 +2594,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2605,13 +2605,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "36"
+              "type": "int",
+              "value": 36
             }
           ],
           "rotation": 0,
@@ -2627,9 +2627,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2638,13 +2638,13 @@
             },
             {
               "name": "jumpDirection",
-              "type": "string",
-              "value": "left"
+              "type": "int",
+              "value": 2
             },
             {
               "name": "jumpMagnitude",
-              "type": "string",
-              "value": "36"
+              "type": "int",
+              "value": 36
             }
           ],
           "rotation": 0,
@@ -2678,8 +2678,8 @@
             },
             {
               "name": "target",
-              "type": "string",
-              "value": "all"
+              "type": "int",
+              "value": 3
             }
           ],
           "rotation": 0,
@@ -2701,8 +2701,8 @@
             },
             {
               "name": "target",
-              "type": "string",
-              "value": "all"
+              "type": "int",
+              "value": 3
             }
           ],
           "rotation": 0,
@@ -2724,8 +2724,8 @@
             },
             {
               "name": "target",
-              "type": "string",
-              "value": "all"
+              "type": "int",
+              "value": 3
             }
           ],
           "rotation": 0,
@@ -2747,8 +2747,8 @@
             },
             {
               "name": "target",
-              "type": "string",
-              "value": "all"
+              "type": "int",
+              "value": 3
             }
           ],
           "rotation": 0,
@@ -2770,8 +2770,8 @@
             },
             {
               "name": "target",
-              "type": "string",
-              "value": "all"
+              "type": "int",
+              "value": 3
             }
           ],
           "rotation": 0,
@@ -2793,8 +2793,8 @@
             },
             {
               "name": "target",
-              "type": "string",
-              "value": "all"
+              "type": "int",
+              "value": 3
             }
           ],
           "rotation": 0,
@@ -2816,8 +2816,8 @@
             },
             {
               "name": "target",
-              "type": "string",
-              "value": "all"
+              "type": "int",
+              "value": 3
             }
           ],
           "rotation": 0,
@@ -2845,9 +2845,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2883,9 +2883,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2921,9 +2921,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2959,9 +2959,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -2997,9 +2997,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3035,9 +3035,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3073,9 +3073,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3111,9 +3111,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3149,9 +3149,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3187,9 +3187,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3225,9 +3225,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3263,9 +3263,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3301,9 +3301,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3339,9 +3339,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3377,9 +3377,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3415,9 +3415,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3453,9 +3453,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3491,9 +3491,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3529,9 +3529,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3567,9 +3567,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3605,9 +3605,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3643,9 +3643,9 @@
           "name": "",
           "properties": [
             {
-              "name": "actionToTrigger",
-              "type": "string",
-              "value": "walk"
+              "name": "stateToTrigger",
+              "type": "int",
+              "value": 1
             },
             {
               "name": "active",
@@ -3721,8 +3721,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "all"
+                    "type": "int",
+                    "value": 3
                   }
                 ],
                 "rotation": 0,
@@ -3759,8 +3759,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "all"
+                    "type": "int",
+                    "value": 3
                   }
                 ],
                 "rotation": 0,
@@ -3797,8 +3797,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "all"
+                    "type": "int",
+                    "value": 3
                   }
                 ],
                 "rotation": 0,
@@ -3835,8 +3835,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "all"
+                    "type": "int",
+                    "value": 3
                   }
                 ],
                 "rotation": 0,
@@ -3873,8 +3873,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "all"
+                    "type": "int",
+                    "value": 3
                   }
                 ],
                 "rotation": 0,
@@ -3911,8 +3911,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "all"
+                    "type": "int",
+                    "value": 3
                   }
                 ],
                 "rotation": 0,
@@ -3949,8 +3949,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "all"
+                    "type": "int",
+                    "value": 3
                   }
                 ],
                 "rotation": 0,
@@ -3987,8 +3987,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "all"
+                    "type": "int",
+                    "value": 3
                   }
                 ],
                 "rotation": 0,
@@ -4040,8 +4040,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "none"
+                    "type": "int",
+                    "value": 0
                   }
                 ],
                 "rotation": 0,
@@ -4078,8 +4078,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "none"
+                    "type": "int",
+                    "value": 0
                   }
                 ],
                 "rotation": 0,
@@ -4116,8 +4116,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "none"
+                    "type": "int",
+                    "value": 0
                   }
                 ],
                 "rotation": 0,
@@ -4187,8 +4187,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "all"
+                    "type": "int",
+                    "value": 3
                   }
                 ],
                 "rotation": 0,
@@ -4225,8 +4225,8 @@
                   },
                   {
                     "name": "target",
-                    "type": "string",
-                    "value": "all"
+                    "type": "int",
+                    "value": 3
                   }
                 ],
                 "rotation": 0,

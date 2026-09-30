@@ -1,0 +1,9 @@
+{
+  "log": 0,
+  "serializedClientManager": 1,
+  "userInput": 2,
+  "userSignalResponse": 3,
+  "clientPayload": 4,
+  "clientsPayload": 5,
+  "removeClientManager": 6
+}

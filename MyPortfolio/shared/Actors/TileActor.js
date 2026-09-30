@@ -32,7 +32,7 @@ export default class TileActor extends Actor {
   }
 
   constructor(tempId, position, tiles, renderLast = false, selectable = false) {
-    super(tempId, null, position, tiles[0].collision, selectable);
+    super(null, tempId, null, position, tiles[0].collision, selectable);
     this.tiles = [...tiles];
 
     this.currentRenderData = {

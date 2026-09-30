@@ -1,0 +1,5 @@
+{
+  "blockCollision": 0,
+  "attackCollision": 1,
+  "healCollision": 2
+}

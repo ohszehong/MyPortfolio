@@ -1,5 +1,5 @@
 {
-  "js/ts.updateImportsOnFileMove.enabled": "prompt",
+  "js/ts.updateImportsOnFileMove.enabled": "always",
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

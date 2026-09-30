@@ -1,6 +1,10 @@
 // import GameStatesManager from "../../server/GameStatesManager/GameStatesManager.js";
 // import ClientStatesManager from "../../src/ClientStatesManager/ClientStatesManager.js";
 import PawnActor from "../Actors/PawnActor.js";
+import ProjectileActor from "../Actors/ProjectileActor.js";
+import VFXHitBoxActor from "../Actors/VFXHitBoxActor.js";
+
+import FacingDirections from "../Standards/FacingDirections.json" with { type: "json" };
 
 export default class DefenseMarchCassetteSignalsManager {
   // /** @type {GameStatesManager | ClientStatesManager} */
@@ -35,6 +39,7 @@ export default class DefenseMarchCassetteSignalsManager {
         result.pawnActor = PawnActor.constructNewActor(
           tempId,
           actorName,
+          FacingDirections.right,
           position,
           actorBlobData,
         );

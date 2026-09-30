@@ -1,10 +1,10 @@
 import { parentPort } from "worker_threads";
 
-import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
-import FacingDirections from "../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
+import SocketMessageTypes from "../shared/Standards/SocketMessageTypes.json" with { type: "json" };
+import FacingDirections from "../shared/Standards/FacingDirections.json" with { type: "json" };
 import GameStatesManager from "./GameStatesManager/GameStatesManager.js";
-import { PawnActorIsOnTrigger } from "../shared/CollisionsDetector/CollisionsDetector.js";
-import processTick_General from "../shared/TickProcesses/processTick_General.js";
+import { PawnActorIsOnTrigger } from "../shared/TickProcesses/Utilities/CollisionsDetector/CollisionsDetector.js";
+import processTick_General from "../shared/TickProcesses/Utilities/Generals/processTick_General.js";
 import { packageSocketMessageForAllUsers } from "../shared/SignalsManagers/packageSocketMessage.js";
 
 /** @type {Object<string, GameStatesManager>} */
@@ -74,24 +74,7 @@ function updateGame(deltaTime) {
 
       if (currentClient) {
         //console.log("current client: ", currentClient.userId);
-        processTick_General(currentClient, deltaTime);
-
-        //check for mapJumpTriggers with playerActor
-        currentClient.mapJumpTriggers.some((trigger) => {
-          if (PawnActorIsOnTrigger(currentClient.playerActor, trigger)) {
-            if (
-              currentClient.playerActor.facingDirection ===
-                trigger.jumpDirection &&
-              currentClient.playerActor.actorState ===
-                trigger.actionToTrigger + "ing"
-            ) {
-              currentClient.playerActor.toJumpState(trigger.jumpMagnitude);
-            }
-            return true;
-          }
-        });
-        currentClient.moveCameraToActor(currentClient.playerActor);
-        currentClient.sanitizeCameraPosition();
+        processTick_General(currentClient, deltaTime, true, false, true, false);
         payloads[clientId] = currentClient.toJSON("client_payload");
       }
     });

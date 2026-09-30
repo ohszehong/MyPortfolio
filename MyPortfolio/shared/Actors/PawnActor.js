@@ -1,8 +1,12 @@
 import Actor from "./Actor.js";
-import CharacterStateTypes from "../Standards/StringKeys/CharacterStateTypes.json" with { type: "json" };
-import FacingDirections from "../Standards/StringKeys/FacingDirections.json" with { type: "json" };
+
+import CharacterStateTypes from "../Standards/CharacterStateTypes.json" with { type: "json" };
+import FacingDirections from "../Standards/FacingDirections.json" with { type: "json" };
+import AbilityTypes from "../Standards/AbilityTypes.json" with { type: "json" };
+
 import DirectionDependentAnimation from "../Animation/DirectionDependentAnimation.js";
 import Ability from "../Ability/Ability.js";
+import applyMovement from "../TickProcesses/Utilities/Generals/applyMovement.js";
 
 export default class PawnActor extends Actor {
   toJSON() {
@@ -13,14 +17,44 @@ export default class PawnActor extends Actor {
     data.actorCurrentStats = this.actorCurrentStats;
     data.actorDefaultStats = this.actorDefaultStats;
     data.actorState = this.actorState;
-    data.facingDirection = this.facingDirection;
     data.activeStateAnimationName = this.activeStateAnimationName;
-    data.activeAbilityName = this.activeAbilityName;
+    data.activeAbilityIndex = this.activeAbilityIndex;
+    data.previousActiveAbilityIndex = this.previousActiveAbilityIndex;
+    data.notUsingAbilityFor = this.notUsingAbilityFor;
+
+    //save latest animation data on active state animation or active ability
+    if (this.activeStateAnimationName) {
+      data.latestActiveAnimationData =
+        this.stateAnimations[this.activeStateAnimationName].toJSON();
+    } else {
+      const abilityName = this._convertAbilityIndexToAbilityName(
+        this.activeAbilityIndex,
+      );
+      const latestActiveAbilityAnimationData =
+        this.Abilities[abilityName]?.toJSON();
+
+      if (latestActiveAbilityAnimationData)
+        data.latestActiveAnimationData = latestActiveAbilityAnimationData;
+    }
 
     return data;
   }
 
-  previousPosition;
+  _convertAbilityIndexToAbilityName(abilityIndex) {
+    switch (abilityIndex) {
+      case 0:
+        return "attack1";
+
+      case 1:
+        return "attack2";
+
+      case 2:
+        return "attack3";
+
+      case 3:
+        return "heal";
+    }
+  }
 
   currentLevel;
   maxLevel;
@@ -46,9 +80,6 @@ export default class PawnActor extends Actor {
 
   actorState;
 
-  /** @type {FacingDirections} */
-  facingDirection;
-
   /**
    * @typedef {Object<string, DirectionDependentAnimation>} StateAnimations
    */
@@ -64,21 +95,45 @@ export default class PawnActor extends Actor {
   //Ability contains DirectionDependentAnimation object and the animations play once only
   /** @type {Abilities} */
   Abilities;
+  orderedAbilities = [];
 
-  activeAbilityName;
+  previousActiveAbilityIndex;
+  activeAbilityIndex;
 
   //this is the delta time use for keep track with the attack speed before the character is able to use ability again
   //_notUsingAbilityFor has to initialized equal to the actor current attack speed so that they can immediately use ability upon summoned
-  _notUsingAbilityFor;
-  _totalAttackAvailable = 0;
-  _currentAttackNumber = 0;
+  notUsingAbilityFor;
 
-  constructor(tempId, actorName, position, collision, selectable) {
-    super(tempId, actorName, position, collision, selectable);
+  lockedTarget;
+
+  constructor(
+    staticId,
+    tempId,
+    actorName,
+    facingDirection,
+    position,
+    collision,
+    selectable,
+  ) {
+    super(
+      staticId,
+      tempId,
+      actorName,
+      facingDirection,
+      position,
+      collision,
+      selectable,
+    );
   }
 
   //create a new PawnActor
-  static constructNewActor(tempId, actorName, position, actorBlobDictionary) {
+  static constructNewActor(
+    tempId,
+    actorName,
+    facingDirection,
+    position,
+    actorBlobDictionary,
+  ) {
     const collision = {
       ...actorBlobDictionary.collision,
       targetType: actorBlobDictionary.targetType,
@@ -86,8 +141,10 @@ export default class PawnActor extends Actor {
     const selectable = actorBlobDictionary.selectable;
 
     const pawnActor = new this(
+      actorBlobDictionary.staticId,
       tempId,
       actorName,
+      facingDirection,
       position,
       collision,
       selectable,
@@ -118,7 +175,7 @@ export default class PawnActor extends Actor {
       pawnActor.actorDefaultStats.healing +
       (pawnActor.currentLevel - 1) * motionValues[5];
 
-    pawnActor.facingDirection = "right"; //default direction
+    pawnActor.facingDirection = facingDirection;
 
     const characterAnimationsData = actorBlobDictionary.animations;
     pawnActor.initCharacterAnimationsData(characterAnimationsData);
@@ -131,52 +188,88 @@ export default class PawnActor extends Actor {
       frameData: null,
     };
 
-    pawnActor._notUsingAbilityFor =
+    pawnActor.notUsingAbilityFor =
       pawnActor.actorCurrentStats.attackspeed * 1000;
+
+    pawnActor.lockedTarget = null;
 
     return pawnActor;
   }
 
   //for existing PawnActors retrieved from the database
   static constructExistingActor(
-    tempId,
-    actorName,
-    position,
-    actorState,
-    actorCurrentStats,
-    actorBlobDictionary,
-    currentLevel = 1,
-    maxLevel = 1,
-    collision = null,
-    selectable = false,
+    existingActorData,
+    actorBlobDictionary, //default data
   ) {
     const pawnActor = new this(
-      tempId,
-      actorName,
-      position,
-      collision,
-      selectable,
+      existingActorData.staticId,
+      existingActorData.tempId,
+      existingActorData.actorName,
+      existingActorData.facingDirection,
+      existingActorData.position,
+      existingActorData.collision,
+      existingActorData.selectable,
     );
 
-    pawnActor.actorCurrentStats = actorCurrentStats;
+    pawnActor.actorCurrentStats = existingActorData.actorCurrentStats;
     pawnActor.actorDefaultStats = { ...actorBlobDictionary.defaultStats };
-    pawnActor.facingDirection = "right"; //default direction
+    pawnActor.facingDirection = existingActorData.facingDirection;
 
     pawnActor.initCharacterAnimationsData(actorBlobDictionary.animations);
 
-    pawnActor.actorState = actorState;
+    pawnActor.actorState = existingActorData.actorState;
 
-    pawnActor.currentLevel = currentLevel;
-    pawnActor.maxLevel = maxLevel;
+    pawnActor.currentLevel = existingActorData.currentLevel;
+    pawnActor.maxLevel = existingActorData.maxLevel;
 
+    pawnActor.activeStateAnimationName =
+      existingActorData.activeStateAnimationName;
+    pawnActor.activeAbilityIndex = existingActorData.activeAbilityIndex;
+    pawnActor.previousActiveAbilityIndex =
+      existingActorData.previousActiveAbilityIndex;
+
+    const latestActiveAnimationData =
+      existingActorData.latestActiveAnimationData;
+
+    if (latestActiveAnimationData) {
+      if (pawnActor.stateAnimations && pawnActor.activeStateAnimationName) {
+        const pawnActorActiveStateAnimation =
+          pawnActor.stateAnimations[pawnActor.activeStateAnimationName];
+
+        if (pawnActorActiveStateAnimation) {
+          pawnActor.recoverLatestAnimationsData(
+            pawnActorActiveStateAnimation,
+            latestActiveAnimationData,
+          );
+        }
+      } else if (pawnActor.Abilities && pawnActor.activeAbilityIndex) {
+        const abilityName = pawnActor._convertAbilityIndexToAbilityName(
+          pawnActor.activeAbilityIndex,
+        );
+
+        const pawnActorActiveAbilityAnimation =
+          pawnActor.Abilities[abilityName].abilityAnimation;
+
+        if (pawnActorActiveAbilityAnimation) {
+          pawnActor.recoverLatestAnimationsData(
+            pawnActorActiveAbilityAnimation,
+            latestActiveAnimationData,
+          );
+        }
+      }
+    }
+
+    //this will be updated during playAnimation
     pawnActor.currentRenderData = {
       animationSpritesheetDirection: null,
       animationSpritesheetName: null,
       frameData: null,
     };
 
-    pawnActor._notUsingAbilityFor =
-      pawnActor.actorCurrentStats.attackspeed * 1000;
+    //don't have to save lockedTarget Id, just let the ticker set the target back again
+    pawnActor.lockedTarget = null;
+
+    pawnActor.notUsingAbilityFor = existingActorData.notUsingAbilityFor;
 
     return pawnActor;
   }
@@ -208,21 +301,27 @@ export default class PawnActor extends Actor {
       } else if (Object.keys(abilitySets).includes(animationName)) {
         const animationData = characterAnimationsData[animationName];
 
+        const scalarValue =
+          animationData.scalingValue *
+          this.actorCurrentStats[animationData.scalingType];
+
         abilitySets[animationName] = new Ability(
+          AbilityTypes[animationName],
           new DirectionDependentAnimation(
             this,
             animationName,
             characterAnimationsData[animationName],
           ),
           animationData.range,
+          animationData.melee,
+          scalarValue,
           animationData.target,
           animationData.targetDistancePriority,
           animationData.scalingValue,
           animationData.scalingType,
           animationData.singleTarget,
+          animationData.repeatable,
         );
-
-        this._totalAttackAvailable += 1;
       }
     });
 
@@ -242,21 +341,26 @@ export default class PawnActor extends Actor {
       heal: abilitySets.heal,
     };
 
-    this.activeAbilityName = null;
+    this.activeAbilityIndex = null;
     this.activeStateAnimationName = "idle";
   }
 
+  initAbilitiesOrder() {
+    const abilitiesArray = Object.values(this.Abilities);
+    abilitiesArray.sort(
+      (ability1, ability2) => ability1.range - ability2.range,
+    );
+
+    this.orderedAbilities = abilitiesArray;
+  }
+
   canChangeState() {
-    if (
-      this.actorState === CharacterStateTypes.idling ||
-      this.actorState === CharacterStateTypes.walking
-    )
-      return true;
-    return false;
+    if (this.actorState >= CharacterStateTypes.jumping) return false;
+    return true;
   }
 
   canUseAbility() {
-    if (this._notUsingAbilityFor >= this.actorCurrentStats.attackspeed * 1000) {
+    if (this.notUsingAbilityFor >= this.actorCurrentStats.attackspeed * 1000) {
       return true;
     }
     return false;
@@ -265,17 +369,18 @@ export default class PawnActor extends Actor {
   toIdleState(force = false) {
     if (force || this.canChangeState()) {
       this.actorState = CharacterStateTypes.idling;
-      this.activeAbilityName = null;
+      this.activeAbilityIndex = null;
       this.activeStateAnimationName = "idle";
     }
   }
 
   toWalkState(facingDirection = null) {
-    if (!facingDirection) return;
     if (this.canChangeState()) {
       this.actorState = CharacterStateTypes.walking;
-      this.facingDirection = facingDirection;
-      this.activeAbilityName = null;
+      this.facingDirection = facingDirection
+        ? facingDirection
+        : this.facingDirection;
+      this.activeAbilityIndex = null;
       this.activeStateAnimationName = "walk";
     }
   }
@@ -283,36 +388,26 @@ export default class PawnActor extends Actor {
   toJumpState(jumpMagnitude = null) {
     if (this.canChangeState()) {
       this.actorState = CharacterStateTypes.jumping;
-      this.activeAbilityName = null;
+      this.activeAbilityIndex = null;
       this.activeStateAnimationName = "jump";
 
       if (jumpMagnitude) this.actorCurrentStats.movespeed = jumpMagnitude;
     }
   }
 
-  toDeathState(force = false) {
+  toDeathState(force = true) {
     if (force || this.canChangeState()) {
       this.actorState = CharacterStateTypes.dying;
-      this.activeAbilityName = null;
+      this.activeAbilityIndex = null;
       this.activeStateAnimationName = "death";
     }
   }
 
-  toAttackState(auto = false, attackNumber = 1) {
-    let _attackNumber = attackNumber;
-
+  toAttackState(attackAbilityIndex = 0) {
     if (this.canChangeState() && this.canUseAbility()) {
-      if (auto) {
-        if (this._currentAttackNumber < this._totalAttackAvailable) {
-          this._currentAttackNumber += 1;
-        } else {
-          this._currentAttackNumber = 1;
-        }
-        _attackNumber = this._currentAttackNumber;
-      }
-
       this.actorState = CharacterStateTypes.usingAbility;
-      this.activeAbilityName = "attack" + _attackNumber.toString();
+      this.activeAbilityIndex = attackAbilityIndex;
+      this.previousActiveAbilityIndex = this.activeAbilityIndex;
       this.activeStateAnimationName = null;
     }
   }
@@ -320,9 +415,21 @@ export default class PawnActor extends Actor {
   toHealingState() {
     if (this.canChangeState() && this.canUseAbility()) {
       this.actorState = CharacterStateTypes.usingAbility;
-      this.activeAbilityName = "heal";
+      this.activeAbilityIndex = 3;
+      this.previousActiveAbilityIndex = this.activeAbilityIndex;
       this.activeStateAnimationName = null;
     }
+  }
+
+  useAbility(abilityIndex) {
+    if (abilityIndex < 0 || abilityIndex > 3) return;
+
+    if (abilityIndex === 3) {
+      this.toHealingState();
+      return;
+    }
+
+    this.toAttackState(abilityIndex);
   }
 
   applyMovement(mapMaxWidth, mapMaxHeight, deltaTime) {
@@ -330,54 +437,14 @@ export default class PawnActor extends Actor {
       this.actorState === CharacterStateTypes.walking ||
       this.actorState === CharacterStateTypes.jumping
     ) {
-      const deltaPercent = deltaTime / 1000;
-
-      //for rewinding
-      this.previousPosition = { ...this.position };
-
-      let mapMaxWidthAfterOffset = mapMaxWidth;
-      let mapMaxHeightAfterOffset = mapMaxHeight;
-      if (this.collision) {
-        mapMaxWidthAfterOffset -= this.collision.width + this.collision.ddx;
-        mapMaxHeightAfterOffset -= this.collision.height + this.collision.ddy;
-      }
-
-      switch (this.facingDirection) {
-        case FacingDirections.up:
-          this.position.dy = Math.max(
-            0,
-            this.position.dy - this.actorCurrentStats.movespeed * deltaPercent,
-          );
-          break;
-
-        case FacingDirections.down:
-          this.position.dy = Math.min(
-            mapMaxHeightAfterOffset,
-            this.position.dy + this.actorCurrentStats.movespeed * deltaPercent,
-          );
-          break;
-
-        case FacingDirections.left:
-          this.position.dx = Math.max(
-            0,
-            this.position.dx - this.actorCurrentStats.movespeed * deltaPercent,
-          );
-          break;
-
-        case FacingDirections.right:
-          this.position.dx = Math.min(
-            mapMaxWidthAfterOffset,
-            this.position.dx + this.actorCurrentStats.movespeed * deltaPercent,
-          );
-          break;
-      }
+      applyMovement(this, mapMaxWidth, mapMaxHeight, deltaTime);
     }
   }
 
   playAnimation(deltaTime) {
     if (this.activeStateAnimationName) {
       this._notUsingAbilityFor = Math.min(
-        this._notUsingAbilityFor + deltaTime,
+        this.notUsingAbilityFor + deltaTime,
         this.actorCurrentStats.attackspeed * 1000,
       );
 
@@ -399,8 +466,10 @@ export default class PawnActor extends Actor {
         if (currentActiveFrameData.lastFrameIsCompleted) {
           if (this.activeStateAnimationName === "jump") {
             this.actorCurrentStats.movespeed = this.actorDefaultStats.movespeed;
+            this.toIdleState(true);
+          } else if (this.activeStateAnimationName === "death") {
+            this.shouldBeDestroyed = true;
           }
-          this.toIdleState(true);
         }
       }
 
@@ -408,11 +477,12 @@ export default class PawnActor extends Actor {
         collisions: currentActiveFrameData.collisions,
         summons: currentActiveFrameData.summons,
       };
-    } else if (this.activeAbilityName) {
+    } else if (Number.isFinite(this.activeAbilityIndex)) {
+      const abilityName = Object.keys(this.Abilities)[this.activeAbilityIndex];
       const currentActiveFrameData =
-        this.Abilities[
-          this.activeAbilityName
-        ].abilityAnimation.getCurrentActiveFrameData(deltaTime);
+        this.Abilities[abilityName].abilityAnimation.getCurrentActiveFrameData(
+          deltaTime,
+        );
 
       this.currentRenderData.animationSpritesheetDirection =
         currentActiveFrameData.animationSpritesheetDirection;
@@ -422,14 +492,14 @@ export default class PawnActor extends Actor {
 
       //stop playing this animation in the next frame by changing state
       if (currentActiveFrameData.lastFrameIsCompleted) {
-        this.toIdleState(true); //here it sets this.activeAbilityName to null
+        this.toIdleState(true); //here it sets this.activeAbilityIndex to null
         this._notUsingAbilityFor = 0;
       }
 
       return {
         collisions: currentActiveFrameData.collisions,
         summons: currentActiveFrameData.summons,
-        ability: this.Abilities[this.activeAbilityName],
+        ability: this.Abilities[abilityName],
       };
     }
 

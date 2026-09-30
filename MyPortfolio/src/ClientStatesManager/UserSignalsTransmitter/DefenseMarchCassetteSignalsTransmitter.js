@@ -1,6 +1,6 @@
-import FacingDirection from "../../../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
-import SocketMessageTypes from "../../../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
-import DefenseMarchSignalTypes from "../../../shared/Standards/StringKeys/DefenseMarchSignalTypes.json" with { type: "json" };
+import FacingDirection from "../../../shared/Standards/FacingDirections.json" with { type: "json" };
+import SocketMessageTypes from "../../../shared/Standards/SocketMessageTypes.json" with { type: "json" };
+import DefenseMarchSignalTypes from "../../../shared/Standards/DefenseMarchSignalTypes.json" with { type: "json" };
 
 import PawnActor from "../../../shared/Actors/PawnActor.js";
 import TileActor from "../../../shared/Actors/TileActor.js";
@@ -63,7 +63,7 @@ export default function transmitUserSignals() {
       const message = {
         requestId: requestId,
         actorName: actorName,
-        signal: DefenseMarchSignalTypes.summonOnWP,
+        signal: DefenseMarchSignalTypes.spawnNewPawnOnWP,
         walkPathIndex: walkPathIndex,
       };
 
@@ -141,7 +141,7 @@ export default function transmitUserSignals() {
             if (result.success) {
               const message = {
                 actorName: selectedCharacter.elementName,
-                signal: DefenseMarchSignalTypes.upgradeCharacter,
+                signal: DefenseMarchSignalTypes.upgradePawn,
               };
 
               this.sendMessageToServer(SocketMessageTypes.userInput, message);

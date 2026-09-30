@@ -1,9 +1,10 @@
-import CharacterStateTypes from "../../shared/Standards/StringKeys/CharacterStateTypes.json" with { type: "json" };
-import FacingDirections from "../../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
-import TargetTypes from "../../shared/Standards/StringKeys/TargetTypes.json" with { type: "json" };
-import CollisionTypes from "../../shared/Standards/StringKeys/CollisionTypes.json" with { type: "json" };
-import SocketMessageTypes from "../../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
-import DefenseMarchSignalTypes from "../../shared/Standards/StringKeys/DefenseMarchSignalTypes.json" with { type: "json" };
+import CharacterStateTypes from "../../shared/Standards/CharacterStateTypes.json" with { type: "json" };
+import FacingDirections from "../../shared/Standards/FacingDirections.json" with { type: "json" };
+import TargetTypes from "../../shared/Standards/TargetTypes.json" with { type: "json" };
+import CollisionTypes from "../../shared/Standards/CollisionTypes.json" with { type: "json" };
+import SocketMessageTypes from "../../shared/Standards/SocketMessageTypes.json" with { type: "json" };
+import DefenseMarchSignalTypes from "../../shared/Standards/DefenseMarchSignalTypes.json" with { type: "json" };
+import SummonActorTypes from "../../shared/Standards/SummonActorTypes.json" with { type: "json" };
 
 import PawnActor from "../../shared/Actors/PawnActor.js";
 import TileActor from "../../shared/Actors/TileActor.js";
@@ -14,8 +15,10 @@ import DefenseMarchCassetteSignalsTransmitter from "./UserSignalsTransmitter/Def
 import {
   AIsCollidedWithB,
   PawnActorIsOnTrigger,
-} from "../../shared/CollisionsDetector/CollisionsDetector.js";
-import processTick_General from "../../shared/TickProcesses/processTick_General.js";
+} from "../../shared/TickProcesses/Utilities/CollisionsDetector/CollisionsDetector.js";
+import processTick_General from "../../shared/TickProcesses/Utilities/Generals/processTick_General.js";
+
+import processTick_DefenseMarchSpecific from "../../shared/TickProcesses/Utilities/DefenseMarch/processTick_DefenseMarchSpecific.js";
 
 import Block from "../HUDs/Block.js";
 import Label from "../HUDs/Label.js";
@@ -90,7 +93,7 @@ export default class ClientStatesManager {
   /** @type {OffscreenCanvas} */
   gameMapBackground = null;
 
-  //for processTick_General
+  //for processTicks
   gameMapBackgroundCanvasBaseWidth = 0;
   gameMapBackgroundCanvasBaseHeight = 0;
 
@@ -112,6 +115,7 @@ export default class ClientStatesManager {
   mapSoundTriggers = [];
 
   pawnActorsBlobDictionary = {};
+  summonActorsBlobDictionary = {};
   tileActorsBlobDictionary = {};
 
   tileSoundsBlobDictionary = {};
@@ -132,7 +136,7 @@ export default class ClientStatesManager {
   spawnCollisions = [];
 
   //actors that spawn from animation
-  spawnActors = [];
+  summonedActors = [];
 
   //array containing all types of actors that are sorted by y position
   allActorsSortedByY = [];
@@ -141,7 +145,6 @@ export default class ClientStatesManager {
   allySummonLocations = [];
   enemySummonLocations = [];
 
-  //considering to transmit these data from server...
   goldCoins = 0;
   currentTotalUnits = 0;
   maxTotalUnits = 50;
@@ -150,6 +153,11 @@ export default class ClientStatesManager {
 
   //for gameLoop specific to a cassette
   processTick_CassetteSpecific = null;
+
+  //flags for tickers
+  _checkBlockCollisionsFlag = false;
+  _checkSoundTriggersFlag = false;
+  _checkJumpTriggersFlag = false;
 
   constructor(consoleSvgRef, buttonsRef) {
     this.consoleSvgRef = consoleSvgRef;
@@ -277,9 +285,14 @@ export default class ClientStatesManager {
               this.signalsTransmitter();
             }
 
-            processTick_General(this, this.FIXED_DELTA_TIME_FROM_SERVER);
-
-            this.processTick_CassetteGeneral();
+            processTick_General(
+              this,
+              this.FIXED_DELTA_TIME_FROM_SERVER,
+              this._checkBlockCollisionsFlag,
+              this._checkSoundTriggersFlag,
+              this._checkJumpTriggersFlag,
+              true,
+            );
 
             if (this.processTick_CassetteSpecific) {
               this.processTick_CassetteSpecific();
@@ -300,90 +313,6 @@ export default class ClientStatesManager {
     };
 
     gameLoop();
-  }
-
-  playAllActorsAnimation(deltaTime) {
-    if (this.playerActor) {
-      this.spawnCollisions = [
-        ...this.spawnCollisions,
-        ...this.playerActor.playAnimation(deltaTime).collisions,
-      ];
-    }
-
-    this.allyPawnActors.forEach((actor) => {
-      this.spawnCollisions = [
-        ...this.spawnCollisions,
-        ...actor.playAnimation(deltaTime).collisions,
-      ];
-    });
-
-    this.enemyPawnActors.forEach((actor) => {
-      this.spawnCollisions = [
-        ...this.spawnCollisions,
-        ...actor.playAnimation(deltaTime).collisions,
-      ];
-    });
-
-    this.tileActors.forEach((actor) => {
-      actor.playAnimation(deltaTime);
-    });
-
-    //handle summoning later...
-  }
-
-  getAllPawnActors() {
-    let pawnActors = [];
-
-    if (this.playerActor) {
-      pawnActors.push(this.playerActor);
-    }
-
-    return (pawnActors = [
-      ...pawnActors,
-      ...this.allyPawnActors,
-      ...this.enemyPawnActors,
-    ]);
-  }
-
-  getAllNonPawnActorBlockCollisions() {
-    let collisions = [];
-
-    this.tileActors.forEach((actor) => {
-      if (actor.collision) {
-        collisions.push(actor.collision);
-      }
-    });
-
-    this.spawnActors.forEach((actor) => {
-      if (actor.collision?.collisionType === CollisionTypes.blockCollision) {
-        collisions.push(actor.collision);
-      }
-    });
-
-    let spawnBlockCollisions = this.spawnCollisions.filter(
-      (collision) => collision.collisionType === CollisionTypes.blockCollision,
-    );
-
-    let mapBlockCollisions = this.mapCollisions.filter(
-      (collision) => collision.collisionType === CollisionTypes.blockCollision,
-    );
-
-    collisions = [
-      ...collisions,
-      ...spawnBlockCollisions,
-      ...mapBlockCollisions,
-    ];
-    return collisions;
-  }
-
-  handleSpawnCollisionsLifetime(deltaTime) {
-    this.spawnCollisions.forEach((collision, index) => {
-      this.spawnCollisions[index].duration -= deltaTime;
-      if (this.spawnCollisions[index].duration <= 0) {
-        //remove spawnCollision
-        this.spawnCollisions.splice(index, 1);
-      }
-    });
   }
 
   async loadCassette(cassetteIndex) {
@@ -433,38 +362,9 @@ export default class ClientStatesManager {
           this.cassetteName = "IntroCassette";
           this.signalsTransmitter = IntroCassetteSignalsTransmitter.bind(this);
 
-          this.processTick_CassetteSpecific = () => {
-            //check for mapJumpTriggers with playerActor
-            if (this.playerActor.actorState != CharacterStateTypes.jumping) {
-              this.mapJumpTriggers.some((trigger) => {
-                if (PawnActorIsOnTrigger(this.playerActor, trigger)) {
-                  if (
-                    this.playerActor.facingDirection ===
-                      trigger.jumpDirection &&
-                    this.playerActor.actorState ===
-                      trigger.actionToTrigger + "ing"
-                  ) {
-                    console.log(
-                      "is within jump trigger...",
-                      trigger.jumpMagnitude,
-                    );
-                    this.playerActor.toJumpState(trigger.jumpMagnitude);
-
-                    const audios =
-                      this.actorSoundsBlobDictionary[this.playerActor.actorName]
-                        ?.jump;
-                    if (audios) {
-                      this.playAudioRandomWithRandomVolume(audios);
-                    }
-                  }
-                  return true;
-                }
-              });
-            }
-
-            this.moveCameraToActor(this.playerActor);
-            this.sanitizeCameraPosition();
-          };
+          this._checkBlockCollisionsFlag = true;
+          this._checkSoundTriggersFlag = true;
+          this._checkJumpTriggersFlag = true;
           break;
 
         case 1:
@@ -480,6 +380,12 @@ export default class ClientStatesManager {
           this.signalsTransmitter =
             DefenseMarchCassetteSignalsTransmitter.bind(this);
           this.signalsManager = new DefenseMarchCassetteSignalsManager(this);
+          this.processTick_CassetteSpecific =
+            processTick_DefenseMarchSpecific.bind(this);
+
+          this._checkBlockCollisionsFlag = false;
+          this._checkSoundTriggersFlag = true;
+          this._checkJumpTriggersFlag = false;
 
           //creating HUDs for DefenseMarch
           this.gameRootHUD = new rootHUD(
@@ -1386,9 +1292,10 @@ export default class ClientStatesManager {
           for (const characterData of Object.values(
             this.pawnActorsBlobDictionary,
           )) {
-            if (characterData.targetType === "ally") {
+            if (characterData.targetType === TargetTypes.ally) {
               const spritesheetOffset =
-                characterData.animations.idle.right.frames[0].spritesheetOffset;
+                characterData.animations.idle[FacingDirections.right].frames[0]
+                  .spritesheetOffset;
               const canvas = new OffscreenCanvas(
                 spritesheetOffset.width,
                 spritesheetOffset.height,
@@ -1501,7 +1408,7 @@ export default class ClientStatesManager {
     this.spawnCollisions = [];
 
     //actors that spawn from animation
-    this.spawnActors = [];
+    this.summonedActors = [];
 
     //array containing all types of actors that are sorted by y position
     this.allActorsSortedByY = [];
@@ -1520,6 +1427,10 @@ export default class ClientStatesManager {
 
     this.gameMapBackgroundCanvasBaseWidth = 0;
     this.gameMapBackgroundCanvasBaseHeight = 0;
+
+    this._checkBlockCollisionsFlag = false;
+    this._checkSoundTriggersFlag = false;
+    this._checkJumpTriggersFlag = false;
   }
 
   getContentCanvas() {
@@ -1581,7 +1492,86 @@ export default class ClientStatesManager {
               );
             }
           }
-          //PawnActor - future add-on: handle spawnActors...
+          //SummonedActor -> either ProjectileActor or VFXHitBoxActor
+          else if (actor.summonActorType) {
+            const summonActorTypeName =
+              actor.summonActorType === SummonActorTypes.Projectile
+                ? "projectiles"
+                : "vfxs";
+
+            /** @type {ImageBitmap} */
+            const actorBitmap =
+              this.summonActorsBlobDictionary[summonActorTypeName][
+                actor.actorName
+              ]?.animationBlobs;
+
+            const currentFrameSpritesheetOffset =
+              actor.currentRenderData?.frameData?.spritesheetOffset;
+
+            if (actorBitmap) {
+              //currently only projectile can be rotated
+              if (actor.currentFacingAngleInRadians) {
+                context2d.save();
+                context2d.translate(
+                  actor.position.dx + currentFrameSpritesheetOffset.width / 2,
+                  actor.position.dy - currentFrameSpritesheetOffset.height / 2,
+                );
+                context2d.rotate(actor.currentFacingAngleInRadians);
+                //differentiate dx dy and sx sy properly, one is destination (location ON THE CANVAS itself while another is the location on the bitmap used)
+                //in this case however, the origin has shifted to center of the "to be drawn" image and now the dx dy in drawImage are relative to it
+                context2d.drawImage(
+                  actorBitmap,
+                  currentFrameSpritesheetOffset.x,
+                  currentFrameSpritesheetOffset.y,
+                  currentFrameSpritesheetOffset.width,
+                  currentFrameSpritesheetOffset.height,
+                  -currentFrameSpritesheetOffset.width / 2,
+                  -currentFrameSpritesheetOffset.height / 2,
+                  currentFrameSpritesheetOffset.width,
+                  currentFrameSpritesheetOffset.height,
+                );
+                context2d.restore();
+              } else if (
+                actor.summonActorType === SummonActorTypes.VFXHitBox &&
+                actor.position
+              ) {
+                const actualWidthToTarget =
+                  actor.currentRenderData?.frameData?.spritesheetOffset
+                    ?.currentActualWidth;
+
+                context2d.drawImage(
+                  actorBitmap,
+                  currentFrameSpritesheetOffset.x,
+                  currentFrameSpritesheetOffset.y,
+                  currentFrameSpritesheetOffset.width,
+                  currentFrameSpritesheetOffset.height,
+                  actor.position.dx - this.cameraPosition.x,
+                  actor.position.dy -
+                    this.cameraPosition.y -
+                    currentFrameSpritesheetOffset.height,
+                  actualWidthToTarget,
+                  currentFrameSpritesheetOffset.height,
+                );
+              } else {
+                context2d.drawImage(
+                  actorBitmap,
+                  currentFrameSpritesheetOffset.x,
+                  currentFrameSpritesheetOffset.y,
+                  currentFrameSpritesheetOffset.width,
+                  currentFrameSpritesheetOffset.height,
+                  actor.targetedPosition.dx -
+                    this.cameraPosition.x -
+                    currentFrameSpritesheetOffset.width / 2,
+                  actor.targetedPosition.dy -
+                    this.cameraPosition.y -
+                    currentFrameSpritesheetOffset.height / 2,
+                  currentFrameSpritesheetOffset.width,
+                  currentFrameSpritesheetOffset.height,
+                );
+              }
+            }
+          }
+          //PawnActor
           else {
             /** @type {ImageBitmap} */
             const actorBitmap =
@@ -1589,37 +1579,22 @@ export default class ClientStatesManager {
                 actor.currentRenderData.animationSpritesheetName
               ];
 
-            const currentFrameData =
+            const currentFrameSpritesheetOffset =
               actor.currentRenderData?.frameData?.spritesheetOffset;
-            //actorCanvas is a canvas of an animation that includes all the direction, use frameData to offset to the correct section
-            //frameData example:
-            //  {
-            //   "spritesheetOffset": {
-            //     "x": 0,
-            //     "y": 32,
-            //     "width": 32,
-            //     "height": 32
-            //   },
-            //   "duration": 290,
-            //   "collisions": []
-            // }
 
-            //TO-DO: the drawImage method from context draw from top to bottom
-            //move the summon location up
-            //now only the top path has the summon feature done, do it for the rest walk path too...
             if (actorBitmap) {
               context2d.drawImage(
                 actorBitmap,
-                currentFrameData.x,
-                currentFrameData.y,
-                currentFrameData.width,
-                currentFrameData.height,
+                currentFrameSpritesheetOffset.x,
+                currentFrameSpritesheetOffset.y,
+                currentFrameSpritesheetOffset.width,
+                currentFrameSpritesheetOffset.height,
                 actor.position.dx - this.cameraPosition.x,
                 actor.position.dy -
                   this.cameraPosition.y -
-                  currentFrameData.height,
-                currentFrameData.width,
-                currentFrameData.height,
+                  currentFrameSpritesheetOffset.height,
+                currentFrameSpritesheetOffset.width,
+                currentFrameSpritesheetOffset.height,
               );
             }
           }
@@ -1686,16 +1661,8 @@ export default class ClientStatesManager {
 
     const createPawnActorFromRawStates = (rawActorStates) => {
       const pawnActor = PawnActor.constructExistingActor(
-        rawActorStates.tempId,
-        rawActorStates.actorName,
-        rawActorStates.position,
-        rawActorStates.actorState,
-        rawActorStates.actorCurrentStats,
+        rawActorStates,
         rawStatesData.pawnActorsBlobDictionary[rawActorStates.actorName],
-        rawActorStates.currentLevel,
-        rawActorStates.maxLevel,
-        rawActorStates.collision,
-        rawActorStates.selectable,
       );
 
       pawnActor.facingDirection = rawActorStates.facingDirection;
@@ -1720,6 +1687,22 @@ export default class ClientStatesManager {
         this.enemyPawnActors.push(createPawnActorFromRawStates(rawActorStates));
       });
     }
+
+    const createSummonedActorFromRawStates = (rawSummonedActorStates) => {
+      let metaData = null;
+
+      switch (rawSummonedActorStates.summonActorType) {
+        case SummonActorTypes.Projectile:
+          break;
+
+        case SummonActorTypes.VFXHitBox:
+          break;
+      }
+    };
+    //TO-DO: init for existing summonedActors
+    //we can't really differentiate between projectiles and VFXs after they are converted to JSON and saved in the file
+    //therefore the JSON has a property called summonActorType which is a number
+    //0 - projectile, 1 - VFX
 
     if (rawStatesData.tileActors?.length > 0) {
       rawStatesData.tileActors.forEach((rawActorStates) => {
@@ -1755,7 +1738,7 @@ export default class ClientStatesManager {
     if (this.cassetteName) {
       rawStatesData.mapSoundTriggers.forEach((trigger) => {
         this.mapSoundTriggers.push({
-          actionToTrigger: trigger.actionToTrigger,
+          stateToTrigger: trigger.stateToTrigger,
           filename: trigger.filename,
           priority: trigger.priority,
           active: trigger.active,
@@ -1768,20 +1751,20 @@ export default class ClientStatesManager {
 
         //only add once, don't need to add if they are already exist
         if (
-          !this.tileSoundsBlobDictionary[trigger.actionToTrigger]?.[
+          !this.tileSoundsBlobDictionary[trigger.stateToTrigger]?.[
             trigger.filename
           ]
         ) {
           const audios = [];
           for (let i = 0; i < trigger.totalVariations; i++) {
             const audio = new Audio(
-              `/${this.cassetteName}/TilesSFX/${trigger.actionToTrigger}/${trigger.filename}/${i}.wav`,
+              `/${this.cassetteName}/TilesSFX/${trigger.stateToTrigger}/${trigger.filename}/${i}.wav`,
             );
             audios.push(audio);
           }
 
-          this.tileSoundsBlobDictionary[trigger.actionToTrigger] = {
-            ...this.tileSoundsBlobDictionary[trigger.actionToTrigger],
+          this.tileSoundsBlobDictionary[trigger.stateToTrigger] = {
+            ...this.tileSoundsBlobDictionary[trigger.stateToTrigger],
             [trigger.filename]: {
               audios: audios,
             },
@@ -1803,7 +1786,7 @@ export default class ClientStatesManager {
           // animations: {},
           // animationBlobs: {},
           // selectable: false,
-          // targetType: "all",
+          // targetType: 3,
           // defaultStats: {},
           // motionValues: [],
           // maxLevel: 99
@@ -1854,6 +1837,31 @@ export default class ClientStatesManager {
 
       console.log("pawnActorsBlobDictionary: ", this.pawnActorsBlobDictionary);
     }
+
+    this.summonActorsBlobDictionary = {
+      ...rawStatesData.summonActorsBlobDictionary,
+    };
+
+    for (const [summonActorsType, summonActorsData] of Object.entries(
+      this.summonActorsBlobDictionary,
+    )) {
+      if (summonActorsData) {
+        for (const [summonActorName, summonActorData] of Object.entries(
+          summonActorsData,
+        )) {
+          this.summonActorsBlobDictionary[summonActorsType][
+            summonActorName
+          ].animationBlobs = await this.convertBlobToBitmap(
+            summonActorData.animationBlobs,
+          );
+        }
+      }
+    }
+
+    console.log(
+      "summonActorsBlobDictionary: ",
+      this.summonActorsBlobDictionary,
+    );
 
     const tileGids = Object.keys(rawStatesData.tileActorsBlobDictionary);
 
@@ -1909,7 +1917,7 @@ export default class ClientStatesManager {
 
         if (data.type === SocketMessageTypes.userSignalResponse) {
           switch (data.value.message.signal) {
-            case DefenseMarchSignalTypes.summonOnWP:
+            case DefenseMarchSignalTypes.spawnNewPawnOnWP:
               if (!data.value.message.success) {
                 const index = this.allyPawnActors.findIndex(
                   (pawnActor) =>
@@ -1950,7 +1958,7 @@ export default class ClientStatesManager {
               console.log(data.value.message.response);
               break;
 
-            case DefenseMarchSignalTypes.upgradeCharacter:
+            case DefenseMarchSignalTypes.upgradePawn:
               if (data.value.message.response) {
                 console.log(data.value.message.response);
               }
@@ -2051,72 +2059,6 @@ export default class ClientStatesManager {
         value = true;
       }
       this._setKeyValue(event.key, value);
-    }
-  }
-
-  _checkAndTriggerWalkingStepSound(actor) {
-    if (actor.actorState != CharacterStateTypes.walking) return;
-
-    this.mapSoundTriggers.some((trigger) => {
-      if (PawnActorIsOnTrigger(actor, trigger)) {
-        //console.log("is within sound trigger...", trigger.filename);
-        const audios =
-          this.tileSoundsBlobDictionary[trigger.actionToTrigger]?.[
-            trigger.filename
-          ]?.audios;
-        if (audios) {
-          this.playAudioRandomWithRandomVolume(audios);
-        }
-        return true;
-      }
-    });
-  }
-
-  processTick_CassetteGeneral() {
-    //check for sound triggers, can make use of the CollisionsDectector.js to check for the bounds
-    if (this.playerActor) {
-      this._checkAndTriggerWalkingStepSound(this.playerActor);
-    }
-
-    this.allyPawnActors.forEach((actor) => {
-      this._checkAndTriggerWalkingStepSound(actor);
-    });
-
-    this.enemyPawnActors.forEach((actor) => {
-      this._checkAndTriggerWalkingStepSound(actor);
-    });
-  }
-
-  playAudio(audios, audioInstanceIndex, volume = 1.0) {
-    const audio = audios[audioInstanceIndex];
-
-    if (audio) {
-      audio.volume = volume;
-      audio.play();
-    }
-  }
-
-  playAudioRandom(audios, volume = 1.0) {
-    const max = audios.length - 1;
-    const index = Math.round(Math.random() * (max - 0)) + 0;
-
-    const audio = audios[index];
-
-    if (audio) {
-      audio.volume = volume;
-      audio.play();
-    }
-  }
-
-  playAudioRandomWithRandomVolume(audios) {
-    const max = audios.length - 1;
-    const index = Math.round(Math.random() * (max - 0)) + 0;
-    const volume = Math.random() * (0.7 - 0.5) + 0.5;
-
-    const audio = audios[index];
-    if (audio) {
-      audio.volume = volume;
-      audio.play();
     }
   }
 
@@ -2282,6 +2224,7 @@ export default class ClientStatesManager {
       ...this.allActorsSortedByY,
       ...this.allyPawnActors,
       ...this.enemyPawnActors,
+      ...this.summonedActors,
       ...this.tileActors,
     ];
     this.allActorsSortedByY.sort((a, b) => {

@@ -4,9 +4,10 @@ import { fileURLToPath } from "url";
 import { randomUUID } from "crypto";
 import { Canvas, createCanvas } from "canvas";
 
-import FacingDirections from "../../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
-import CharacterStateTypes from "../../shared/Standards/StringKeys/CharacterStateTypes.json" with { type: "json" };
-import CollisionTypes from "../../shared/Standards/StringKeys/CollisionTypes.json" with { type: "json" };
+import FacingDirections from "../../shared/Standards/FacingDirections.json" with { type: "json" };
+import TargetTypes from "../../shared/Standards/TargetTypes.json" with { type: "json" };
+import CharacterStateTypes from "../../shared/Standards/CharacterStateTypes.json" with { type: "json" };
+import CollisionTypes from "../../shared/Standards/CollisionTypes.json" with { type: "json" };
 import loadTileMap from "../Utilities/TileMapLoader/loadTileMap.js";
 import loadImage from "../Utilities/ImgLoader/loadImage.js";
 import PawnActor from "../../shared/Actors/PawnActor.js";
@@ -70,7 +71,7 @@ export default class GameStatesManager {
   spawnCollisions = [];
 
   //actors that spawn from animation
-  spawnActors = [];
+  summonedActors = [];
 
   //for DefenseMarchCassette (summon locations are init via loadTileMap)
   allySummonLocations = [];
@@ -89,6 +90,7 @@ export default class GameStatesManager {
     let serializedPlayerActor;
     let serializedAllyPawnActors = [];
     let serializedEnemyPawnActors = [];
+    let serializedSummonedActors = [];
     let serializedTileActors = [];
 
     serializedPlayerActor = this.playerActor ? this.playerActor.toJSON() : null;
@@ -103,14 +105,21 @@ export default class GameStatesManager {
       serializedAllyPawnActors.push(serializedData);
     });
 
+    this.summonedActors.forEach((actor) => {
+      let serializedData = actor.toJSON();
+      serializedSummonedActors.push(serializedData);
+    });
+
     this.tileActors.forEach((actor) => {
-      serializedTileActors.push(actor.toJSON());
+      let serializedData = actor.toJSON();
+      serializedTileActors.push(serializedData);
     });
 
     return [
       serializedPlayerActor,
       serializedAllyPawnActors,
       serializedEnemyPawnActors,
+      serializedSummonedActors,
       serializedTileActors,
     ];
   }
@@ -120,6 +129,7 @@ export default class GameStatesManager {
       playerActor,
       serializedAllyPawnActors,
       serializedEnemyPawnActors,
+      serializedSummonedActors,
       serializedTileActors,
     ] = this.getSerializedActors();
 
@@ -136,7 +146,9 @@ export default class GameStatesManager {
       playerActor: playerActor,
       allyPawnActors: serializedAllyPawnActors,
       enemyPawnActors: serializedEnemyPawnActors,
+      summonedActors: serializedSummonedActors,
       tileActors: serializedTileActors,
+      spawnCollisions: this.spawnCollisions,
     };
 
     //DefenseMarchCassette specific data
@@ -156,6 +168,7 @@ export default class GameStatesManager {
         .toString("base64");
 
       data.pawnActorsBlobDictionary = this.pawnActorsBlobDictionary;
+      data.summonActorsBlobDictionary = this.summonActorsBlobDictionary;
       data.tileActorsBlobDictionary = this.tileActorsBlobDictionary;
       data.gameMapBackgroundBlob = gameMapBackgroundBlob;
       data.clientContentCanvasBaseWidth = this.clientContentCanvasBaseWidth;
@@ -260,6 +273,8 @@ export default class GameStatesManager {
     clientManager.userId = serializedJSON.userId;
     clientManager.pawnActorsBlobDictionary =
       serializedJSON.pawnActorsBlobDictionary;
+    clientManager.summonActorsBlobDictionary =
+      serializedJSON.summonActorsBlobDictionary;
     clientManager.tileActorsBlobDictionary =
       serializedJSON.tileActorsBlobDictionary;
     clientManager.mapCollisions = serializedJSON.mapCollisions;
@@ -287,36 +302,18 @@ export default class GameStatesManager {
 
     if (serializedJSON.playerActor) {
       clientManager.playerActor = PawnActor.constructExistingActor(
-        serializedJSON.playerActor.tempId,
-        serializedJSON.playerActor.actorName,
-        serializedJSON.playerActor.position,
-        serializedJSON.playerActor.actorState,
-        serializedJSON.playerActor.actorCurrentStats,
+        serializedJSON,
         clientManager.pawnActorsBlobDictionary[
           serializedJSON.playerActor.actorName
         ],
-        serializedJSON.playerActor.currentLevel,
-        serializedJSON.playerActor.maxLevel,
-        serializedJSON.playerActor.collision,
-        serializedJSON.playerActor.selectable,
       );
     }
 
     serializedJSON.allyPawnActors.forEach((actorJSON) => {
       clientManager.allyPawnActors.push(
         PawnActor.constructExistingActor(
-          actorJSON.playerActor.tempId,
-          actorJSON.playerActor.actorName,
-          actorJSON.playerActor.position,
-          actorJSON.playerActor.actorState,
-          actorJSON.playerActor.actorCurrentStats,
-          clientManager.pawnActorsBlobDictionary[
-            actorJSON.playerActor.actorName
-          ].animations,
-          actorJSON.playerActor.currentLevel,
-          actorJSON.playerActor.maxLevel,
-          actorJSON.playerActor.collision,
-          actorJSON.playerActor.selectable,
+          actorJSON,
+          clientManager.pawnActorsBlobDictionary[actorJSON.actorName],
         ),
       );
     });
@@ -324,18 +321,8 @@ export default class GameStatesManager {
     serializedJSON.enemyPawnActors.forEach((actorJSON) => {
       clientManager.enemyPawnActors.push(
         PawnActor.constructExistingActor(
-          actorJSON.playerActor.tempId,
-          actorJSON.playerActor.actorName,
-          actorJSON.playerActor.position,
-          actorJSON.playerActor.actorState,
-          actorJSON.playerActor.actorCurrentStats,
-          clientManager.pawnActorsBlobDictionary[
-            actorJSON.playerActor.actorName
-          ].animations,
-          actorJSON.playerActor.currentLevel,
-          actorJSON.playerActor.maxLevel,
-          actorJSON.playerActor.collision,
-          actorJSON.playerActor.selectable,
+          actorJSON,
+          clientManager.pawnActorsBlobDictionary[actorJSON.actorName],
         ),
       );
     });
@@ -352,104 +339,6 @@ export default class GameStatesManager {
     });
 
     return clientManager;
-  }
-
-  playAllActorsAnimation(deltaTime) {
-    if (this.playerActor) {
-      const animationResult = this.playerActor.playAnimation(deltaTime);
-      //console.log("animationData: ", animationResult);
-
-      if (animationResult.collisions) {
-        this.spawnCollisions = [
-          ...this.spawnCollisions,
-          ...animationResult.collisions,
-        ];
-      }
-    }
-
-    this.allyPawnActors.forEach((actor) => {
-      const animationResult = actor.playAnimation(deltaTime);
-
-      if (animationResult.collisions) {
-        this.spawnCollisions = [
-          ...this.spawnCollisions,
-          ...animationResult.collisions,
-        ];
-      }
-    });
-
-    this.enemyPawnActors.forEach((actor) => {
-      const animationResult = actor.playAnimation(deltaTime);
-
-      if (animationResult.collisions) {
-        this.spawnCollisions = [
-          ...this.spawnCollisions,
-          ...animationResult.collisions,
-        ];
-      }
-    });
-
-    this.tileActors.forEach((actor) => {
-      actor.playAnimation(deltaTime);
-    });
-
-    //handle summoning later...
-  }
-
-  getAllPawnActors() {
-    let pawnActors = [];
-
-    if (this.playerActor) {
-      pawnActors.push(this.playerActor);
-    }
-
-    return (pawnActors = [
-      ...pawnActors,
-      ...this.allyPawnActors,
-      ...this.enemyPawnActors,
-    ]);
-  }
-
-  getAllNonPawnActorBlockCollisions() {
-    let collisions = [];
-
-    this.tileActors.forEach((actor) => {
-      if (actor.collision) {
-        collisions.push(actor.collision);
-      }
-    });
-
-    this.spawnActors.forEach((actor) => {
-      if (actor.collision?.collisionType === CollisionTypes.blockCollision) {
-        collisions.push(actor.collision);
-      }
-    });
-
-    let spawnBlockCollisions = this.spawnCollisions.filter(
-      (collision) => collision.collisionType === CollisionTypes.blockCollision,
-    );
-
-    let mapBlockCollisions = this.mapCollisions.filter(
-      (collision) => collision.collisionType === CollisionTypes.blockCollision,
-    );
-
-    collisions = [
-      ...collisions,
-      ...spawnBlockCollisions,
-      ...mapBlockCollisions,
-    ];
-
-    return collisions;
-  }
-
-  handleSpawnCollisionsLifetime(deltaTime) {
-    this.spawnCollisions.forEach((collision, index) => {
-      this.spawnCollisions[index].duration -= deltaTime;
-      if (this.spawnCollisions[index].duration <= 0) {
-        //remove spawnCollision
-        this.spawnCollisions.splice(index, 1);
-      }
-    });
   }
 
   async init() {
@@ -626,9 +515,9 @@ export default class GameStatesManager {
 
           if (this.cassetteIndex === 1) {
             const targetType = allPawnActorsDefaultData[actorName].targetType;
-            if (targetType === "ally") {
+            if (targetType === TargetTypes.ally) {
               extraDirectoryBeforeActorName = "Allies";
-            } else if (targetType === "enemy") {
+            } else if (targetType === TargetTypes.enemy) {
               extraDirectoryBeforeActorName = "Enemies";
             }
           }
@@ -654,30 +543,54 @@ export default class GameStatesManager {
     /* summon actors (e.g. projectiles/VFX) */
     if (!this.dirToSummonActorsDataJSONFile) return;
 
-    const allSummonActorsDefaultData = JSON.parse(
+    this.summonActorsBlobDictionary = JSON.parse(
       fs.readFileSync(this.dirToSummonActorsDataJSONFile, "utf-8"),
     );
 
-    const allProjectilesName = Object.keys(allSummonActorsDefaultData.projectiles);
-    const allHitVFXSName = Object.keys(allSummonActorsDefaultData.hitVFXs);
-    const allVFXSName = Object.keys(allSummonActorsDefaultData.vfxs);
+    if (Object.keys(this.summonActorsBlobDictionary).length <= 0) return;
 
-    if(allProjectilesName.length > 0)
-    {
-      allProjectilesName.map((projectileName) => {
-        allSummonActorsDefaultData.projectiles.projectileName.animationBlobs = //cont...
-      })
-    }
+    const allProjectilesName = Object.keys(
+      this.summonActorsBlobDictionary.projectiles,
+    );
+    const allHitVFXSName = Object.keys(this.summonActorsBlobDictionary.hitVFXs);
+    const allVFXSName = Object.keys(this.summonActorsBlobDictionary.vfxs);
 
-      const defaultActorImage = await loadImage(
-      `${serverFolderToCharacterAssets}${actorName}/defaultImage/defaultImage.png`,
-    )
-      .then((img) => img)
-      .catch((err) => null);
+    const allSummonActorsName = [
+      ...allProjectilesName,
+      ...allHitVFXSName,
+      ...allVFXSName,
+    ];
 
-    if (defaultActorImage) {
-      let blob = this.convertImgToBlob(defaultActorImage);
-      if (blob) actorBlobDictionary.defaultActorImage = blob;
+    if (allSummonActorsName.length > 0) {
+      const entries = await Promise.all(
+        allSummonActorsName.map(async (summonActorName) => {
+          let category = "projectiles";
+          if (summonActorName[0] === "h") {
+            category = "hitVFXs";
+          } else if (summonActorName[0] === "v") {
+            category = "vfxs";
+          }
+
+          const summonActorAnimationSheet = await loadImage(
+            `CassetteContentData/${this.cassetteName}/SummonAssets/${category}/${summonActorName}/${summonActorName}Sheet.png`,
+          )
+            .then((img) => img)
+            .catch((err) => null);
+
+          if (summonActorAnimationSheet) {
+            const animationBlobs = this.convertImgToBlob(
+              summonActorAnimationSheet,
+            );
+            return [category, summonActorName, animationBlobs];
+          }
+        }),
+      );
+
+      entries.forEach(([category, summonActorName, animationBlobs]) => {
+        this.summonActorsBlobDictionary[category][
+          summonActorName
+        ].animationBlobs = animationBlobs;
+      });
     }
   }
 
@@ -690,16 +603,8 @@ export default class GameStatesManager {
           this.pawnActorsBlobDictionary[loadedGameStates.playerActor.actorName];
 
         this.playerActor = PawnActor.constructExistingActor(
-          loadedGameStates.playerActor.tempId,
-          loadedGameStates.playerActor.actorName,
-          loadedGameStates.playerActor.position,
-          loadedGameStates.playerActor.actorState,
-          loadedGameStates.playerActor.actorCurrentStats,
+          loadedGameStates.playerActor,
           defaultPlayerActorData,
-          loadedGameStates.playerActor.currentLevel,
-          loadedGameStates.playerActor.maxLevel,
-          loadedGameStates.playerActor.collision,
-          loadedGameStates.playerActor.selectable,
         );
       }
 
@@ -708,16 +613,8 @@ export default class GameStatesManager {
           this.pawnActorsBlobDictionary[allyPawnActor.actorName];
 
         const pawnActor = PawnActor.constructExistingActor(
-          allyPawnActor.tempId,
-          allyPawnActor.actorName,
-          allyPawnActor.position,
-          allyPawnActor.actorState,
-          allyPawnActor.actorCurrentStats,
+          allyPawnActor,
           defaultAllyPawnActorData,
-          allyPawnActor.currentLevel,
-          allyPawnActor.maxLevel,
-          allyPawnActor.collision,
-          allyPawnActor.selectable,
         );
 
         this.allyPawnActors.push(pawnActor);
@@ -728,16 +625,8 @@ export default class GameStatesManager {
           this.pawnActorsBlobDictionary[enemyPawnActor.actorName];
 
         const pawnActor = PawnActor.constructExistingActor(
-          enemyPawnActor.tempId,
-          enemyPawnActor.actorName,
-          enemyPawnActor.position,
-          enemyPawnActor.actorState,
-          enemyPawnActor.actorCurrentStats,
+          enemyPawnActor,
           defaultEnemyPawnActorData,
-          enemyPawnActor.currentLevel,
-          enemyPawnActor.maxLevel,
-          enemyPawnActor.collision,
-          enemyPawnActor.selectable,
         );
 
         this.enemyPawnActors.push(pawnActor);
@@ -773,6 +662,7 @@ export default class GameStatesManager {
     this.playerActor = PawnActor.constructNewActor(
       uuid,
       "mainCharacter",
+      FacingDirections.right,
       playerStartingPosition,
       actorBlobDictionary,
     );

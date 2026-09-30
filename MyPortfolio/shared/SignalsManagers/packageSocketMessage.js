@@ -1,4 +1,4 @@
-import SocketMessageTypes from "../Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
+import SocketMessageTypes from "../Standards/SocketMessageTypes.json" with { type: "json" };
 
 export default function packageSocketMessageForSingleUser(
   cassetteIndex,

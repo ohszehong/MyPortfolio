@@ -1,5 +1,5 @@
-import FacingDirection from "../../../shared/Standards/StringKeys/FacingDirections.json" with { type: "json" };
-import SocketMessageTypes from "../../../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
+import FacingDirection from "../../../shared/Standards/FacingDirections.json" with { type: "json" };
+import SocketMessageTypes from "../../../shared/Standards/SocketMessageTypes.json" with { type: "json" };
 import PawnActor from "../../../shared/Actors/PawnActor.js";
 import TileActor from "../../../shared/Actors/TileActor.js";
 

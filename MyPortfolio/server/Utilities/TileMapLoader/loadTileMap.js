@@ -3,7 +3,9 @@ import { Canvas, createCanvas, registerFont } from "canvas";
 import IntroMapV2JSON from "../../CassetteContentData/IntroCassette/MapData/IntroMapV2.json" with { type: "json" };
 import DefenseMarchMapJSON from "../../CassetteContentData/DefenseMarchCassette/MapData/DefenseMarchMap.json" with { type: "json" };
 
-import TriggerTypes from "../../../shared/Standards/StringKeys/TriggerTypes.json" with { type: "json" };
+import TriggerTypes from "../../../shared/Standards/TriggerTypes.json" with { type: "json" };
+import CollisionTypes from "../../../shared/Standards/CollisionTypes.json" with { type: "json" };
+
 import TileActor from "../../../shared/Actors/TileActor.js";
 import loadImage from "../ImgLoader/loadImage.js";
 
@@ -87,7 +89,7 @@ export default async function loadTileMap(shouldAbortRef) {
 
               if (object.name === "BlockCollision") {
                 data.collision = {
-                  collisionType: "blockCollision",
+                  collisionType: CollisionTypes.blockCollision,
                   target: collisionTarget?.value,
                   active: collisionActive?.value,
                   ddx: object.x,
@@ -399,7 +401,7 @@ export default async function loadTileMap(shouldAbortRef) {
         const collisionTarget = blockCollision.properties[1]?.value;
 
         let blockCollisionData = {
-          collisionType: "blockCollision",
+          collisionType: CollisionTypes.blockCollision,
           target: collisionTarget,
           active: collisionActive,
         };
@@ -425,11 +427,11 @@ export default async function loadTileMap(shouldAbortRef) {
 
         let jumpTriggerData = {
           triggerTypes: TriggerTypes.jumpTrigger,
-          actionToTrigger: null,
-          jumpDirection: "right",
+          stateToTrigger: null,
+          jumpDirection: 3,
           jumpMagnitude: 0,
           active: true,
-          target: "ally",
+          target: 1,
           dx: jumpTrigger.x,
           dy: jumpTrigger.y,
           width: jumpTrigger.width,
@@ -456,7 +458,9 @@ export default async function loadTileMap(shouldAbortRef) {
 
         for (const property of jumpTrigger.properties) {
           jumpTriggerData[property.name] =
-            property.name === "jumpMagnitude"
+            property.name === "jumpMagnitude" ||
+            property.name === "jumpDirection" ||
+            property.name === "target"
               ? parseFloat(property.value)
               : property.value;
         }
@@ -477,12 +481,12 @@ export default async function loadTileMap(shouldAbortRef) {
 
         let soundTriggerData = {
           triggerTypes: TriggerTypes.soundTrigger,
-          actionToTrigger: null,
+          stateToTrigger: null,
           filename: null,
           priority: 99,
           totalVariations: 0,
           active: true,
-          target: "all",
+          target: 3,
           dx: soundTrigger.x,
           dy: soundTrigger.y,
           width: soundTrigger.width,
@@ -509,7 +513,9 @@ export default async function loadTileMap(shouldAbortRef) {
 
         for (const property of soundTrigger.properties) {
           soundTriggerData[property.name] =
-            property.name === "priority" || property.name === "totalVariations"
+            property.name === "priority" ||
+            property.name === "totalVariations" ||
+            property.name === "target"
               ? parseInt(property.value)
               : property.value;
         }

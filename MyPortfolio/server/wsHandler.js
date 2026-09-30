@@ -1,7 +1,7 @@
 import { WebSocketServer } from "ws";
 import url from "url";
 
-import SocketMessageTypes from "../shared/Standards/StringKeys/SocketMessageTypes.json" with { type: "json" };
+import SocketMessageTypes from "../shared/Standards/SocketMessageTypes.json" with { type: "json" };
 import { Worker } from "worker_threads";
 
 import packageSocketMessageForSingleUser from "../shared/SignalsManagers/packageSocketMessage.js";

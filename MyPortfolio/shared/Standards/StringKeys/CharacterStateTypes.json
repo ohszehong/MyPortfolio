@@ -1,9 +1,0 @@
-{
-  "idling": "idling",
-  "walking": "walking",
-  "running": "running",
-  "jumping": "jumping",
-  "dying": "dying",
-  "receivingDamage": "receivingDamage",
-  "usingAbility": "usingAbility"
-}
