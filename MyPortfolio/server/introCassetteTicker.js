@@ -74,7 +74,15 @@ function updateGame(deltaTime) {
 
       if (currentClient) {
         //console.log("current client: ", currentClient.userId);
-        processTick_General(currentClient, deltaTime, true, false, true, false);
+        processTick_General(
+          currentClient,
+          deltaTime,
+          true,
+          false,
+          false,
+          true,
+          false,
+        );
         payloads[clientId] = currentClient.toJSON("client_payload");
       }
     });

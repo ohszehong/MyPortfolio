@@ -25,7 +25,10 @@ export default class ProjectileActor extends SummonedActor {
   angularSpeed = 1; //experimental, for now default to 1
   currentFacingAngleInRadians;
 
-  hasReachedTarget;
+  hasReachedTarget = false;
+
+  //prevent multi-hit
+  attackedPawnActorList = [];
 
   constructor(projectileMetaData) {
     const latestTravellingAnimationData =
@@ -161,27 +164,21 @@ export default class ProjectileActor extends SummonedActor {
       }
     }
 
-    let data = {
-      collisions: [],
-    };
-
-    let currentRenderData = null;
+    let currentActiveFrameData = null;
 
     if (!this.hasReachedTarget) {
       //travel here...
       if (this.travellingAnimations) {
-        currentRenderData =
+        currentActiveFrameData =
           this.travellingAnimations.getCurrentActiveFrameData(deltaTime);
-
-        data.collisions = currentRenderData.collisions;
       }
     } else {
       if (this.hitAnimations) {
-        currentRenderData =
+        currentActiveFrameData =
           this.hitAnimations.getCurrentActiveFrameData(deltaTime);
 
         //right now hit animation has no collision at all, it's just for the effect
-        if (!duration && currentRenderData.lastFrameIsCompleted) {
+        if (!duration && currentActiveFrameData.lastFrameIsCompleted) {
           this.shouldBeDestroyed = true;
         }
       } else {
@@ -189,40 +186,23 @@ export default class ProjectileActor extends SummonedActor {
       }
     }
 
-    if (currentRenderData) {
-      this.currentRenderData.animationSpritesheetDirection =
-        currentRenderData.animationSpritesheetDirection;
-      this.currentRenderData.animationSpritesheetName =
-        currentRenderData.animationSpritesheetName;
-      this.currentRenderData.frameData = currentRenderData.frameData;
+    if (currentActiveFrameData) {
+      this.updateCurrentRenderData(currentActiveFrameData);
+      return this.currentRenderData;
     }
 
-    return data;
+    return {
+      collisions: [],
+    };
   }
 
-  applyMovement(mapMaxWidth, mapMaxHeight, deltaTime) {
-    super.applyMovement(mapMaxWidth, mapMaxHeight, deltaTime);
+  clearProperties() {
+    super.clearProperties();
 
-    if (this.targetActor) {
-    } else if (this.targetPosition) {
-    }
-  }
-
-  _getAngleInRadiansTowardsAPosition(position) {
-    //TO-DO:
-    //current flow -> 1) we get the target first for projectile -> 2) then we get the rotation towards the target in applyMovement -> 3) then we apply the rotation on the attack collision during playAnimation
-    //something to consider -> right now there's only two points after the rotation, the bottom left (ddx, ddy) and the top right (ddx2, ddy2)
-    //we probably need to have 4 points instead for the AABB operations...
-    //also remember that our position starts from bottom left instead of top left, and moving downward is positive Y instead of negative Y...
-
-    //To be used in drawImage
-    function drawRotatedImage(ctx, img, x, y, angle) {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(angle);
-      // Draw image centered at the rotated origin
-      ctx.drawImage(img, -img.width / 2, -img.height / 2);
-      ctx.restore();
-    }
+    this.travellingAnimations = null;
+    this.hitAnimations = null;
+    this.angularSpeed = null;
+    this.currentFacingAngleInRadians = null;
+    this.hasReachedTarget = null;
   }
 }

@@ -156,6 +156,7 @@ export default class ClientStatesManager {
 
   //flags for tickers
   _checkBlockCollisionsFlag = false;
+  _checkAttackAndHealCollisionsFlag = false;
   _checkSoundTriggersFlag = false;
   _checkJumpTriggersFlag = false;
 
@@ -289,6 +290,7 @@ export default class ClientStatesManager {
               this,
               this.FIXED_DELTA_TIME_FROM_SERVER,
               this._checkBlockCollisionsFlag,
+              this._checkAttackAndHealCollisionsFlag,
               this._checkSoundTriggersFlag,
               this._checkJumpTriggersFlag,
               true,
@@ -363,6 +365,7 @@ export default class ClientStatesManager {
           this.signalsTransmitter = IntroCassetteSignalsTransmitter.bind(this);
 
           this._checkBlockCollisionsFlag = true;
+          this._checkAttackAndHealCollisionsFlag = false;
           this._checkSoundTriggersFlag = true;
           this._checkJumpTriggersFlag = true;
           break;
@@ -384,6 +387,7 @@ export default class ClientStatesManager {
             processTick_DefenseMarchSpecific.bind(this);
 
           this._checkBlockCollisionsFlag = false;
+          this._checkAttackAndHealCollisionsFlag = true;
           this._checkSoundTriggersFlag = true;
           this._checkJumpTriggersFlag = false;
 
@@ -1429,6 +1433,7 @@ export default class ClientStatesManager {
     this.gameMapBackgroundCanvasBaseHeight = 0;
 
     this._checkBlockCollisionsFlag = false;
+    this._checkAttackAndHealCollisionsFlag = false;
     this._checkSoundTriggersFlag = false;
     this._checkJumpTriggersFlag = false;
   }

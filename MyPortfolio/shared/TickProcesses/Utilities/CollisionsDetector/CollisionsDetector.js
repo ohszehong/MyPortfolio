@@ -15,61 +15,154 @@ import TargetTypes from "../../../Standards/TargetTypes.json" with { type: "json
  */
 
 /** @param {Collision} collisionA @param {Collision} collisionB */
-export function AIsCollidedWithB(
-  collisionA,
-  collisionB,
-  collisionDectectionAlgorithm = "AABB",
-) {
-  if (collisionDectectionAlgorithm === "AABB") {
-    if (!isEligible(collisionA, collisionB)) return;
+export function AIsCollidedWithB(collisionA, collisionB) {
+  if (!isEligible(collisionA, collisionB)) return;
 
-    //mapCollisions uses dx instead of ddx, same goes for dy
-    let _collisionA;
-    let _collisionB;
+  const [_collisionA, _collisionB] = _extractCollisionA_And_CollisionBForCalc(
+    collisionA,
+    collisionB,
+  );
 
-    if (collisionA.dx) {
-      _collisionA = {
-        dx: collisionA.dx,
-        dy: collisionA.dy,
-        dxEnd: collisionA.dx + collisionA.width,
-        dyEnd: collisionA.dy + collisionA.height,
-      };
-    } else {
-      _collisionA = {
-        dx: collisionA.source.position.dx + collisionA.ddx,
-        dy: collisionA.source.position.dy + collisionA.ddy,
-        dxEnd:
-          collisionA.source.position.dx + collisionA.ddx + collisionA.width,
-        dyEnd:
-          collisionA.source.position.dy + collisionA.ddy + collisionA.height,
-      };
+  //use OBB instead of AABB (if extracted collisions contained array meaning one of them or both are rotated)
+  if (Array.isArray(_collisionA)) {
+    const collisionACurrentFacingAngleInRadians = collisionA.source
+      .currentFacingAngleInRadians
+      ? collisionA.source.currentFacingAngleInRadians
+      : 0;
+    const collisionBCurrentFacingAngleInRadians = collisionB.source
+      .currentFacingAngleInRadians
+      ? collisionB.source.currentFacingAngleInRadians
+      : 0;
+
+    //only projectileActor has currentFacingAngleInRadians property for now
+    const axesOfCollisionA = _getAxes(collisionACurrentFacingAngleInRadians);
+    const axesOfCollisionB = _getAxes(collisionBCurrentFacingAngleInRadians);
+
+    const axesToTest = [...axesOfCollisionA, ...axesOfCollisionB];
+
+    for (const axis of axesToTest) {
+      if (!AIsOverlappedWithBOnAxis(_collisionA, _collisionB, axis)) {
+        return false;
+      }
     }
 
-    if (collisionB.dx) {
-      _collisionB = {
-        dx: collisionB.dx,
-        dy: collisionB.dy,
-        dxEnd: collisionB.dx + collisionB.width,
-        dyEnd: collisionB.dy + collisionB.height,
-      };
-    } else {
-      _collisionB = {
-        dx: collisionB.source.position.dx + collisionB.ddx,
-        dy: collisionB.source.position.dy + collisionB.ddy,
-        dxEnd:
-          collisionB.source.position.dx + collisionB.ddx + collisionB.width,
-        dyEnd:
-          collisionB.source.position.dy + collisionB.ddy + collisionB.height,
-      };
-    }
-
-    return (
-      _collisionA.dxEnd >= _collisionB.dx &&
-      _collisionA.dx <= _collisionB.dxEnd &&
-      _collisionA.dyEnd >= _collisionB.dy &&
-      _collisionA.dy <= _collisionB.dyEnd
-    );
+    return true;
   }
+
+  //AABB
+  return (
+    _collisionA.dxEnd >= _collisionB.dx &&
+    _collisionA.dx <= _collisionB.dxEnd &&
+    _collisionA.dyEnd >= _collisionB.dy &&
+    _collisionA.dy <= _collisionB.dyEnd
+  );
+}
+
+function _getAxes(collisionSourceCurrentFacingAngleInRadians) {
+  const cos = Math.cos(collisionSourceCurrentFacingAngleInRadians);
+  const sin = Math.sin(collisionSourceCurrentFacingAngleInRadians);
+
+  return [
+    { dx: cos, dy: sin },
+    { dx: -sin, dy: cos },
+  ];
+}
+
+function _projectCollisionOnAxis(extractedCollision, axis) {
+  let min = Infinity;
+  let max = -Infinity;
+
+  for (const corner of extractedCollision) {
+    const projection = corner.dx * axis.dx + corner.dy * axis.dy; //dot product
+    min = Math.min(min, projection);
+    max = Math.max(max, projection);
+  }
+
+  return { min, max };
+}
+
+function AIsOverlappedWithBOnAxis(
+  extractedCollisionA,
+  extractedCollisionB,
+  axis,
+) {
+  const projA = _projectCollisionOnAxis(extractedCollisionA, axis);
+  const projB = _projectCollisionOnAxis(extractedCollisionB, axis);
+
+  return projA.max >= projB.min && projB.max >= projA.min;
+}
+
+function _extractCollisionA_And_CollisionBForCalc(collisionA, collisionB) {
+  let _collisions = [];
+  let collisions = [collisionA, collisionB];
+
+  //the other collision that is compared with the rotated box should have all 4 corners too even if they are not rotated for OBB
+  for (let i = 0; i < collisions.length; i++) {
+    const collisionSourcePosition = collisions[i].source.position;
+
+    if (collisions[i].corners) {
+      _collisions[i] = [
+        {
+          dx: collisionSourcePosition.dx + collisions[i].corners[0][0],
+          dy: collisionSourcePosition.dy - collisions[i].corners[0][1],
+        },
+        {
+          dx: collisionSourcePosition.dx + collisions[i].corners[1][0],
+          dy: collisionSourcePosition.dy - collisions[i].corners[1][1],
+        },
+        {
+          dx: collisionSourcePosition.dx + collisions[i].corners[2][0],
+          dy: collisionSourcePosition.dy - collisions[i].corners[2][1],
+        },
+        {
+          dx: collisionSourcePosition.dx + collisions[i].corners[3][0],
+          dy: collisionSourcePosition.dy - collisions[i].corners[3][1],
+        },
+      ];
+    } else {
+      const dx = collisions[i].dx
+        ? collisions[i].dx
+        : collisionSourcePosition.dx + collisions[i].ddx;
+      const dy = collisions[i].dx
+        ? collisions[i].dy
+        : collisionSourcePosition.dy - collisions[i].ddy;
+      const dxEnd = collisions[i].dx
+        ? collisions[i].dx + collisions[i].width
+        : collisionSourcePosition.dx + collisions[i].ddx + collisions[i].width;
+      const dyEnd = collisions[i].dx
+        ? collisions[i].dy - collisions[i].height
+        : collisionSourcePosition.dy - collisions[i].ddy - collisions[i].height;
+
+      if (collisionA.rotated || collisionB.rotated) {
+        _collisions[i] = [
+          {
+            dx: dx,
+            dy: dy,
+          },
+          {
+            dx: dxEnd,
+            dy: dy,
+          },
+          {
+            dx: dxEnd,
+            dy: dyEnd,
+          },
+          {
+            dx: dx,
+            dy: dyEnd,
+          },
+        ];
+      } else {
+        _collisions[i] = {
+          dx: dx,
+          dy: dy,
+          dxEnd: dxEnd,
+          dyEnd: dyEnd,
+        };
+      }
+    }
+  }
+  return _collision;
 }
 
 /**
@@ -92,8 +185,8 @@ export function PawnActorIsOnTrigger(actor, trigger) {
   const actorBottomLeftDx =
     actorCollision.source.position.dx + actorCollision.ddx;
   const actorBottomLeftDy =
-    actorCollision.source.position.dy +
-    actorCollision.ddy +
+    actorCollision.source.position.dy -
+    actorCollision.ddy -
     actorCollision.height;
 
   //Only need to check the bottom left point of the actorCollision
@@ -101,7 +194,7 @@ export function PawnActorIsOnTrigger(actor, trigger) {
     actorBottomLeftDx >= trigger.dx &&
     actorBottomLeftDx <= trigger.dx + trigger.width &&
     actorBottomLeftDy >= trigger.dy &&
-    actorBottomLeftDy <= trigger.dy + trigger.height
+    actorBottomLeftDy <= trigger.dy - trigger.height
   );
 }
 

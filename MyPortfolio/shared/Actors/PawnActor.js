@@ -442,6 +442,9 @@ export default class PawnActor extends Actor {
   }
 
   playAnimation(deltaTime) {
+    //reset ability property in currentRenderData
+    this.currentRenderData.ability = null;
+
     if (this.activeStateAnimationName) {
       this._notUsingAbilityFor = Math.min(
         this.notUsingAbilityFor + deltaTime,
@@ -453,11 +456,7 @@ export default class PawnActor extends Actor {
           this.activeStateAnimationName
         ].getCurrentActiveFrameData(deltaTime);
 
-      this.currentRenderData.animationSpritesheetDirection =
-        currentActiveFrameData.animationSpritesheetDirection;
-      this.currentRenderData.animationSpritesheetName =
-        currentActiveFrameData.animationSpritesheetName;
-      this.currentRenderData.frameData = currentActiveFrameData.frameData;
+      this.updateCurrentRenderData(currentActiveFrameData);
 
       if (
         this.activeStateAnimationName != "walk" &&
@@ -473,10 +472,7 @@ export default class PawnActor extends Actor {
         }
       }
 
-      return {
-        collisions: currentActiveFrameData.collisions,
-        summons: currentActiveFrameData.summons,
-      };
+      return this.currentRenderData;
     } else if (Number.isFinite(this.activeAbilityIndex)) {
       const abilityName = Object.keys(this.Abilities)[this.activeAbilityIndex];
       const currentActiveFrameData =
@@ -484,11 +480,8 @@ export default class PawnActor extends Actor {
           deltaTime,
         );
 
-      this.currentRenderData.animationSpritesheetDirection =
-        currentActiveFrameData.animationSpritesheetDirection;
-      this.currentRenderData.animationSpritesheetName =
-        currentActiveFrameData.animationSpritesheetName;
-      this.currentRenderData.frameData = currentActiveFrameData.frameData;
+      this.updateCurrentRenderData(currentActiveFrameData);
+      this.currentRenderData.ability = this.Abilities[abilityName];
 
       //stop playing this animation in the next frame by changing state
       if (currentActiveFrameData.lastFrameIsCompleted) {
@@ -496,16 +489,31 @@ export default class PawnActor extends Actor {
         this._notUsingAbilityFor = 0;
       }
 
-      return {
-        collisions: currentActiveFrameData.collisions,
-        summons: currentActiveFrameData.summons,
-        ability: this.Abilities[abilityName],
-      };
+      return this.currentRenderData;
     }
 
     return {
       collisions: [],
       summons: [],
     };
+  }
+
+  clearProperties() {
+    super.clearProperties();
+
+    this.currentLevel = null;
+    this.maxLevel = null;
+    this.motionValues = null;
+    this.actorDefaultStats = null;
+    this.actorCurrentStats = null;
+    this.actorState = null;
+    this.stateAnimations = null;
+    this.activeStateAnimationName = null;
+    this.Abilities = null;
+    this.orderedAbilities = null;
+    this.previousActiveAbilityIndex = null;
+    this.activeAbilityIndex = null;
+    this.notUsingAbilityFor = null;
+    this.lockedTarget = null;
   }
 }

@@ -45,6 +45,7 @@ class DefenseMarchClientSimulator {
       this.gameStatesManager,
       totalDelta,
       false,
+      true,
       false,
       false,
       false,

@@ -2,33 +2,50 @@ import { AIsCollidedWithB } from "../CollisionsDetector/CollisionsDetector.js";
 import { playAudio, playAudioRandom } from "./audioHandlers.js";
 
 import playAllActorsAnimation from "./playAllActorsAnimation.js";
-import getAllPawnActors from "./getAllPawnActors.js";
+import getAllAlivePawnActors from "./getAllAlivePawnActors.js";
 import getAllNonActorBlockCollisions from "./getAllNonActorBlockCollisions.js";
-import handleSpawnCollisionsLifetime from "./handleSpawnCollisionsLifetime.js";
+import getAllSpawnedAttackAndHealCollisions from "./getAllSpawnedAttackAndHealCollisions.js";
+import {
+  handleSpawnCollisionsLifetime,
+  handleActorsLifetime,
+} from "./handleCollisionsAndActorsLifetime.js";
 
 import CharacterStateTypes from "../../../Standards/CharacterStateTypes.json" with { type: "json" };
 import CollisionTypes from "../../../Standards/CollisionTypes.json" with { type: "json" };
+import TargetTypes from "../../../Standards/TargetTypes.json" with { type: "json" };
+import SummonActorTypes from "../../../Standards/SummonActorTypes.json" with { type: "json" };
 
 export default function processTick_General(
   gameStatesManager,
   deltaTime,
   checkBlockCollisions = true,
+  checkAttackAndHealCollisions = false,
   checkSoundTriggers = false,
   checkJumpTriggers = false,
   clientSide = true,
 ) {
   handleSpawnCollisionsLifetime(gameStatesManager, deltaTime);
+  handleActorsLifetime(gameStatesManager);
 
   const allNonActorBlockCollisions =
     getAllNonActorBlockCollisions(gameStatesManager);
-  const allPawnActors = getAllPawnActors(gameStatesManager);
+  const allAlivePawnActors = getAllAlivePawnActors(gameStatesManager);
 
-  const allActors = allPawnActors.concat(
-    gameStatesManager.summonedActors,
+  const allActors = gameStatesManager.summonedActors.concat(
     gameStatesManager.tileActors,
+    allAlivePawnActors,
   );
 
   if (!allActors || !allActors.length <= 0) return;
+
+  if (checkAttackAndHealCollisions) {
+    const allAttackAndHealCollisions =
+      getAllSpawnedAttackAndHealCollisions(gameStatesManager);
+    _checkAttackAndHealCollisions(
+      allAlivePawnActors,
+      allAttackAndHealCollisions,
+    );
+  }
 
   _moveActorsAndCheckBlockCollisions(
     allActors,
@@ -40,14 +57,14 @@ export default function processTick_General(
 
   if (checkSoundTriggers && clientSide) {
     _checkMovingPawnActorsWithWalkingSoundTriggers(
-      allPawnActors,
+      allAlivePawnActors,
       gameStatesManager,
     );
   }
 
   if (checkJumpTriggers) {
     _checkPawnActorsWithJumpTriggers(
-      allPawnActors,
+      allAlivePawnActors,
       gameStatesManager,
       clientSide,
     );
@@ -65,7 +82,7 @@ function _moveActorsAndCheckBlockCollisions(
   checkBlockCollisions = true,
 ) {
   for (let actor of allActors) {
-    if (actor.actorState === CharacterStateTypes.dying) continue;
+    if (actor.actorState >= CharacterStateTypes.dying) continue;
 
     let stopChecking = false;
 
@@ -98,6 +115,145 @@ function _moveActorsAndCheckBlockCollisions(
       }
     }
   }
+}
+
+function _checkAttackAndHealCollisions(
+  allAlivePawnActors,
+  allAttackAndHealCollisions,
+) {
+  allAttackAndHealCollisions.forEach((collision) => {
+    const isSummonedActor = collision.abilityRef ? false : true;
+    const ref = isSummonedActor ? collision.source : collision.abilityRef;
+    const isSingleTarget = ref.singleTarget;
+
+    allAlivePawnActors.some((pawnActor) => {
+      //prevent projectile multi-hitting - other attacks are fine as their collision only appear once throughout their lifetime
+      if (
+        isSummonedActor &&
+        ref.summonActorType === SummonActorTypes.Projectile
+      ) {
+        if (ref.attackedPawnActorList.includes(pawnActor)) return false;
+      }
+
+      const shouldCheckWithTargetActorOnly = isSummonedActor
+        ? isSingleTarget && ref.homing
+        : isSingleTarget;
+
+      const skipTargetChecking = false;
+
+      if (shouldCheckWithTargetActorOnly) {
+        const collisionTargetActor = isSummonedActor
+          ? ref.targetActor
+          : collision.source.lockedTarget;
+
+        if (pawnActor != collisionTargetActor) {
+          //skip current actor
+          return false;
+        }
+
+        //skip target checking if it is the targeted actor
+        skipTargetChecking = true;
+      }
+
+      //if pawnActor is attacked to death mid-way during this loop, skip all pawn actors for single+homing projectile
+      if (pawnActor.actorState === CharacterStateTypes.dying) {
+        if (skipTargetChecking) {
+          return true;
+        }
+        return false;
+      }
+
+      if (!skipTargetChecking) {
+        const collisionTarget = isSummonedActor
+          ? ref.targetActor?.collision?.targetType
+          : ref.target;
+
+        if (collisionTarget != TargetTypes.all) {
+          if (collisionTarget != pawnActor.collision?.targetType) {
+            //skip
+            return false;
+          }
+        }
+      }
+
+      const actorCollision = pawnActor.collision;
+      if (actorCollision) {
+        if (AIsCollidedWithB(collision, actorCollision)) {
+          let scalarValue = 0;
+
+          if (ref) {
+            scalarValue = ref.scalarValue;
+          }
+
+          switch (collision.collisionType) {
+            case CollisionTypes.attackCollision:
+              const actorDefense = pawnActor.actorCurrentStats.defense;
+              pawnActor.actorCurrentStats.health -= Math.max(
+                1,
+                scalarValue - actorDefense,
+              );
+              if (pawnActor.actorCurrentStats.health <= 0) {
+                pawnActor.toDeathState(true);
+              }
+              break;
+
+            case CollisionTypes.healCollision:
+              const actorMaxHealth = pawnActor.actorDefaultStats.health;
+              pawnActor.actorCurrentStats.health = Math.min(
+                actorMaxHealth,
+                pawnActor.actorCurrentStats.health + scalarValue,
+              );
+              break;
+          }
+
+          //for homing projectile/single target melee attack
+          if (pawnActor === ref.targetActor) {
+            if (ref.hasReachedTarget === false && ref.homing) {
+              ref.hasReachedTarget = true;
+            }
+            if (isSingleTarget) {
+              return true;
+            }
+            return false;
+          }
+        }
+      }
+    });
+    //for non-singleTarget projectile, destroy it if it reached its targetPosition
+    if (isSummonedActor && ref.hasReachedTarget === false) {
+      //reference
+      // newCollisionData.corners = [
+      //         [collision.ddx, collision.ddy],
+      //         [ddx2, collision.ddy],
+      //         [ddx2, ddy2],
+      //         [collision.ddx, ddy2],
+      //       ].map(([x, y]) => [x * cos - y * sin, x * sin + y * cos]);
+      const [c0, c1, , c3] = collision.corners;
+
+      //two edges leaving corner c0
+      const ax = c1[0] - c0[0];
+      const ay = c1[1] - c0[1];
+      const bx = c3[0] - c0[0];
+      const by = c3[1] - c0[1];
+
+      //vector from c0 to the targetPosition
+      const dx = px - c0.x;
+      const dy = py - c0.y;
+
+      //dot product - imagine flattening the dx/dy vector to the two edges leaving corner c0 and check whether they are within the edges
+      const projA = dx * ax + dy * ay;
+      const projB = dx * bx + dy * by;
+
+      if (
+        projA >= 0 &&
+        projA <= ax * ax + ay * ay &&
+        projB >= 0 &&
+        projB <= bx * bx + by * by
+      ) {
+        ref.hasReachedTarget = true;
+      }
+    }
+  });
 }
 
 function _checkMovingPawnActorsWithWalkingSoundTriggers(
@@ -165,31 +321,6 @@ function _checkPawnActorsWithJumpTriggers(
           return true;
         }
       });
-    }
-  });
-}
-
-//TO-DO: continue the function below
-//also, remember to utilize the shouldBeDestroyed flag from playAnimation to destroy the summonedActor...
-//all attack and heal collisions are inserted into gameStatesManager.spawnCollisions (including SummonedActor instances)
-function _checkPawnActorsWithAttackAndHealCollisions(
-  allPawnActors,
-  gameStatesManager,
-) {
-  //summoned actors -> targetActor / targetPosition
-  //pawn actors -> lockedTarget
-
-  const spawnCollisions = gameStatesManager.spawnCollisions;
-
-  if (spawnCollisions?.length <= 0) return;
-
-  spawnCollisions.forEach((collision) => {
-    switch (collision.collisionType) {
-      case CollisionTypes.attackCollision:
-        break;
-
-      case CollisionTypes.healCollision:
-        break;
     }
   });
 }

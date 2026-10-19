@@ -60,6 +60,16 @@ export default class Actor {
 
   playAnimation(deltaTime) {}
 
+  updateCurrentRenderData(currentActiveFrameData) {
+    this.currentRenderData.animationSpritesheetDirection =
+      currentActiveFrameData.animationSpritesheetDirection;
+    this.currentRenderData.animationSpritesheetName =
+      currentActiveFrameData.animationSpritesheetName;
+    this.currentRenderData.frameData = currentActiveFrameData.frameData;
+    this.currentRenderData.collisions = currentActiveFrameData.collisions;
+    this.currentRenderData.summons = currentActiveFrameData.summons;
+  }
+
   recoverLatestAnimationsData(Animation, latestAnimationData) {
     Animation.prevFrameIndex = latestAnimationData.prevFrameIndex;
     Animation.currentFrameIndex = latestAnimationData.currentFrameIndex;
@@ -82,5 +92,22 @@ export default class Actor {
     };
 
     return data;
+  }
+
+  clearProperties() {
+    this.staticId = null;
+    this.tempId = null;
+    this.actorName = null;
+    this.position = null;
+    this.previousPosition = null;
+    this.collision = null;
+    this.selectable = null;
+    this.currentRenderData = null;
+    this.facingDirection = null;
+    this.shouldBeDestroyed = null;
+  }
+
+  destroy() {
+    this.clearProperties();
   }
 }

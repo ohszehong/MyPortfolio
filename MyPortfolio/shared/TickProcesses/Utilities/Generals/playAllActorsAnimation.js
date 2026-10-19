@@ -41,6 +41,14 @@ export default function playAllActorsAnimation(gameStatesManager, deltaTime) {
 
 function _handleCurrentFrameData(gameStatesManager, actor, currentFrameData) {
   if (currentFrameData.collisions?.length > 0) {
+    currentFrameData.collisions.forEach((collision) => {
+      collision.source = actor;
+
+      if (currentFrameData.ability) {
+        collision.abilityRef = currentFrameData.ability;
+      }
+    });
+
     let newCollisionsData = [];
 
     //rotate collision boxes based on projectile's currentFacingAngleInRadians
@@ -55,6 +63,7 @@ function _handleCurrentFrameData(gameStatesManager, actor, currentFrameData) {
             const ddx2 = collision.ddx + collision.width;
             const ddy2 = collision.ddy - collision.height;
 
+            newCollisionData.source = actor;
             newCollisionData.rotated = true;
 
             //these are just the offset, add origin actor position to the corners later
@@ -75,6 +84,7 @@ function _handleCurrentFrameData(gameStatesManager, actor, currentFrameData) {
         currentFrameData.collisions.forEach((collision) => {
           let newCollisionData;
 
+          newCollisionData.source = actor;
           newCollisionData.ddx = collision.ddx;
           newCollisionData.ddy = collision.ddy;
           newCollisionData.height = collision.height;

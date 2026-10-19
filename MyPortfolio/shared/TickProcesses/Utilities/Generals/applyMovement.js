@@ -1,5 +1,6 @@
 import FacingDirections from "../../../Standards/FacingDirections.json" with { type: "json" };
 import SummonActorTypes from "../../../Standards/SummonActorTypes.json" with { type: "json" };
+import CharacterStateTypes from "../../../Standards/CharacterStateTypes.json" with { type: "json" };
 
 export default function applyMovement(
   actor,
@@ -14,13 +15,25 @@ export default function applyMovement(
   actor.previousPosition = { ...actor.position };
 
   if (actor.summonActorType === SummonActorTypes.Projectile) {
+    if (actor.hasReachedTarget) return;
+
+    //for projectile, destroy itself if the targetActor is already dying and it is homing + singleTarget
     //only update target position if homing is true, otherwise use the same target position
     if (actor.homing) {
+      if (actor.singleTarget) {
+        if (
+          !actor.targetActor?.actorState ||
+          actor.targetActor?.actorState === CharacterStateTypes.dying
+        ) {
+          actor.hasReachedTarget = true;
+          return;
+        }
+      }
       actor.updateTargetPositionBasedOnTargetActor();
     }
 
     //check with summonedActor's targetActor dy instead of its targetPosition that has been centered
-    if (actor?.targetActor?.position?.dy != actor.from?.position?.dy) {
+    if (actor.targetActor?.position?.dy != actor.from?.position?.dy) {
       //rotate only if the target is not on the same path
       const currentTargetedPosition = actor.targetPosition;
 

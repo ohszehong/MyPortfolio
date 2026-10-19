@@ -93,27 +93,22 @@ export default class VFXHitBoxActor extends SummonedActor {
       }
     }
 
-    let data = {
-      collisions: [],
-    };
-
     if (this.VFXAnimations) {
-      const currentRenderData =
+      const currentActiveFrameData =
         this.VFXAnimations.getCurrentActiveFrameData(deltaTime);
 
-      data.collisions = currentRenderData.collisions;
-
-      if (!duration && currentRenderData.lastFrameIsCompleted) {
+      if (!duration && currentActiveFrameData.lastFrameIsCompleted) {
         this.shouldBeDestroyed = true;
       }
 
-      this.currentRenderData.animationSpritesheetDirection =
-        currentRenderData.animationSpritesheetDirection;
-      this.currentRenderData.animationSpritesheetName =
-        currentRenderData.animationSpritesheetName;
-      this.currentRenderData.frameData = currentRenderData.frameData;
-
-      return data;
+      this.updateCurrentRenderData(currentActiveFrameData);
+      return this.currentRenderData;
     }
+  }
+
+  clearProperties() {
+    super.clearProperties();
+
+    this.VFXAnimations = null;
   }
 }

@@ -23,11 +23,11 @@ export default class SummonedActor extends Actor {
   }
 
   //  "scalingValue": 1.1,
-  //       "scalingType": "attack",
-  //       "range": 40,
-  //       "targetDistancePriority": 0,
-  //       "target": 1,
-  //       "singleTarget": false,
+  //  "scalingType": "attack",
+  //  "range": 40,
+  //  "targetDistancePriority": 0,
+  //  "target": 1,
+  //  "singleTarget": false,
 
   /** @type {PawnActor} */
   from;
@@ -43,14 +43,13 @@ export default class SummonedActor extends Actor {
 
   scalingValue;
   scalingType;
+  scalarValue;
 
   actorDefaultStats = {
-    attack: 0,
     movespeed: 0,
   };
 
   actorCurrentStats = {
-    attack: 0,
     movespeed: 0,
   };
 
@@ -94,8 +93,7 @@ export default class SummonedActor extends Actor {
     if (baseScalarValue) {
       const totalScalarValue = baseScalarValue * scalingValue;
 
-      this.actorDefaultStats.attack = totalScalarValue;
-      this.actorCurrentStats.attack = totalScalarValue;
+      this.scalarValue = totalScalarValue;
     }
 
     this.targetActor = targetActor;
@@ -135,5 +133,22 @@ export default class SummonedActor extends Actor {
 
   applyMovement(mapMaxWidth, mapMaxHeight, deltaTime) {
     applyMovement(this, mapMaxWidth, mapMaxHeight, deltaTime);
+  }
+
+  clearProperties() {
+    super.clearProperties();
+
+    this.from = null;
+    this.summonActorType = null;
+    this.targetActor = null;
+    this.targetPosition = null;
+    this.singleTarget = null;
+    this.scalingValue = null;
+    this.scalingType = null;
+    this.scalarValue = null;
+    this.actorDefaultStats = null;
+    this.actorCurrentStats = null;
+    this.homing = null;
+    this.duration = null;
   }
 }
