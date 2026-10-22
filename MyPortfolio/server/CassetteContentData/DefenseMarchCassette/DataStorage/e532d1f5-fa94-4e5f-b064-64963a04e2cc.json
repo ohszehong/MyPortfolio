@@ -1,0 +1,507 @@
+{
+  "cameraPosition": { "x": 0, "y": 0 },
+  "playerActor": null,
+  "allyPawnActors": [],
+  "enemyPawnActors": [],
+  "summonedActors": [],
+  "pawnActorsBlobDictionary": {
+    "cleric": {
+      "staticId": 0,
+      "selectable": true,
+      "targetType": 1,
+      "motionValues": [10, 1, 0, 0, 0, 20],
+      "defaultStats": {
+        "health": 100,
+        "defense": 5,
+        "attack": 1,
+        "movespeed": 50,
+        "attackspeed": 2,
+        "healing": 20
+      },
+      "maxLevel": 50,
+      "goldCoins": 250,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 9,
+        "ddy": 1,
+        "width": 13,
+        "height": 30,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "elfRangerRookie": {
+      "staticId": 1,
+      "selectable": true,
+      "targetType": 1,
+      "motionValues": [15, 2, 5, 0, 0, 0],
+      "defaultStats": {
+        "health": 80,
+        "defense": 10,
+        "attack": 15,
+        "movespeed": 60,
+        "attackspeed": 1,
+        "healing": 0
+      },
+      "maxLevel": 50,
+      "goldCoins": 120,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 3,
+        "ddy": 5,
+        "width": 12,
+        "height": 33,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "elfRangerVeteran": {
+      "staticId": 2,
+      "selectable": true,
+      "targetType": 1,
+      "motionValues": [25, 5, 15, 0, 0, 0],
+      "defaultStats": {
+        "health": 200,
+        "defense": 30,
+        "attack": 50,
+        "movespeed": 100,
+        "attackspeed": 0.5,
+        "healing": 0
+      },
+      "maxLevel": 50,
+      "goldCoins": 800,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 15,
+        "ddy": 1,
+        "width": 15,
+        "height": 39,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "fowlGladiator": {
+      "staticId": 3,
+      "selectable": true,
+      "targetType": 1,
+      "motionValues": [25, 1, 20, 0, 0, 0],
+      "defaultStats": {
+        "health": 130,
+        "defense": 20,
+        "attack": 20,
+        "movespeed": 50,
+        "attackspeed": 1.5,
+        "healing": 0
+      },
+      "maxLevel": 50,
+      "goldCoins": 160,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 28,
+        "ddy": 37,
+        "width": 15,
+        "height": 27,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "golemSentinel": {
+      "staticId": 4,
+      "selectable": true,
+      "targetType": 1,
+      "motionValues": [50, 10, 2, 0, 0, 0],
+      "defaultStats": {
+        "health": 300,
+        "defense": 50,
+        "attack": 10,
+        "movespeed": 45,
+        "attackspeed": 2,
+        "healing": 0
+      },
+      "maxLevel": 50,
+      "goldCoins": 300,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 15,
+        "ddy": 15,
+        "width": 29,
+        "height": 41,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "knight": {
+      "staticId": 5,
+      "selectable": true,
+      "targetType": 1,
+      "motionValues": [30, 10, 20, 0, 0, 0],
+      "defaultStats": {
+        "health": 270,
+        "defense": 70,
+        "attack": 100,
+        "movespeed": 120,
+        "attackspeed": 0.5,
+        "healing": 0
+      },
+      "maxLevel": 50,
+      "goldCoins": 900,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 49,
+        "ddy": 44,
+        "width": 13,
+        "height": 36,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "wizard": {
+      "staticId": 6,
+      "selectable": true,
+      "targetType": 1,
+      "motionValues": [15, 5, 35, 0, 0, 0],
+      "defaultStats": {
+        "health": 180,
+        "defense": 40,
+        "attack": 120,
+        "movespeed": 65,
+        "attackspeed": 2,
+        "healing": 0
+      },
+      "maxLevel": 50,
+      "goldCoins": 850,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 4,
+        "ddy": 4,
+        "width": 14,
+        "height": 36,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "arcaneArcher": {
+      "staticId": 7,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [5, 1, 5, 0, 0, 0],
+      "defaultStats": {
+        "health": 20,
+        "defense": 10,
+        "attack": 10,
+        "movespeed": 50,
+        "attackspeed": 1,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 80,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 21,
+        "ddy": 16,
+        "width": 23,
+        "height": 33,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "bat": {
+      "staticId": 8,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [10, 1, 5, 0, 0, 0],
+      "defaultStats": {
+        "health": 30,
+        "defense": 5,
+        "attack": 15,
+        "movespeed": 100,
+        "attackspeed": 0.5,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 50,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 23,
+        "ddy": 21,
+        "width": 18,
+        "height": 20,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "evilWizard": {
+      "staticId": 9,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [10, 2, 15, 0, 0, 0],
+      "defaultStats": {
+        "health": 25,
+        "defense": 10,
+        "attack": 20,
+        "movespeed": 45,
+        "attackspeed": 2,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 120,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 16,
+        "ddy": 2,
+        "width": 12,
+        "height": 43,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "ancientGolem": {
+      "staticId": 10,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [20, 5, 2, 0, 0, 0],
+      "defaultStats": {
+        "health": 150,
+        "defense": 30,
+        "attack": 10,
+        "movespeed": 50,
+        "attackspeed": 2,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 200,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 9,
+        "ddy": 6,
+        "width": 39,
+        "height": 44,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "hermitCrab": {
+      "staticId": 11,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [1, 10, 2, 0, 0, 0],
+      "defaultStats": {
+        "health": 20,
+        "defense": 100,
+        "attack": 20,
+        "movespeed": 60,
+        "attackspeed": 1,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 220,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 8,
+        "ddy": 6,
+        "width": 26,
+        "height": 31,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "skullWolf": {
+      "staticId": 12,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [5, 2, 15, 0, 0, 0],
+      "defaultStats": {
+        "health": 20,
+        "defense": 10,
+        "attack": 35,
+        "movespeed": 120,
+        "attackspeed": 0.5,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 75,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 3,
+        "ddy": 3,
+        "width": 31,
+        "height": 14,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "battlemage": {
+      "staticId": 13,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [20, 5, 15, 0, 0, 0],
+      "defaultStats": {
+        "health": 800,
+        "defense": 20,
+        "attack": 60,
+        "movespeed": 50,
+        "attackspeed": 1.5,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 650,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 28,
+        "ddy": 48,
+        "width": 21,
+        "height": 47,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "demonSlime": {
+      "staticId": 14,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [50, 0, 10, 0, 0, 0],
+      "defaultStats": {
+        "health": 2000,
+        "defense": 0,
+        "attack": 100,
+        "movespeed": 60,
+        "attackspeed": 2,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 800,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 104,
+        "ddy": 39,
+        "width": 77,
+        "height": 75,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "fireWorm": {
+      "staticId": 15,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [15, 0, 10, 0, 0, 0],
+      "defaultStats": {
+        "health": 500,
+        "defense": 10,
+        "attack": 160,
+        "movespeed": 65,
+        "attackspeed": 1.5,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 1150,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 8,
+        "ddy": 29,
+        "width": 40,
+        "height": 45,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "huntress": {
+      "staticId": 16,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [15, 5, 10, 0, 0, 0],
+      "defaultStats": {
+        "health": 700,
+        "defense": 30,
+        "attack": 130,
+        "movespeed": 110,
+        "attackspeed": 0.75,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 1300,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 65,
+        "ddy": 57,
+        "width": 22,
+        "height": 40,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    },
+    "lostWarrior": {
+      "staticId": 17,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [10, 10, 10, 0, 0, 0],
+      "defaultStats": {
+        "health": 500,
+        "defense": 50,
+        "attack": 200,
+        "movespeed": 100,
+        "attackspeed": 0.5,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 1600,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 68,
+        "ddy": 55,
+        "width": 24,
+        "height": 47,
+        "active": true
+      },
+      "currentLevel": 1
+    },
+    "rogueSamurai": {
+      "staticId": 18,
+      "selectable": true,
+      "targetType": 2,
+      "motionValues": [10, 1, 10, 0, 0, 0],
+      "defaultStats": {
+        "health": 650,
+        "defense": 15,
+        "attack": 160,
+        "movespeed": 120,
+        "attackspeed": 0.25,
+        "healing": 0
+      },
+      "maxLevel": 100,
+      "goldCoins": 2000,
+      "collision": {
+        "collisionType": 0,
+        "ddx": 1,
+        "ddy": 7,
+        "width": 17,
+        "height": 34,
+        "active": true,
+        "target": 0
+      },
+      "currentLevel": 1
+    }
+  },
+  "goldCoins": 500,
+  "currentTotalUnits": 0,
+  "maxTotalUnits": 50,
+  "currentWave": 1,
+  "maxWaves": 100
+}

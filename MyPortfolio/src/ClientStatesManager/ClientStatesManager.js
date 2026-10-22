@@ -1,32 +1,22 @@
-import CharacterStateTypes from "../../shared/Standards/CharacterStateTypes.json" with { type: "json" };
 import FacingDirections from "../../shared/Standards/FacingDirections.json" with { type: "json" };
 import TargetTypes from "../../shared/Standards/TargetTypes.json" with { type: "json" };
-import CollisionTypes from "../../shared/Standards/CollisionTypes.json" with { type: "json" };
 import SocketMessageTypes from "../../shared/Standards/SocketMessageTypes.json" with { type: "json" };
 import DefenseMarchSignalTypes from "../../shared/Standards/DefenseMarchSignalTypes.json" with { type: "json" };
 import SummonActorTypes from "../../shared/Standards/SummonActorTypes.json" with { type: "json" };
 
-import PawnActor from "../../shared/Actors/PawnActor.js";
-import TileActor from "../../shared/Actors/TileActor.js";
-
 import IntroCassetteSignalsTransmitter from "./UserSignalsTransmitter/IntroCassetteSignalsTransmitter.js";
 import DefenseMarchCassetteSignalsTransmitter from "./UserSignalsTransmitter/DefenseMarchCassetteSignalsTransmitter.js";
 
-import {
-  AIsCollidedWithB,
-  PawnActorIsOnTrigger,
-} from "../../shared/TickProcesses/Utilities/CollisionsDetector/CollisionsDetector.js";
 import processTick_General from "../../shared/TickProcesses/Utilities/Generals/processTick_General.js";
-
 import processTick_DefenseMarchSpecific from "../../shared/TickProcesses/Utilities/DefenseMarch/processTick_DefenseMarchSpecific.js";
 
-import Block from "../HUDs/Block.js";
 import Label from "../HUDs/Label.js";
 import Button from "../HUDs/Button.js";
 import UImage from "../HUDs/Image.js";
 import rootHUD from "../HUDs/rootHUD.js";
 import childHUD from "../HUDs/childHUD.js";
 
+import loadExistingGameStates from "../../shared/TickProcesses/Utilities/Generals/Loader/loadExistingGameStates.js";
 import loadImage from "../Utilities/loadImage.js";
 import WalkPath from "../HUDs/WalkPath.js";
 
@@ -353,7 +343,7 @@ export default class ClientStatesManager {
         //console.log("response data: ", response.data);
 
         //initialize states data
-        await this.initRawStatesData(response.data);
+        await loadExistingGameStates(this, response.data, true);
 
         //sort all the actors by y position
         this.sortAllActorsByY();
@@ -1479,6 +1469,10 @@ export default class ClientStatesManager {
 
         const renderLastTileActors = [];
 
+        const renderLastHealthBars = [];
+        const HEALTHBAR_WIDTH = 35;
+        const HEALTHBAR_HEIGHT = 6;
+
         //draw all other actors
         this.allActorsSortedByY.forEach((actor) => {
           //if actor is a TileActor, right now only tileActor has the property of renderLast
@@ -1536,14 +1530,48 @@ export default class ClientStatesManager {
                   currentFrameSpritesheetOffset.height,
                 );
                 context2d.restore();
-              } else if (
-                actor.summonActorType === SummonActorTypes.VFXHitBox &&
-                actor.position
-              ) {
-                const actualWidthToTarget =
-                  actor.currentRenderData?.frameData?.spritesheetOffset
-                    ?.currentActualWidth;
+              } else if (actor.summonActorType === SummonActorTypes.VFXHitBox) {
+                if (actor.position) {
+                  const actualWidthToTarget =
+                    actor.currentRenderData?.frameData?.spritesheetOffset
+                      ?.currentActualWidth;
 
+                  context2d.drawImage(
+                    actorBitmap,
+                    currentFrameSpritesheetOffset.x,
+                    currentFrameSpritesheetOffset.y,
+                    currentFrameSpritesheetOffset.width,
+                    currentFrameSpritesheetOffset.height,
+                    actor.position.dx - this.cameraPosition.x,
+                    actor.position.dy -
+                      this.cameraPosition.y -
+                      currentFrameSpritesheetOffset.height,
+                    actualWidthToTarget,
+                    currentFrameSpritesheetOffset.height,
+                  );
+                } else {
+                  const hitboxDy =
+                    actor.targetActor?.position?.dy -
+                    currentFrameSpritesheetOffset.height;
+
+                  if (!isNaN(hitboxDy)) {
+                    context2d.drawImage(
+                      actorBitmap,
+                      currentFrameSpritesheetOffset.x,
+                      currentFrameSpritesheetOffset.y,
+                      currentFrameSpritesheetOffset.width,
+                      currentFrameSpritesheetOffset.height,
+                      actor.targetPosition.dx -
+                        this.cameraPosition.x -
+                        currentFrameSpritesheetOffset.width / 2,
+                      hitboxDy - this.cameraPosition.y,
+                      currentFrameSpritesheetOffset.width,
+                      currentFrameSpritesheetOffset.height,
+                    );
+                  }
+                }
+              } else {
+                //draw normally, for non-rotated projectiles
                 context2d.drawImage(
                   actorBitmap,
                   currentFrameSpritesheetOffset.x,
@@ -1554,22 +1582,6 @@ export default class ClientStatesManager {
                   actor.position.dy -
                     this.cameraPosition.y -
                     currentFrameSpritesheetOffset.height,
-                  actualWidthToTarget,
-                  currentFrameSpritesheetOffset.height,
-                );
-              } else {
-                context2d.drawImage(
-                  actorBitmap,
-                  currentFrameSpritesheetOffset.x,
-                  currentFrameSpritesheetOffset.y,
-                  currentFrameSpritesheetOffset.width,
-                  currentFrameSpritesheetOffset.height,
-                  actor.targetedPosition.dx -
-                    this.cameraPosition.x -
-                    currentFrameSpritesheetOffset.width / 2,
-                  actor.targetedPosition.dy -
-                    this.cameraPosition.y -
-                    currentFrameSpritesheetOffset.height / 2,
                   currentFrameSpritesheetOffset.width,
                   currentFrameSpritesheetOffset.height,
                 );
@@ -1601,13 +1613,30 @@ export default class ClientStatesManager {
                 currentFrameSpritesheetOffset.width,
                 currentFrameSpritesheetOffset.height,
               );
+
+              //store healthbar hud info to be drawn later
+              const currentHealthPercentage =
+                actor.actorCurrentStats.health / actor.actorDefaultStats.health;
+              const fillWidth = HEALTHBAR_WIDTH * currentHealthPercentage;
+
+              const currentActorHealthBarHUDInfo = {
+                dx:
+                  actor.position.dx -
+                  this.cameraPosition.x -
+                  currentFrameSpritesheetOffset.width / 2,
+                dy:
+                  actor.position.dy -
+                  this.cameraPosition.y -
+                  currentFrameSpritesheetOffset.height -
+                  HEALTHBAR_HEIGHT -
+                  5,
+                fillWidth: fillWidth,
+              };
+
+              renderLastHealthBars.push(currentActorHealthBarHUDInfo);
             }
           }
         });
-
-        if (this.gameRootHUD) {
-          this.gameRootHUD.drawHUDs(context2d);
-        }
 
         renderLastTileActors.forEach((actor) => {
           /** @type {ImageBitmap} */
@@ -1621,6 +1650,34 @@ export default class ClientStatesManager {
             actor.position.dy - this.cameraPosition.y,
           );
         });
+
+        if (this.gameRootHUD) {
+          this.gameRootHUD.drawHUDs(context2d);
+
+          if (renderLastHealthBars.length > 0) {
+            context2d.save();
+            renderLastHealthBars.forEach((HUDInfo) => {
+              //border
+              context2d.strokeStyle = "black";
+              context2d.lineWidth = 2;
+              context2d.strokeRect(
+                HUDInfo.dx,
+                HUDInfo.dy,
+                HEALTHBAR_WIDTH,
+                HEALTHBAR_HEIGHT,
+              );
+
+              context2d.fillStyle = "red";
+              context2d.fillRect(
+                HUDInfo.dx,
+                HUDInfo.dy,
+                HUDInfo.fillWidth,
+                HEALTHBAR_HEIGHT,
+              );
+            });
+            context2d.restore();
+          }
+        }
       }
     } catch (err) {
       console.log("drawContentCanvas failed: ", err);
@@ -1640,258 +1697,6 @@ export default class ClientStatesManager {
       img.onerror = reject;
       img.src = `data:image/png;base64,${base64BlobString}`;
     });
-  }
-
-  async convertBlobToBitmap(base64BlobString) {
-    const binaryString = atob(base64BlobString);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-
-    const blob = new Blob([bytes], { type: "image/png" });
-    const bitmap = await createImageBitmap(blob);
-
-    return bitmap;
-  }
-
-  async initRawStatesData(rawStatesData) {
-    if (rawStatesData.userId) {
-      this.userId = rawStatesData.userId;
-    }
-
-    this.goldCoins = rawStatesData.goldCoins;
-
-    const createPawnActorFromRawStates = (rawActorStates) => {
-      const pawnActor = PawnActor.constructExistingActor(
-        rawActorStates,
-        rawStatesData.pawnActorsBlobDictionary[rawActorStates.actorName],
-      );
-
-      pawnActor.facingDirection = rawActorStates.facingDirection;
-
-      return pawnActor;
-    };
-
-    if (rawStatesData.playerActor) {
-      this.playerActor = createPawnActorFromRawStates(
-        rawStatesData.playerActor,
-      );
-    }
-
-    if (rawStatesData.allyPawnActors?.length > 0) {
-      rawStatesData.allyPawnActors.forEach((rawActorStates) => {
-        this.allyPawnActors.push(createPawnActorFromRawStates(rawActorStates));
-      });
-    }
-
-    if (rawStatesData.enemyPawnActors?.length > 0) {
-      rawStatesData.enemyPawnActors.forEach((rawActorStates) => {
-        this.enemyPawnActors.push(createPawnActorFromRawStates(rawActorStates));
-      });
-    }
-
-    const createSummonedActorFromRawStates = (rawSummonedActorStates) => {
-      let metaData = null;
-
-      switch (rawSummonedActorStates.summonActorType) {
-        case SummonActorTypes.Projectile:
-          break;
-
-        case SummonActorTypes.VFXHitBox:
-          break;
-      }
-    };
-    //TO-DO: init for existing summonedActors
-    //we can't really differentiate between projectiles and VFXs after they are converted to JSON and saved in the file
-    //therefore the JSON has a property called summonActorType which is a number
-    //0 - projectile, 1 - VFX
-
-    if (rawStatesData.tileActors?.length > 0) {
-      rawStatesData.tileActors.forEach((rawActorStates) => {
-        this.tileActors.push(
-          new TileActor(
-            rawActorStates.tempId,
-            rawActorStates.position,
-            rawActorStates.tiles,
-            rawActorStates.renderLast,
-            rawActorStates.selectable,
-          ),
-        );
-      });
-    }
-
-    this.selectedObject = rawStatesData.selectedObject;
-
-    this.cameraPosition = rawStatesData.cameraPosition;
-    this.cursorPosition = rawStatesData.cursorPosition;
-
-    this.gameMapBackground = await this.convertBlobToBitmap(
-      rawStatesData.gameMapBackgroundBlob,
-    ).catch((err) => null);
-
-    if (this.gameMapBackground) {
-      this.gameMapBackgroundCanvasBaseWidth = this.gameMapBackground.width;
-      this.gameMapBackgroundCanvasBaseHeight = this.gameMapBackground.height;
-    }
-
-    this.mapCollisions = [...rawStatesData.mapCollisions];
-    this.mapJumpTriggers = [...rawStatesData.mapJumpTriggers];
-
-    if (this.cassetteName) {
-      rawStatesData.mapSoundTriggers.forEach((trigger) => {
-        this.mapSoundTriggers.push({
-          stateToTrigger: trigger.stateToTrigger,
-          filename: trigger.filename,
-          priority: trigger.priority,
-          active: trigger.active,
-          target: trigger.target,
-          dx: trigger.dx,
-          dy: trigger.dy,
-          width: trigger.width,
-          height: trigger.height,
-        });
-
-        //only add once, don't need to add if they are already exist
-        if (
-          !this.tileSoundsBlobDictionary[trigger.stateToTrigger]?.[
-            trigger.filename
-          ]
-        ) {
-          const audios = [];
-          for (let i = 0; i < trigger.totalVariations; i++) {
-            const audio = new Audio(
-              `/${this.cassetteName}/TilesSFX/${trigger.stateToTrigger}/${trigger.filename}/${i}.wav`,
-            );
-            audios.push(audio);
-          }
-
-          this.tileSoundsBlobDictionary[trigger.stateToTrigger] = {
-            ...this.tileSoundsBlobDictionary[trigger.stateToTrigger],
-            [trigger.filename]: {
-              audios: audios,
-            },
-          };
-        }
-      });
-
-      this.mapSoundTriggers.sort((triggerA, triggerB) => {
-        return triggerA.priority - triggerB.priority;
-      });
-    }
-
-    const actorNames = Object.keys(rawStatesData.pawnActorsBlobDictionary);
-
-    if (actorNames) {
-      const entries = await Promise.all(
-        actorNames.map(async (actorName) => {
-          // defaultActorImage: null,
-          // animations: {},
-          // animationBlobs: {},
-          // selectable: false,
-          // targetType: 3,
-          // defaultStats: {},
-          // motionValues: [],
-          // maxLevel: 99
-          // currentLevel: 1
-
-          const blobStruct = {
-            ...rawStatesData.pawnActorsBlobDictionary[actorName],
-          };
-
-          await this.initActorAudios(actorName, "jump");
-          await this.initActorAudios(actorName, "receiveDamage");
-          await this.initActorAudios(actorName, "attack1");
-          await this.initActorAudios(actorName, "attack2");
-          await this.initActorAudios(actorName, "attack3");
-          await this.initActorAudios(actorName, "heal");
-
-          if (blobStruct.defaultActorImage) {
-            blobStruct.defaultActorImage = await this.convertBlobToBitmap(
-              actorBlobDictionary.defaultActorImage,
-            );
-          }
-
-          if (blobStruct.animationBlobs) {
-            const animationNames = Object.keys(blobStruct.animationBlobs);
-
-            const entries = await Promise.all(
-              animationNames.map(async (animationName) => {
-                const animationBitmap = await this.convertBlobToBitmap(
-                  blobStruct.animationBlobs[animationName],
-                );
-
-                return [animationName, animationBitmap];
-              }),
-            );
-
-            entries.forEach(([animationName, animationBitmap]) => {
-              blobStruct.animationBlobs[animationName] = animationBitmap;
-            });
-          }
-
-          return [actorName, blobStruct];
-        }),
-      );
-
-      entries.forEach(([actorName, blobStruct]) => {
-        this.pawnActorsBlobDictionary[actorName] = blobStruct;
-      });
-
-      console.log("pawnActorsBlobDictionary: ", this.pawnActorsBlobDictionary);
-    }
-
-    this.summonActorsBlobDictionary = {
-      ...rawStatesData.summonActorsBlobDictionary,
-    };
-
-    for (const [summonActorsType, summonActorsData] of Object.entries(
-      this.summonActorsBlobDictionary,
-    )) {
-      if (summonActorsData) {
-        for (const [summonActorName, summonActorData] of Object.entries(
-          summonActorsData,
-        )) {
-          this.summonActorsBlobDictionary[summonActorsType][
-            summonActorName
-          ].animationBlobs = await this.convertBlobToBitmap(
-            summonActorData.animationBlobs,
-          );
-        }
-      }
-    }
-
-    console.log(
-      "summonActorsBlobDictionary: ",
-      this.summonActorsBlobDictionary,
-    );
-
-    const tileGids = Object.keys(rawStatesData.tileActorsBlobDictionary);
-
-    if (tileGids) {
-      const entries = await Promise.all(
-        tileGids.map(async (tileGid) => {
-          const tileCanvas = await this.convertBlobToBitmap(
-            rawStatesData.tileActorsBlobDictionary[tileGid],
-          );
-
-          return [tileGid, tileCanvas];
-        }),
-      );
-
-      entries.forEach(([tileGid, tileCanvas]) => {
-        this.tileActorsBlobDictionary[tileGid] = tileCanvas;
-      });
-    }
-
-    //for DefenseMarch
-    this.allySummonLocations = rawStatesData.allySummonLocations;
-    this.enemySummonLocations = rawStatesData.enemySummonLocations;
-
-    console.log("ally summon locations: ", this.allySummonLocations);
-    console.log("enemy summon locations: ", this.enemySummonLocations);
   }
 
   initWebSocket() {
@@ -2229,12 +2034,14 @@ export default class ClientStatesManager {
       ...this.allActorsSortedByY,
       ...this.allyPawnActors,
       ...this.enemyPawnActors,
-      ...this.summonedActors,
       ...this.tileActors,
     ];
     this.allActorsSortedByY.sort((a, b) => {
       return a.position.y - b.position.y;
     });
+
+    //summonedActors always at last
+    this.allActorsSortedByY.push(...this.summonedActors);
   }
 
   sendMessageToServer(messageType, message = "") {

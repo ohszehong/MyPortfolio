@@ -1,6 +1,7 @@
-import SummonedActor from "./SummonedActor";
-import DirectionDependentAnimation from "../Animation/DirectionDependentAnimation";
+import SummonedActor from "./SummonedActor.js";
+import DirectionDependentAnimation from "../Animation/DirectionDependentAnimation.js";
 import SummonActorTypes from "../Standards/SummonActorTypes.json" with { type: "json" };
+
 export default class VFXHitBoxActor extends SummonedActor {
   toJSON() {
     let data = super.toJSON();
@@ -86,9 +87,9 @@ export default class VFXHitBoxActor extends SummonedActor {
   }
 
   playAnimation(deltaTime) {
-    if (duration) {
-      duration -= deltaTime;
-      if (duration <= 0) {
+    if (this.duration) {
+      this.duration -= deltaTime;
+      if (this.duration <= 0) {
         this.shouldBeDestroyed = true;
       }
     }
@@ -97,13 +98,16 @@ export default class VFXHitBoxActor extends SummonedActor {
       const currentActiveFrameData =
         this.VFXAnimations.getCurrentActiveFrameData(deltaTime);
 
-      if (!duration && currentActiveFrameData.lastFrameIsCompleted) {
+      if (!this.duration && currentActiveFrameData.lastFrameIsCompleted) {
         this.shouldBeDestroyed = true;
       }
-
       this.updateCurrentRenderData(currentActiveFrameData);
       return this.currentRenderData;
     }
+
+    return {
+      collisions: [],
+    };
   }
 
   clearProperties() {

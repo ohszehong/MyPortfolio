@@ -47,7 +47,10 @@ export default class Actor {
 
     this.actorName = actorName;
     this.facingDirection = facingDirection;
-    this.position = { ...position };
+
+    if (position) {
+      this.position = { ...position };
+    }
 
     if (collision && Object.keys(collision).length > 0) {
       this.collision = { source: this, ...collision };

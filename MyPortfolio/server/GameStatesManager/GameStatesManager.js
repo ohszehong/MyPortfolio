@@ -1,4 +1,4 @@
-import fs, { readFileSync } from "fs";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { randomUUID } from "crypto";
@@ -6,10 +6,11 @@ import { Canvas, createCanvas } from "canvas";
 
 import FacingDirections from "../../shared/Standards/FacingDirections.json" with { type: "json" };
 import TargetTypes from "../../shared/Standards/TargetTypes.json" with { type: "json" };
-import CharacterStateTypes from "../../shared/Standards/CharacterStateTypes.json" with { type: "json" };
-import CollisionTypes from "../../shared/Standards/CollisionTypes.json" with { type: "json" };
+
 import loadTileMap from "../Utilities/TileMapLoader/loadTileMap.js";
 import loadImage from "../Utilities/ImgLoader/loadImage.js";
+import loadExistingGameStates from "../../shared/TickProcesses/Utilities/Generals/Loader/loadExistingGameStates.js";
+
 import PawnActor from "../../shared/Actors/PawnActor.js";
 import TileActor from "../../shared/Actors/TileActor.js";
 import DefenseMarchCassetteSignalsManager from "../../shared/SignalsManagers/DefenseMarchCassetteSignalsManager.js";
@@ -426,13 +427,18 @@ export default class GameStatesManager {
         }
       }
 
+      const loadResult = await loadExistingGameStates(
+        this,
+        loadedGameStates,
+        false,
+      );
       //user doesn't exists
-      if (!this.initExistingGameStates(loadedGameStates)) {
+      if (!loadResult) {
         return false;
       }
       return true;
     } catch (err) {
-      console.log("throwing error from load general game states.");
+      console.log("throwing error from loadGeneralGameStates()");
       throw new Error(err);
     }
   }
@@ -594,51 +600,6 @@ export default class GameStatesManager {
     }
   }
 
-  initExistingGameStates(loadedGameStates) {
-    if (loadedGameStates) {
-      //if playerActor exists
-      if (loadedGameStates.playerActor) {
-        //get actor animation data
-        const defaultPlayerActorData =
-          this.pawnActorsBlobDictionary[loadedGameStates.playerActor.actorName];
-
-        this.playerActor = PawnActor.constructExistingActor(
-          loadedGameStates.playerActor,
-          defaultPlayerActorData,
-        );
-      }
-
-      for (const allyPawnActor of loadedGameStates.allyPawnActors) {
-        const defaultAllyPawnActorData =
-          this.pawnActorsBlobDictionary[allyPawnActor.actorName];
-
-        const pawnActor = PawnActor.constructExistingActor(
-          allyPawnActor,
-          defaultAllyPawnActorData,
-        );
-
-        this.allyPawnActors.push(pawnActor);
-      }
-
-      for (const enemyPawnActor of loadedGameStates.enemyPawnActors) {
-        const defaultEnemyPawnActorData =
-          this.pawnActorsBlobDictionary[enemyPawnActor.actorName];
-
-        const pawnActor = PawnActor.constructExistingActor(
-          enemyPawnActor,
-          defaultEnemyPawnActorData,
-        );
-
-        this.enemyPawnActors.push(pawnActor);
-      }
-
-      this.cameraPosition = { ...loadedGameStates.cameraPosition };
-      this.goldCoins = loadedGameStates.goldCoins;
-      return true;
-    }
-    return false;
-  }
-
   createNewIntroCassetteGameStates() {
     //create new data and save it immediately
     const uuid = randomUUID();
@@ -676,6 +637,11 @@ export default class GameStatesManager {
     const uuid = randomUUID();
 
     this.userId = uuid;
+    this.goldCoins = 500;
+    this.currentTotalUnits = 0;
+    this.maxTotalUnits = 50;
+    this.currentWave = 1;
+    this.maxWaves = 100;
 
     //add currentLevel to each pawnActor in pawnActorsBlobDictionary
     Object.values(this.pawnActorsBlobDictionary).forEach((pawnActorBlob) => {
@@ -690,6 +656,7 @@ export default class GameStatesManager {
       playerActor,
       serializedAllyPawnActors,
       serializedEnemyPawnActors,
+      serializedSummonedActors,
       serializedTileActors,
     ] = this.getSerializedActors();
 
@@ -723,12 +690,13 @@ export default class GameStatesManager {
       playerActor: playerActor,
       allyPawnActors: serializedAllyPawnActors,
       enemyPawnActors: serializedEnemyPawnActors,
+      summonedActors: serializedSummonedActors,
       pawnActorsBlobDictionary: pawnActorsBlobDictionaryCopy,
     };
 
     //DefenseMarchCassette specific data
     if (this.cassetteIndex === 1) {
-      gameStatesData.goldCoins = 500; //initial gold coins
+      gameStatesData.goldCoins = this.goldCoins;
       gameStatesData.currentTotalUnits = this.currentTotalUnits;
       gameStatesData.maxTotalUnits = this.maxTotalUnits;
       gameStatesData.currentWave = this.currentWave;

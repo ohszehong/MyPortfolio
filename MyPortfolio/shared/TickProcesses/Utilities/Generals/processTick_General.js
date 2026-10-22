@@ -36,7 +36,7 @@ export default function processTick_General(
     allAlivePawnActors,
   );
 
-  if (!allActors || !allActors.length <= 0) return;
+  if (!allActors || allActors.length <= 0) return;
 
   if (checkAttackAndHealCollisions) {
     const allAttackAndHealCollisions =
@@ -139,7 +139,7 @@ function _checkAttackAndHealCollisions(
         ? isSingleTarget && ref.homing
         : isSingleTarget;
 
-      const skipTargetChecking = false;
+      let skipTargetChecking = false;
 
       if (shouldCheckWithTargetActorOnly) {
         const collisionTargetActor = isSummonedActor

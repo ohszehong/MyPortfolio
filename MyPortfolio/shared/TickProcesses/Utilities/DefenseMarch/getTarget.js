@@ -28,7 +28,7 @@ export default function getTarget(
     const targetIsInvalid =
       pawnActor.position.dx - mainPawnActor.position.dx < 0;
     const _targetIsInvalid =
-      mainPawnActor.targetType === TargetTypes.ally
+      mainPawnActor.collision?.targetType === TargetTypes.ally
         ? targetIsInvalid
         : !targetIsInvalid;
 
@@ -46,7 +46,7 @@ export default function getTarget(
         ? pawnActor.position.dx < selectedTarget.position.dx
         : pawnActor.position.dx > selectedTarget.position.dx;
     const _pawnActorIsCurrentBestTarget =
-      mainPawnActor.targetType === TargetTypes.ally
+      mainPawnActor.collision?.targetType === TargetTypes.ally
         ? pawnActorIsCurrentBestTarget
         : !pawnActorIsCurrentBestTarget;
 

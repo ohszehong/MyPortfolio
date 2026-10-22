@@ -58,7 +58,6 @@ export default class PawnActor extends Actor {
 
   currentLevel;
   maxLevel;
-  motionValues = [];
 
   actorDefaultStats = {
     health: 0,
@@ -341,15 +340,21 @@ export default class PawnActor extends Actor {
       heal: abilitySets.heal,
     };
 
+    this.initAbilitiesOrder();
+
     this.activeAbilityIndex = null;
     this.activeStateAnimationName = "idle";
   }
 
   initAbilitiesOrder() {
     const abilitiesArray = Object.values(this.Abilities);
-    abilitiesArray.sort(
-      (ability1, ability2) => ability1.range - ability2.range,
-    );
+
+    abilitiesArray.sort((ability1, ability2) => {
+      if (!ability1) return 1;
+      if (!ability2) return -1;
+
+      return ability1.range - ability2.range;
+    });
 
     this.orderedAbilities = abilitiesArray;
   }
@@ -503,7 +508,6 @@ export default class PawnActor extends Actor {
 
     this.currentLevel = null;
     this.maxLevel = null;
-    this.motionValues = null;
     this.actorDefaultStats = null;
     this.actorCurrentStats = null;
     this.actorState = null;

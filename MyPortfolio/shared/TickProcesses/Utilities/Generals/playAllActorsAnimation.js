@@ -1,5 +1,5 @@
-import ProjectileActor from "../../../Actors/ProjectileActor";
-import VFXHitBoxActor from "../../../Actors/VFXHitBoxActor";
+import ProjectileActor from "../../../Actors/ProjectileActor.js";
+import VFXHitBoxActor from "../../../Actors/VFXHitBoxActor.js";
 
 import SummonActorTypes from "../../../Standards/SummonActorTypes.json" with { type: "json" };
 
@@ -11,12 +11,6 @@ export default function playAllActorsAnimation(gameStatesManager, deltaTime) {
   const enemyPawnActors = gameStatesManager.enemyPawnActors;
   const summonedActors = gameStatesManager.summonedActors;
   const tileActors = gameStatesManager.tileActors;
-
-  //do summonedActors first because new summonedActors might be spawned during pawnActor playAnimation...
-  summonedActors.forEach((actor) => {
-    const currentFrameData = actor.playAnimation(deltaTime);
-    _handleCurrentFrameData(gameStatesManager, actor, currentFrameData);
-  });
 
   if (playerActor) {
     const currentFrameData = playerActor.playAnimation(deltaTime);
@@ -36,6 +30,12 @@ export default function playAllActorsAnimation(gameStatesManager, deltaTime) {
   //currently tileActors do not have any frame data that needs to be processed
   tileActors.forEach((actor) => {
     actor.playAnimation(deltaTime);
+  });
+
+  //do summonedActors last because new summonedActors might be spawned during pawnActor playAnimation...
+  summonedActors.forEach((actor) => {
+    const currentFrameData = actor.playAnimation(deltaTime);
+    _handleCurrentFrameData(gameStatesManager, actor, currentFrameData);
   });
 }
 
@@ -82,22 +82,25 @@ function _handleCurrentFrameData(gameStatesManager, actor, currentFrameData) {
       //if VFXHitBoxActor has a position meaning it can be stretched
       if (actor.position) {
         currentFrameData.collisions.forEach((collision) => {
-          let newCollisionData;
-
-          newCollisionData.source = actor;
-          newCollisionData.ddx = collision.ddx;
-          newCollisionData.ddy = collision.ddy;
-          newCollisionData.height = collision.height;
+          let newCollisionData = {
+            source: actor,
+            ddx: collision.ddx,
+            ddy: collision.ddy,
+            height: collision.height,
+          };
 
           const actualWidthToTarget = Math.abs(
             actor.targetedPosition?.dx - actor.position.dx,
           );
-          newCollisionData.width = actualWidthToTarget + newCollisionData.ddx;
+
+          if (!isNaN(actualWidthToTarget)) {
+            newCollisionData.width = actualWidthToTarget + newCollisionData.ddx;
+          }
 
           newCollisionsData.push(newCollisionData);
 
           //add currentActualWidth to currentRenderData for rendering
-          actor.currentRenderData?.frameData?.spritesheetOffset.currentActualWidth =
+          actor.currentRenderData.frameData.spritesheetOffset.currentActualWidth =
             actualWidthToTarget;
         });
       }

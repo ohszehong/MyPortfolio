@@ -12,6 +12,7 @@ export default class Animation {
 
   toJSON() {
     const data = {
+      name: this.animationSpritesheetName.split("Sheet.png")[0],
       prevFrameIndex: this.prevFrameIndex,
       currentFrameIndex: this.currentFrameIndex,
       totalDeltaTimeBeforeNextAnimationFrame:

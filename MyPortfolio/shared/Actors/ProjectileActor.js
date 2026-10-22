@@ -1,6 +1,7 @@
 import SummonedActor from "./SummonedActor.js";
 import DirectionDependentAnimation from "../Animation/DirectionDependentAnimation.js";
 import SummonActorTypes from "../Standards/SummonActorTypes.json" with { type: "json" };
+
 export default class ProjectileActor extends SummonedActor {
   toJSON() {
     let data = super.toJSON();
@@ -157,9 +158,9 @@ export default class ProjectileActor extends SummonedActor {
   }
 
   playAnimation(deltaTime) {
-    if (duration) {
-      duration -= deltaTime;
-      if (duration <= 0) {
+    if (this.duration) {
+      this.duration -= deltaTime;
+      if (this.duration <= 0) {
         this.shouldBeDestroyed = true;
       }
     }
@@ -178,7 +179,7 @@ export default class ProjectileActor extends SummonedActor {
           this.hitAnimations.getCurrentActiveFrameData(deltaTime);
 
         //right now hit animation has no collision at all, it's just for the effect
-        if (!duration && currentActiveFrameData.lastFrameIsCompleted) {
+        if (!this.duration && currentActiveFrameData.lastFrameIsCompleted) {
           this.shouldBeDestroyed = true;
         }
       } else {

@@ -8,10 +8,11 @@ import CharacterStateTypes from "../../../Standards/CharacterStateTypes.json" wi
 //all pawn actors target and movement
 //pawn actor should only walk straight on their path and cannot change their path
 //range pawn actor can attack/heal other path pawn actors
+//this -> binded by GameStatesManager/ClientStatesManager
 export default function processTick_DefenseMarchSpecific() {
   const mapHalfWidth = this.gameMapBackgroundCanvasBaseWidth / 2;
-  const allAllyPawnActors = this.gameStatesManager.allyPawnActors;
-  const allEnemyPawnActors = this.gameStatesManager.enemyPawnActors;
+  const allAllyPawnActors = this.allyPawnActors;
+  const allEnemyPawnActors = this.enemyPawnActors;
 
   const allPawnActors = [...allAllyPawnActors, ...allEnemyPawnActors];
   /* ---------------------------------------------------------------- */
@@ -98,13 +99,13 @@ function _determinePotentialTargetBasedOnUsableAbilities(
 }
 
 function _dictatesStateOnCooldownWithoutTarget(pawnActor, mapHalfWidth) {
-  if (pawnActor.targetType === TargetTypes.ally) {
+  if (pawnActor.collision?.targetType === TargetTypes.ally) {
     if (pawnActor.position.dx < mapHalfWidth) {
       pawnActor.toWalkState(pawnActor.facingDirection);
     } else {
       pawnActor.toIdleState();
     }
-  } else if (pawnActor.targetType === TargetTypes.enemy) {
+  } else if (pawnActor.collision?.targetType === TargetTypes.enemy) {
     //might need to create a gate with hp or some condition to lose the game
     if (pawnActor.position.dx > mapHalfWidth) {
       pawnActor.toWalkState(pawnActor.facingDirection);
@@ -134,6 +135,8 @@ function _determineAIPawnActorState(
   let usableAbilities = [];
 
   usableAbilities = pawnActor.orderedAbilities.filter((ability) => {
+    if (!ability) return false;
+
     if (
       !ability.repeatable &&
       ability.abilityIndex === pawnActor.previousActiveAbilityIndex

@@ -1,6 +1,6 @@
-import PawnActor from "./PawnActor";
-import Actor from "./Actor";
-import applyMovement from "../TickProcesses/Utilities/Generals/applyMovement";
+import PawnActor from "./PawnActor.js";
+import Actor from "./Actor.js";
+import applyMovement from "../TickProcesses/Utilities/Generals/applyMovement.js";
 
 export default class SummonedActor extends Actor {
   toJSON() {
@@ -125,7 +125,7 @@ export default class SummonedActor extends Actor {
           this.targetActor?.collision?.width / 2,
         dy:
           this.targetActor?.position?.dy -
-          this.targetActor?.collision?.ddy +
+          this.targetActor?.collision?.ddy -
           this.targetActor?.collision?.height / 2,
       };
     }
