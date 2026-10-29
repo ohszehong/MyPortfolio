@@ -14,7 +14,7 @@ export default class DefenseMarchCassetteSignalsManager {
     this.statesManager = statesManager;
   }
 
-  spawnPawnActorAtLocation(tempId, actorName, position) {
+  spawnAllyPawnActorAtLocation(tempId, actorName, position) {
     const actorBlobData =
       this.statesManager.pawnActorsBlobDictionary[actorName];
 
@@ -54,6 +54,43 @@ export default class DefenseMarchCassetteSignalsManager {
         }
       }
     }
+    return result;
+  }
+
+  spawnEnemyPawnActorAtLocation(tempId, actorName, position) {
+    const actorBlobData =
+      this.statesManager.pawnActorsBlobDictionary[actorName];
+    const waveManager = this.statesManager.waveManager;
+
+    let result = {
+      pawnActor: null,
+      message: null,
+      success: false,
+    };
+
+    if (!actorBlobData || !waveManager) {
+      result.message = "Invalid actorBlobData or waveManager.";
+      return result;
+    }
+
+    result.pawnActor = PawnActor.constructNewActor(
+      tempId,
+      actorName,
+      FacingDirections.left,
+      position,
+      actorBlobData,
+    );
+
+    if (!result.pawnActor) {
+      result.message = "Failed to construct a new enemey pawn actor.";
+      return result;
+    }
+
+    this.statesManager.enemyPawnActors.push(result.pawnActor);
+
+    result.success = true;
+    result.message = `Successfully spawn ${actorName} at x: ${position.dx} y: ${position.dy}`;
+
     return result;
   }
 

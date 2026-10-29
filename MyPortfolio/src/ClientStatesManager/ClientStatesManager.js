@@ -16,12 +16,13 @@ import UImage from "../HUDs/Image.js";
 import rootHUD from "../HUDs/rootHUD.js";
 import childHUD from "../HUDs/childHUD.js";
 
-import loadExistingGameStates from "../../shared/TickProcesses/Utilities/Generals/Loader/loadExistingGameStates.js";
+import loadExistingGameStates from "../../shared/TickProcesses/Utilities/Generals/GameStatesLoader/loadExistingGameStates.js";
 import loadImage from "../Utilities/loadImage.js";
 import WalkPath from "../HUDs/WalkPath.js";
 
 import packageSocketMessageForSingleUser from "../../shared/SignalsManagers/packageSocketMessage.js";
 import DefenseMarchCassetteSignalsManager from "../../shared/SignalsManagers/DefenseMarchCassetteSignalsManager.js";
+import WaveManager from "../../shared/TickProcesses/Utilities/DefenseMarch/WaveManager.js";
 
 export default class ClientStatesManager {
   userId = null;
@@ -140,6 +141,7 @@ export default class ClientStatesManager {
   maxTotalUnits = 50;
   currentWave = 1;
   maxWaves = 100;
+  waveManager = null;
 
   //for gameLoop specific to a cassette
   processTick_CassetteSpecific = null;
@@ -287,7 +289,9 @@ export default class ClientStatesManager {
             );
 
             if (this.processTick_CassetteSpecific) {
-              this.processTick_CassetteSpecific();
+              this.processTick_CassetteSpecific(
+                this.FIXED_DELTA_TIME_FROM_SERVER,
+              );
             }
             this.sortAllActorsByY();
 
@@ -375,6 +379,7 @@ export default class ClientStatesManager {
           this.signalsManager = new DefenseMarchCassetteSignalsManager(this);
           this.processTick_CassetteSpecific =
             processTick_DefenseMarchSpecific.bind(this);
+          this.waveManager = new WaveManager(this);
 
           this._checkBlockCollisionsFlag = false;
           this._checkAttackAndHealCollisionsFlag = true;
@@ -1414,6 +1419,7 @@ export default class ClientStatesManager {
     this.maxTotalUnits = 50;
     this.currentWave = 1;
     this.maxWaves = 100;
+    this.waveManager = null;
 
     this.processTick_CassetteSpecific = null;
     this.currentGameTick = 0;

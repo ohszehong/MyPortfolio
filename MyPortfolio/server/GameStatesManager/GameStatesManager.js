@@ -9,7 +9,7 @@ import TargetTypes from "../../shared/Standards/TargetTypes.json" with { type: "
 
 import loadTileMap from "../Utilities/TileMapLoader/loadTileMap.js";
 import loadImage from "../Utilities/ImgLoader/loadImage.js";
-import loadExistingGameStates from "../../shared/TickProcesses/Utilities/Generals/Loader/loadExistingGameStates.js";
+import loadExistingGameStates from "../../shared/TickProcesses/Utilities/Generals/GameStatesLoader/loadExistingGameStates.js";
 
 import PawnActor from "../../shared/Actors/PawnActor.js";
 import TileActor from "../../shared/Actors/TileActor.js";

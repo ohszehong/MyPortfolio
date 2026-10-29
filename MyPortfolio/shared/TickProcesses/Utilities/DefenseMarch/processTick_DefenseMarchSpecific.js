@@ -9,7 +9,12 @@ import CharacterStateTypes from "../../../Standards/CharacterStateTypes.json" wi
 //pawn actor should only walk straight on their path and cannot change their path
 //range pawn actor can attack/heal other path pawn actors
 //this -> binded by GameStatesManager/ClientStatesManager
-export default function processTick_DefenseMarchSpecific() {
+export default function processTick_DefenseMarchSpecific(deltaTime) {
+  //generates wave first if possible
+  if (this.waveManager) {
+    this.waveManager.generatesNewWaveIfAvailable(deltaTime);
+  }
+
   const mapHalfWidth = this.gameMapBackgroundCanvasBaseWidth / 2;
   const allAllyPawnActors = this.allyPawnActors;
   const allEnemyPawnActors = this.enemyPawnActors;

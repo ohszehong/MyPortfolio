@@ -8,6 +8,7 @@ import DefenseMarchSignalTypes from "../shared/Standards/DefenseMarchSignalTypes
 import GameStatesManager from "./GameStatesManager/GameStatesManager.js";
 import { PawnActorIsOnTrigger } from "../shared/TickProcesses/Utilities/CollisionsDetector/CollisionsDetector.js";
 import processTick_General from "../shared/TickProcesses/Utilities/Generals/processTick_General.js";
+import processTick_DefenseMarchSpecific from "../shared/TickProcesses/Utilities/DefenseMarch/processTick_DefenseMarchSpecific.js";
 
 import packageSocketMessageForSingleUser from "../shared/SignalsManagers/packageSocketMessage.js";
 import DefenseMarchCassetteSignalsManager from "../shared/SignalsManagers/DefenseMarchCassetteSignalsManager.js";
@@ -24,10 +25,15 @@ class DefenseMarchClientSimulator {
   /** @type {GameStatesManager} */
   gameStatesManager;
   prevTime;
+  processTick_Specific;
 
   constructor(gameStatesManager) {
     this.gameStatesManager = gameStatesManager;
     this.prevTime = performance.now();
+
+    this.processTick_Specific = processTick_DefenseMarchSpecific.bind(
+      this.gameStatesManager,
+    );
   }
 
   simulateGame() {
@@ -51,8 +57,7 @@ class DefenseMarchClientSimulator {
       false,
     );
 
-    //TO-DO:insert process tick specific to DefenseMarch Cassette here...
-    //and then continue to create waves to summon enemies...
+    this.processTick_Specific(totalDelta);
   }
 }
 
@@ -165,7 +170,7 @@ function init() {
             //pawnActor position format: {dx: xxx, dy: xxx}
             const actorId = crypto.randomUUID();
 
-            const result = signalsManager.spawnPawnActorAtLocation(
+            const result = signalsManager.spawnAllyPawnActorAtLocation(
               actorId,
               actorName,
               {

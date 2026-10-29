@@ -50,7 +50,7 @@ export default function transmitUserSignals() {
   //0 - Top, 1 - Middle, 2 - Bottom
   const summonCharacterOnWP = (walkPathIndex, actorName) => {
     const requestId = crypto.randomUUID();
-    const result = this.signalsManager.spawnPawnActorAtLocation(
+    const result = this.signalsManager.spawnAllyPawnActorAtLocation(
       requestId,
       actorName,
       {
